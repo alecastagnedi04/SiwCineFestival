@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title
+        th:text="${film.title} + ' | SiwCineFestival'">
+        Dettaglio Film
+    </title>
+
+    <link
+        rel="stylesheet"
+        th:href="@{/css/style.css}">
+
+</head>
+
+<body>
+
+
+<!-- ===================================================
+     NAVBAR
+     =================================================== -->
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+
+
+<!-- ===================================================
+     FILM HERO
+     =================================================== -->
+
+<section class="movie-hero">
+
+    <div class="container">
+
+
+        <!-- BREADCRUMB -->
+
+        <div class="breadcrumb">
+
+            <a th:href="@{/}">
+                Home
+            </a>
+
+            <span class="breadcrumb-separator">
+                ✦
+            </span>
+
+            <a th:href="@{/festivals}">
+                Festival
+            </a>
+
+            <span class="breadcrumb-separator">
+                ✦
+            </span>
+
+            <span th:text="${film.title}">
+                Film
+            </span>
+
+        </div>
+
+
+
+        <div class="movie-hero-grid">
+
+
+            <!-- LOCANDINA ART DECO -->
+
+            <div class="movie-premiere-poster">
+
+                <div class="movie-premiere-inner">
+
+
+                    <div class="movie-premiere-top">
+
+                        SIWCINEFESTIVAL
+
+                    </div>
+
+
+
+                    <div class="movie-premiere-art">
+
+                        <div class="movie-premiere-circle">
+
+                            ✦
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="movie-premiere-title">
+
+
+                        <div class="section-label">
+
+                            THE OFFICIAL FILM COLLECTION
+
+                        </div>
+
+
+                        <h2 th:text="${film.title}">
+
+                            Titolo del film
+
+                        </h2>
+
+
+                        <div class="movie-premiere-line"></div>
+
+
+                        <span th:text="${film.year}">
+
+                            2026
+
+                        </span>
+
+                    </div>
+
+
+
+                    <div class="movie-premiere-bottom">
+
+                        ✦ &nbsp; THE ART OF CINEMA &nbsp; ✦
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- INFORMAZIONI FILM -->
+
+            <div class="movie-hero-content">
+
+
+                <span class="eyebrow">
+
+                    THE CINEMA COLLECTION
+
+                </span>
+
+
+
+                <h1
+                    class="movie-title"
+                    th:text="${film.title}">
+
+                    Interstellar
+
+                </h1>
+
+
+
+                <div class="movie-meta">
+
+
+                    <span
+                        class="meta-pill"
+                        th:text="${film.year}">
+
+                        2014
+
+                    </span>
+
+
+                    <span
+                        class="meta-pill"
+                        th:text="${film.genre}">
+
+                        Fantascienza
+
+                    </span>
+
+
+                    <span class="meta-pill">
+
+                        <span th:text="${film.duration}">
+                            169
+                        </span>
+
+                        &nbsp; minuti
+
+                    </span>
+
+                </div>
+
+
+
+                <div class="movie-director">
+
+
+                    <div class="section-label">
+
+                        DIRECTED BY
+
+                    </div>
+
+
+
+                    <h3
+                        th:text="${director.name + ' ' + director.surname}">
+
+                        Christopher Nolan
+
+                    </h3>
+
+                </div>
+
+
+
+                <div class="movie-facts">
+
+
+                    <div class="movie-fact">
+
+                        <span>
+                            Produzione
+                        </span>
+
+
+                        <strong
+                            th:text="${film.productionCountry}">
+
+                            Stati Uniti
+
+                        </strong>
+
+                    </div>
+
+
+
+                    <div class="movie-fact">
+
+                        <span>
+                            Genere
+                        </span>
+
+
+                        <strong th:text="${film.genre}">
+
+                            Fantascienza
+
+                        </strong>
+
+                    </div>
+
+
+
+                    <div class="movie-fact">
+
+                        <span>
+                            Anno
+                        </span>
+
+
+                        <strong th:text="${film.year}">
+
+                            2014
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- AZIONI -->
+
+                <div class="movie-actions">
+
+
+                    <a
+                        th:href="@{/films/{id}/reviews(id=${film.id})}"
+                        class="btn btn-gold">
+
+                        ✦ Scopri le recensioni
+
+                    </a>
+
+
+
+                    <a
+                        th:if="${isAdmin}"
+                        th:href="@{/admin/films/{id}/edit(id=${film.id})}"
+                        class="btn btn-outline">
+
+                        Modifica film
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ===================================================
+     CAST
+     =================================================== -->
+
+<section class="section">
+
+    <div class="container">
+
+
+        <div class="section-header">
+
+            <div>
+
+
+                <div class="section-label">
+
+                    ✦ The Official Cast
+
+                </div>
+
+
+
+                <h2>
+
+                    I volti della
+
+                    <span class="gold-text italic-text">
+
+                        storia.
+
+                    </span>
+
+                </h2>
+
+
+
+                <p class="section-description">
+
+                    Gli interpreti che portano
+                    sullo schermo i protagonisti
+                    del film.
+
+                </p>
+
+            </div>
+
+
+
+            <div class="meta-pill">
+
+                <span th:text="${#lists.size(castings)}">
+                    0
+                </span>
+
+                &nbsp; interpreti
+
+            </div>
+
+        </div>
+
+
+
+        <!-- CAST PRESENTE -->
+
+        <div
+            class="movie-cast-grid"
+            th:if="${!castings.isEmpty()}">
+
+
+            <article
+                class="movie-cast-card"
+                th:each="casting : ${castings}">
+
+
+                <div class="movie-cast-symbol">
+
+                    ★
+
+                </div>
+
+
+
+                <div class="section-label">
+
+                    CAST MEMBER
+
+                </div>
+
+
+
+                <h3
+                    th:text="${casting.actor.name + ' ' + casting.actor.surname}">
+
+                    Matthew McConaughey
+
+                </h3>
+
+
+
+                <div class="movie-cast-divider"></div>
+
+
+
+                <p>
+
+                    Nel ruolo di
+
+                </p>
+
+
+
+                <strong
+                    th:text="${casting.characterName}">
+
+                    Cooper
+
+                </strong>
+
+            </article>
+
+        </div>
+
+
+
+        <!-- CAST VUOTO -->
+
+        <div
+            class="empty-state"
+            th:if="${castings.isEmpty()}">
+
+
+            <div class="empty-icon">
+                ★
+            </div>
+
+
+            <h3>
+
+                Il cast è ancora
+
+                <span class="gold-text">
+                    da scoprire.
+                </span>
+
+            </h3>
+
+
+            <p>
+
+                Gli interpreti di questo film
+                non sono ancora stati inseriti
+                nel catalogo.
+
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ===================================================
+     FESTIVAL E PROIEZIONI
+     =================================================== -->
+
+<section class="section movie-secondary-section">
+
+    <div class="container detail-grid">
+
+
+        <!-- COLONNA FESTIVAL -->
+
+        <div class="content-panel">
+
+
+            <div class="section-label">
+
+                ✦ Official Festival Selection
+
+            </div>
+
+
+
+            <h3>
+
+                Festival
+
+                <span class="gold-text">
+                    partecipanti.
+                </span>
+
+            </h3>
+
+
+
+            <p style="margin-bottom:25px;">
+
+                Le edizioni cinematografiche
+                nelle quali è stato selezionato
+                questo film.
+
+            </p>
+
+
+
+            <ul
+                class="elegant-list"
+                th:if="${!festivals.isEmpty()}">
+
+
+                <li th:each="festival : ${festivals}">
+
+
+                    <div>
+
+
+                        <a
+                            th:href="@{/festivals/{id}(id=${festival.id})}"
+                            th:text="${festival.name}">
+
+                            Festival di Venezia
+
+                        </a>
+
+
+
+                        <p class="movie-festival-info">
+
+                            <span th:text="${festival.city}">
+
+                                Venezia
+
+                            </span>
+
+
+                            &nbsp; ✦ &nbsp;
+
+
+                            <span th:text="${festival.year}">
+
+                                2026
+
+                            </span>
+
+                        </p>
+
+                    </div>
+
+
+
+                    <span class="list-arrow">
+
+                        ↗
+
+                    </span>
+
+                </li>
+
+            </ul>
+
+
+
+            <p th:if="${festivals.isEmpty()}">
+
+                Questo film non è ancora
+                associato a nessun festival.
+
+            </p>
+
+        </div>
+
+
+
+        <!-- COLONNA PROIEZIONI -->
+
+        <div class="content-panel">
+
+
+            <div class="section-label">
+
+                ✦ Screening Schedule
+
+            </div>
+
+
+
+            <h3>
+
+                Le prossime
+
+                <span class="gold-text">
+                    proiezioni.
+                </span>
+
+            </h3>
+
+
+
+            <p style="margin-bottom:25px;">
+
+                Consulta gli appuntamenti
+                del film nelle sale cinematografiche.
+
+            </p>
+
+
+
+            <div
+                class="movie-screenings"
+                th:if="${!screenings.isEmpty()}">
+
+
+                <div
+                    class="movie-screening-item"
+                    th:each="screening : ${screenings}">
+
+
+                    <div class="movie-screening-date">
+
+
+                        <span
+                            th:text="${#temporals.format(screening.date, 'dd/MM/yyyy')}">
+
+                            05/09/2026
+
+                        </span>
+
+
+
+                        <strong
+                            th:text="${#temporals.format(screening.time, 'HH:mm')}">
+
+                            18:00
+
+                        </strong>
+
+                    </div>
+
+
+
+                    <p>
+
+                        <span th:text="${screening.festival.name}">
+
+                            Festival
+
+                        </span>
+
+                        <br>
+
+                        <span th:text="${screening.room.name}">
+
+                            Sala
+
+                        </span>
+
+                    </p>
+
+
+
+                    <span
+                        class="status-badge"
+                        th:text="${screening.status.name() == 'SCHEDULED' ? 'In programma' : (screening.status.name() == 'COMPLETED' ? 'Conclusa' : 'Annullata')}">
+
+                        In programma
+
+                    </span>
+
+                </div>
+
+            </div>
+
+
+
+            <p th:if="${screenings.isEmpty()}">
+
+                Non sono ancora disponibili
+                proiezioni per questo film.
+
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ===================================================
+     RECENSIONI
+     =================================================== -->
+
+<section class="section">
+
+    <div class="container">
+
+
+        <div class="section-header">
+
+
+            <div>
+
+
+                <div class="section-label">
+
+                    ✦ Audience Reviews
+
+                </div>
+
+
+
+                <h2>
+
+                    La parola al
+
+                    <span class="gold-text italic-text">
+
+                        pubblico.
+
+                    </span>
+
+                </h2>
+
+
+
+                <p class="section-description">
+
+                    Il cinema continua a vivere
+                    attraverso le emozioni
+                    di chi lo guarda.
+
+                </p>
+
+            </div>
+
+
+
+            <div class="movie-review-actions">
+
+
+                <!-- UTENTE NON AUTENTICATO -->
+
+                <a
+                    th:if="${!isAuthenticated}"
+                    th:href="@{/login}"
+                    class="btn btn-outline">
+
+                    Accedi per recensire
+
+                </a>
+
+
+
+                <!-- UTENTE SENZA RECENSIONE -->
+
+                <a
+                    th:if="${isAuthenticated and myReview == null}"
+                    th:href="@{/films/{id}/reviews/new(id=${film.id})}"
+                    class="btn btn-gold">
+
+                    ✦ Scrivi una recensione
+
+                </a>
+
+
+
+                <!-- UTENTE CON RECENSIONE -->
+
+                <a
+                    th:if="${isAuthenticated and myReview != null}"
+                    th:href="@{/films/{filmId}/reviews/{reviewId}/edit(filmId=${film.id},reviewId=${myReview.id})}"
+                    class="btn btn-outline">
+
+                    Modifica la tua recensione
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- RECENSIONI PRESENTI -->
+
+        <div
+            class="movie-reviews-grid"
+            th:if="${!reviews.isEmpty()}">
+
+
+            <article
+                class="movie-review-card"
+                th:each="review : ${reviews}">
+
+
+                <div class="movie-review-top">
+
+
+                    <div class="review-avatar">
+
+                        ✦
+
+                    </div>
+
+
+
+                    <div>
+
+
+                        <strong th:text="${review.author.username}">
+
+                            Username
+
+                        </strong>
+
+
+
+                        <p
+                            th:text="${#temporals.format(review.date, 'dd/MM/yyyy')}">
+
+                            Data
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- VOTO -->
+
+                <div class="review-stars">
+
+
+                    <span
+                        th:each="star : ${#numbers.sequence(1,5)}"
+                        th:text="${star <= review.rating ? '★' : '☆'}">
+
+                        ★
+
+                    </span>
+
+                </div>
+
+
+
+                <!-- TESTO -->
+
+                <p
+                    class="review-text"
+                    th:text="${review.text}">
+
+                    Testo della recensione.
+
+                </p>
+
+
+
+                <!-- MODIFICA PROPRIA RECENSIONE -->
+
+                <a
+                    th:if="${myReview != null and myReview.id == review.id}"
+                    th:href="@{/films/{filmId}/reviews/{reviewId}/edit(filmId=${film.id},reviewId=${review.id})}"
+                    class="film-text-link">
+
+                    Modifica la tua recensione ↗
+
+                </a>
+
+            </article>
+
+        </div>
+
+
+
+        <!-- NESSUNA RECENSIONE -->
+
+        <div
+            class="empty-state"
+            th:if="${reviews.isEmpty()}">
+
+
+            <div class="empty-icon">
+
+                ✦
+
+            </div>
+
+
+
+            <h3>
+
+                Nessuna recensione
+
+                <span class="gold-text">
+                    per ora.
+                </span>
+
+            </h3>
+
+
+
+            <p>
+
+                Questo film non ha ancora
+                ricevuto recensioni.
+
+                Potresti essere il primo
+                a condividere la tua opinione.
+
+            </p>
+
+
+
+            <a
+                th:if="${isAuthenticated}"
+                th:href="@{/films/{id}/reviews/new(id=${film.id})}"
+                class="btn btn-gold">
+
+                Scrivi la prima recensione
+
+            </a>
+
+        </div>
+
+
+
+        <!-- TUTTE LE RECENSIONI -->
+
+        <div class="movie-all-reviews">
+
+            <a
+                th:href="@{/films/{id}/reviews(id=${film.id})}"
+                class="btn btn-outline">
+
+                Visualizza tutte le recensioni ↗
+
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ===================================================
+     FOOTER
+     =================================================== -->
+
+<footer class="site-footer">
+
+    <div class="container footer-inner">
+
+        <div class="footer-brand">
+
+            ✦ SiwCineFestival
+
+        </div>
+
+
+        <p class="footer-copy">
+
+            THE ART OF CINEMA · FILM COLLECTION
+
+        </p>
+
+
+        <div class="footer-decoration">
+
+            ✦ ✦ ✦
+
+        </div>
+
+    </div>
+
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title
+        th:text="'Recensioni di ' + ${film.title} + ' | SiwCineFestival'">
+
+        Recensioni
+
+    </title>
+
+    <link
+        rel="stylesheet"
+        th:href="@{/css/style.css}">
+
+</head>
+
+<body>
+
+
+<!-- NAVBAR -->
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+
+
+<!-- HEADER -->
+
+<section class="page-hero">
+
+    <div class="container">
+
+
+        <div class="breadcrumb">
+
+
+            <a th:href="@{/}">
+                Home
+            </a>
+
+
+            <span class="breadcrumb-separator">
+                ✦
+            </span>
+
+
+            <a
+                th:href="@{/films/{id}(id=${film.id})}"
+                th:text="${film.title}">
+
+                Film
+            </a>
+
+
+            <span class="breadcrumb-separator">
+                ✦
+            </span>
+
+
+            <span>
+                Recensioni
+            </span>
+
+        </div>
+
+
+
+        <div class="eyebrow" style="margin-top:35px;">
+
+            THE AUDIENCE SPEAKS
+
+        </div>
+
+
+
+        <h1>
+
+            La voce del
+
+            <em class="gold-text">
+                pubblico.
+            </em>
+
+        </h1>
+
+
+
+        <p>
+
+            Ogni spettatore vive una storia diversa.
+
+            Scopri le recensioni del pubblico
+            e condividi la tua esperienza
+            cinematografica.
+
+        </p>
+
+
+
+        <div class="review-film-reference">
+
+
+            <div class="section-label">
+
+                NOW REVIEWING
+
+            </div>
+
+
+
+            <h2 th:text="${film.title}">
+
+                Titolo del film
+
+            </h2>
+
+
+
+            <p>
+
+                <span th:text="${film.year}">
+                    2014
+                </span>
+
+
+                &nbsp; ✦ &nbsp;
+
+
+                <span th:text="${film.genre}">
+                    Fantascienza
+                </span>
+
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ===================================================
+     RECENSIONI
+     =================================================== -->
+
+<main class="section">
+
+    <div class="container">
+
+
+        <!-- MESSAGGI -->
+
+        <div
+            th:if="${successMessage != null}"
+            class="alert alert-success"
+            th:text="${successMessage}">
+        </div>
+
+
+
+        <div
+            th:if="${errorMessage != null}"
+            class="alert alert-error"
+            th:text="${errorMessage}">
+        </div>
+
+
+
+        <!-- HEADER SEZIONE -->
+
+        <div class="section-header">
+
+
+            <div>
+
+
+                <div class="section-label">
+
+                    ✦ The Review Collection
+
+                </div>
+
+
+
+                <h2>
+
+                    Le
+
+                    <span class="gold-text italic-text">
+
+                        recensioni.
+
+                    </span>
+
+                </h2>
+
+
+
+                <p class="section-description">
+
+                    Opinioni, emozioni e impressioni
+                    degli spettatori.
+
+                </p>
+
+            </div>
+
+
+
+            <div class="review-page-actions">
+
+
+                <div class="meta-pill">
+
+
+                    <span th:text="${#lists.size(reviews)}">
+
+                        0
+
+                    </span>
+
+
+                    &nbsp; recensioni
+
+                </div>
+
+
+
+                <!-- UTENTE NON AUTENTICATO -->
+
+                <a
+                    th:if="${!isAuthenticated}"
+                    th:href="@{/login}"
+                    class="btn btn-outline">
+
+                    Accedi per recensire
+
+                </a>
+
+
+
+                <!-- UTENTE SENZA RECENSIONE -->
+
+                <a
+                    th:if="${isAuthenticated and myReview == null}"
+                    th:href="@{/films/{id}/reviews/new(id=${film.id})}"
+                    class="btn btn-gold">
+
+                    ✦ Scrivi una recensione
+
+                </a>
+
+
+
+                <!-- UTENTE CON RECENSIONE -->
+
+                <a
+                    th:if="${isAuthenticated and myReview != null}"
+                    th:href="@{/films/{filmId}/reviews/{reviewId}/edit(filmId=${film.id},reviewId=${myReview.id})}"
+                    class="btn btn-outline">
+
+                    Modifica la tua recensione
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ELENCO RECENSIONI -->
+
+        <div
+            class="review-page-grid"
+            th:if="${!reviews.isEmpty()}">
+
+
+            <article
+                class="review-page-card"
+                th:each="review : ${reviews}">
+
+
+                <!-- AUTORE -->
+
+                <div class="review-page-card-header">
+
+
+                    <div class="review-avatar">
+
+                        ✦
+
+                    </div>
+
+
+
+                    <div>
+
+
+                        <strong th:text="${review.author.username}">
+
+                            Username
+
+                        </strong>
+
+
+
+                        <p
+                            th:text="${#temporals.format(review.date, 'dd/MM/yyyy')}">
+
+                            28/10/2026
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- VOTO -->
+
+                <div class="review-page-rating">
+
+
+                    <div class="review-stars">
+
+
+                        <span
+                            th:each="star : ${#numbers.sequence(1,5)}"
+                            th:text="${star <= review.rating ? '★' : '☆'}">
+
+                            ★
+
+                        </span>
+
+                    </div>
+
+
+
+                    <strong th:text="|${review.rating}/5|">
+
+                        5/5
+
+                    </strong>
+
+                </div>
+
+
+
+                <!-- TESTO -->
+
+                <p
+                    class="review-text"
+                    th:text="${review.text}">
+
+                    Testo della recensione.
+
+                </p>
+
+
+
+                <!-- AZIONI PROPRIETARIO -->
+
+                <div
+                    class="review-owner-actions"
+                    th:if="${myReview != null and myReview.id == review.id}">
+
+
+                    <!-- MODIFICA -->
+
+                    <a
+                        th:href="@{/films/{filmId}/reviews/{reviewId}/edit(filmId=${film.id},reviewId=${review.id})}"
+                        class="btn btn-outline btn-small">
+
+                        Modifica
+
+                    </a>
+
+
+
+                    <!-- ELIMINA -->
+
+                    <form
+                        th:action="@{/films/{filmId}/reviews/{reviewId}/delete(filmId=${film.id},reviewId=${review.id})}"
+                        method="post"
+                        onsubmit="return confirm('Vuoi eliminare questa recensione?');">
+
+
+                        <button
+                            type="submit"
+                            class="btn btn-outline btn-small">
+
+                            Elimina
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </article>
+
+        </div>
+
+
+
+        <!-- NESSUNA RECENSIONE -->
+
+        <div
+            class="empty-state"
+            th:if="${reviews.isEmpty()}">
+
+
+            <div class="empty-icon">
+
+                ✦
+
+            </div>
+
+
+
+            <div class="section-label">
+
+                BE THE FIRST TO REVIEW
+
+            </div>
+
+
+
+            <h3>
+
+                La prima recensione
+
+                <span class="gold-text">
+
+                    aspetta te.
+
+                </span>
+
+            </h3>
+
+
+
+            <p>
+
+                Nessuno ha ancora condiviso
+                la propria opinione su questo film.
+
+                Ogni grande storia merita
+                di essere raccontata.
+
+            </p>
+
+
+
+            <a
+                th:if="${isAuthenticated}"
+                th:href="@{/films/{id}/reviews/new(id=${film.id})}"
+                class="btn btn-gold">
+
+                ✦ Scrivi la prima recensione
+
+            </a>
+
+
+
+            <a
+                th:if="${!isAuthenticated}"
+                th:href="@{/login}"
+                class="btn btn-outline">
+
+                Accedi per partecipare
+
+            </a>
+
+        </div>
+
+
+
+        <!-- TORNA AL FILM -->
+
+        <div class="review-back-link">
+
+
+            <a
+                th:href="@{/films/{id}(id=${film.id})}"
+                class="btn btn-outline">
+
+                ← Torna al film
+
+            </a>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+
+<!-- FOOTER -->
+
+<footer class="site-footer">
+
+    <div class="container footer-inner">
+
+
+        <div class="footer-brand">
+
+            ✦ SiwCineFestival
+
+        </div>
+
+
+
+        <p class="footer-copy">
+
+            THE ART OF CINEMA · AUDIENCE REVIEWS
+
+        </p>
+
+
+
+        <div class="footer-decoration">
+
+            ✦ ✦ ✦
+
+        </div>
+
+    </div>
+
+</footer>
+
+</body>
+</html>

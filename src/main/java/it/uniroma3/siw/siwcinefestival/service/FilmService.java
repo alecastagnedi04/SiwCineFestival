@@ -65,12 +65,26 @@ public class FilmService {
 
 
     @Transactional(readOnly = true)
-    public Optional<Film> findByIdWithDirectorAndCast(
-            Long id) {
+public Optional<Film> findByIdWithDirectorAndCast(
+        Long id) {
 
-        return filmRepository
-                .findByIdWithDirectorAndCast(id);
-    }
+    Optional<Film> result =
+            filmRepository.findByIdWithDirectorAndCast(id);
+
+    /*
+     * Director e Casting vengono caricati
+     * tramite EntityGraph nel Repository.
+     *
+     * Inizializziamo separatamente i festival
+     * mentre la transazione è ancora aperta.
+     */
+
+    result.ifPresent(film -> {
+        film.getFestivals().size();
+    });
+
+    return result;
+}
 
 
     @Transactional(readOnly = true)
