@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Gestione Attori | SiwCineFestival</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+
+<!-- HEADER -->
+<section class="page-hero">
+
+    <div class="container">
+
+        <div class="breadcrumb">
+
+            <a th:href="@{/}">Home</a>
+
+            <span class="breadcrumb-separator">✦</span>
+
+            <a th:href="@{/admin}">Dashboard</a>
+
+            <span class="breadcrumb-separator">✦</span>
+
+            <span>Attori</span>
+
+        </div>
+
+
+        <div class="eyebrow" style="margin-top:35px;">
+            THE STARS OF CINEMA
+        </div>
+
+
+        <h1>
+            I protagonisti
+            <em class="gold-text">
+                delle storie.
+            </em>
+        </h1>
+
+
+        <p>
+            Il cinema prende vita
+            grazie ai suoi interpreti.
+
+            Gestisci gli attori del catalogo
+            e preparati ad associarli
+            ai tuoi film.
+        </p>
+
+
+        <div class="admin-page-actions">
+
+            <a th:href="@{/admin}"
+               class="btn btn-outline">
+                ← Dashboard
+            </a>
+
+            <a th:href="@{/admin/films}"
+               class="btn btn-gold">
+                Catalogo film ↗
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- MAIN -->
+<main class="section">
+
+    <div class="container">
+
+        <div th:if="${successMessage != null}"
+             class="alert alert-success"
+             th:text="${successMessage}">
+        </div>
+
+
+        <div class="admin-form-layout">
+
+            <!-- FORM -->
+            <div class="admin-form-panel">
+
+                <div class="section-label">
+                    ✦ Actor Details
+                </div>
+
+                <h2 class="admin-panel-title">
+
+                    <span th:if="${!isEdit}">
+                        Nuovo
+                    </span>
+
+                    <span th:if="${isEdit}">
+                        Modifica
+                    </span>
+
+                    <span class="gold-text italic-text">
+                        interprete.
+                    </span>
+
+                </h2>
+
+                <p class="admin-panel-description">
+                    Inserisci le informazioni
+                    dell'attore cinematografico.
+                </p>
+
+
+                <form
+                    th:object="${actorForm}"
+                    th:action="${isEdit} ? @{/admin/actors/{id}/edit(id=${actorId})} : @{/admin/actors/new}"
+                    method="post">
+
+
+                    <!-- ERRORI GLOBALI -->
+                    <div
+                        th:if="${#fields.hasGlobalErrors()}"
+                        class="alert alert-error">
+
+                        <div
+                            th:each="err : ${#fields.globalErrors()}"
+                            th:text="${err}">
+                        </div>
+
+                    </div>
+
+
+                    <!-- NOME -->
+                    <div class="form-group">
+
+                        <label for="name"
+                               class="form-label">
+                            Nome *
+                        </label>
+
+                        <input
+                            id="name"
+                            type="text"
+                            th:field="*{name}"
+                            class="form-control"
+                            placeholder="Es. Leonardo"
+                            maxlength="255"
+                            required>
+
+                        <span
+                            th:if="${#fields.hasErrors('name')}"
+                            th:errors="*{name}"
+                            class="form-error">
+                        </span>
+
+                    </div>
+
+
+                    <!-- COGNOME -->
+                    <div class="form-group">
+
+                        <label for="surname"
+                               class="form-label">
+                            Cognome *
+                        </label>
+
+                        <input
+                            id="surname"
+                            type="text"
+                            th:field="*{surname}"
+                            class="form-control"
+                            placeholder="Es. DiCaprio"
+                            maxlength="255"
+                            required>
+
+                        <span
+                            th:if="${#fields.hasErrors('surname')}"
+                            th:errors="*{surname}"
+                            class="form-error">
+                        </span>
+
+                    </div>
+
+
+                    <!-- DATA NASCITA -->
+                    <div class="form-group">
+
+                        <label for="birthDate"
+                               class="form-label">
+                            Data di nascita *
+                        </label>
+
+                        <input
+                            id="birthDate"
+                            type="date"
+                            th:field="*{birthDate}"
+                            class="form-control"
+                            required>
+
+                        <span
+                            th:if="${#fields.hasErrors('birthDate')}"
+                            th:errors="*{birthDate}"
+                            class="form-error">
+                        </span>
+
+                    </div>
+
+
+                    <!-- NAZIONALITÀ -->
+                    <div class="form-group">
+
+                        <label for="nationality"
+                               class="form-label">
+                            Nazionalità *
+                        </label>
+
+                        <input
+                            id="nationality"
+                            type="text"
+                            th:field="*{nationality}"
+                            class="form-control"
+                            placeholder="Es. Statunitense"
+                            required>
+
+                        <span
+                            th:if="${#fields.hasErrors('nationality')}"
+                            th:errors="*{nationality}"
+                            class="form-error">
+                        </span>
+
+                    </div>
+
+
+                    <!-- BUTTONS -->
+                    <div class="admin-form-buttons">
+
+                        <button
+                            type="submit"
+                            class="btn btn-gold">
+
+                            <span th:if="${!isEdit}">
+                                ✦ Crea attore
+                            </span>
+
+                            <span th:if="${isEdit}">
+                                ✦ Salva modifiche
+                            </span>
+
+                        </button>
+
+                        <a
+                            th:href="@{/admin/actors}"
+                            class="btn btn-outline">
+                            Annulla
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+
+            <!-- SIDEBAR -->
+            <aside class="admin-form-sidebar">
+
+                <div class="admin-side-card admin-side-highlight">
+
+                    <div class="admin-side-symbol">
+                        ★
+                    </div>
+
+                    <div class="section-label">
+                        HOLLYWOOD STARS
+                    </div>
+
+                    <h3>
+                        Ogni ruolo
+                        <span class="gold-text italic-text">
+                            è una storia.
+                        </span>
+                    </h3>
+
+                    <p>
+                        Gli interpreti trasformano
+                        personaggi scritti sulla carta
+                        in emozioni che rimangono
+                        impresse nella memoria.
+                    </p>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+
+        <!-- ELENCO ATTORI -->
+        <section class="admin-association-section">
+
+            <div class="section-header">
+
+                <div>
+
+                    <div class="section-label">
+                        ✦ The Cast Archive
+                    </div>
+
+                    <h2>
+                        Le stelle
+                        <span class="gold-text italic-text">
+                            del cinema.
+                        </span>
+                    </h2>
+
+                </div>
+
+                <div class="meta-pill">
+
+                    <span th:text="${#lists.size(actors)}">
+                        0
+                    </span>
+
+                    &nbsp; attori
+
+                </div>
+
+            </div>
+
+
+            <div class="admin-table-container"
+                 th:if="${!actors.isEmpty()}">
+
+                <table class="admin-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Attore</th>
+                            <th>Nazionalità</th>
+                            <th>Data di nascita</th>
+                            <th>Azioni</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr th:each="actor : ${actors}">
+
+                            <td>
+
+                                <div class="table-main-title">
+
+                                    <span class="table-star">
+                                        ★
+                                    </span>
+
+                                    <span
+                                        th:text="${actor.name + ' ' + actor.surname}">
+                                        Nome attore
+                                    </span>
+
+                                </div>
+
+                            </td>
+
+
+                            <td
+                                th:text="${actor.nationality}">
+                                Nazionalità
+                            </td>
+
+
+                            <td
+                                th:text="${#temporals.format(actor.birthDate, 'dd/MM/yyyy')}">
+                                Data
+                            </td>
+
+
+                            <td>
+
+                                <a
+                                    th:href="@{/admin/actors/{id}/edit(id=${actor.id})}"
+                                    class="btn btn-outline btn-small">
+                                    Modifica
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <div class="empty-state"
+                 th:if="${actors.isEmpty()}">
+
+                <div class="empty-icon">
+                    ★
+                </div>
+
+                <h3>
+                    Nessun attore
+                    <span class="gold-text">
+                        presente.
+                    </span>
+                </h3>
+
+                <p>
+                    Utilizza il form per creare
+                    il primo attore cinematografico.
+                </p>
+
+            </div>
+
+        </section>
+
+    </div>
+
+</main>
+
+
+<footer class="site-footer">
+
+    <div class="container footer-inner">
+
+        <div class="footer-brand">
+            ✦ SiwCineFestival
+        </div>
+
+        <p class="footer-copy">
+            THE ART OF CINEMA · ACTORS
+        </p>
+
+        <div class="footer-decoration">
+            ✦ ✦ ✦
+        </div>
+
+    </div>
+
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="SiwCineFestival: scopri festival cinematografici, film e proiezioni.">
+
+    <title>
+        SiwCineFestival | The Art of Cinema
+    </title>
+
+    <link
+        rel="stylesheet"
+        th:href="@{/css/style.css}">
+
+</head>
+
+<body>
+
+
+<!-- NAVBAR -->
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+
+
+<!-- ===================================================
+     HERO SECTION
+     =================================================== -->
+
+<section class="hero">
+
+    <div class="container hero-grid">
+
+
+        <!-- TESTO PRINCIPALE -->
+
+        <div class="hero-content animate-up">
+
+            <span class="eyebrow">
+                SiwCineFestival • The Grand Premiere
+            </span>
+
+
+            <h1 class="hero-title">
+
+                Dove il<br>
+
+                <em>cinema</em><br>
+
+                diventa<br>
+
+                leggenda.
+
+            </h1>
+
+
+            <p class="hero-description">
+
+                Le grandi storie meritano un grande palcoscenico.
+
+                Scopri i festival cinematografici,
+                esplora i film in programma
+                e lasciati trasportare dalla magia
+                della settima arte.
+
+            </p>
+
+
+            <div class="hero-actions">
+
+                <a
+                    th:href="@{/festivals}"
+                    class="btn btn-gold">
+
+                    Esplora i festival
+
+                    <span>↗</span>
+
+                </a>
+
+
+                <a
+                    th:if="${!isAuthenticated}"
+                    th:href="@{/register}"
+                    class="btn btn-outline">
+
+                    Entra nella community
+
+                </a>
+
+
+                <a
+                    th:if="${isAdmin}"
+                    th:href="@{/admin}"
+                    class="btn btn-outline">
+
+                    Area amministratore
+
+                </a>
+
+            </div>
+
+
+            <div class="hero-caption">
+
+                Un omaggio alla magia del grande schermo
+
+            </div>
+
+        </div>
+
+
+
+        <!-- POSTER CINEMATOGRAFICO -->
+
+        <div class="cinema-stage animate-up animate-delay"
+             aria-label="Decorazione ispirata alle première cinematografiche">
+
+            <div class="stage-inner">
+
+                <div class="stage-topline">
+
+                    THE GRAND CINEMA EXPERIENCE
+
+                </div>
+
+
+                <div class="stage-ornament"
+                     aria-hidden="true">
+                </div>
+
+
+                <div>
+
+                    <div class="stage-stars" aria-hidden="true">
+                        ✦ ✦ ✦
+                    </div>
+
+
+                    <h2 class="stage-title">
+
+                        Lights.<br>
+
+                        Camera.<br>
+
+                        <em>Magic.</em>
+
+                    </h2>
+
+                </div>
+
+
+                <div class="stage-bottom">
+
+                    ✦ &nbsp; A CELEBRATION OF FILM &nbsp; ✦
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ===================================================
+     INTRO STRIP
+     =================================================== -->
+
+<section class="intro-strip container">
+
+    <div class="intro-item">
+
+        <span
+            class="intro-number"
+            th:text="${#lists.size(festivals)}">
+            0
+        </span>
+
+        <div class="intro-label">
+            Festival disponibili
+        </div>
+
+    </div>
+
+
+    <div class="intro-item">
+
+        <span class="intro-number">
+            VII
+        </span>
+
+        <div class="intro-label">
+            La settima arte
+        </div>
+
+    </div>
+
+
+    <div class="intro-item">
+
+        <span class="intro-number">
+            ✦
+        </span>
+
+        <div class="intro-label">
+            Un'esperienza da vivere
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ===================================================
+     FESTIVAL SECTION
+     =================================================== -->
+
+<section class="section">
+
+    <div class="container">
+
+
+        <div class="section-header">
+
+            <div>
+
+                <div class="section-label">
+
+                    ✦ La nostra selezione
+
+                </div>
+
+
+                <h2 class="section-heading">
+
+                    Sul grande
+
+                    <span class="gold-text italic-text">
+                        schermo.
+                    </span>
+
+                </h2>
+
+
+                <p class="section-description">
+
+                    Dai grandi festival internazionali
+                    alle nuove storie da scoprire.
+
+                    Ogni festival è una porta aperta
+                    verso il mondo del cinema.
+
+                </p>
+
+            </div>
+
+
+            <a
+                th:href="@{/festivals}"
+                class="btn btn-outline">
+
+                Tutti i festival ↗
+
+            </a>
+
+        </div>
+
+
+
+        <!-- FESTIVAL PRESENTI -->
+
+        <div
+            class="festival-grid"
+            th:if="${!festivals.isEmpty()}">
+
+
+            <a
+                th:each="festival : ${festivals}"
+                th:href="@{/festivals/{id}(id=${festival.id})}"
+                class="festival-card">
+
+
+                <div class="festival-card-top">
+
+                    <span
+                        class="festival-year"
+                        th:text="${festival.year}">
+                        2026
+                    </span>
+
+
+                    <span class="festival-tag">
+
+                        Official Selection
+
+                    </span>
+
+                </div>
+
+
+                <div class="festival-card-body">
+
+
+                    <div
+                        class="festival-city"
+                        th:text="${festival.city}">
+
+                        Venezia
+
+                    </div>
+
+
+                    <h3 th:text="${festival.name}">
+
+                        Festival del Cinema
+
+                    </h3>
+
+
+                    <div class="festival-date">
+
+                        <span
+                            th:text="${#temporals.format(festival.startDate, 'dd MMM yyyy')}">
+                        </span>
+
+                        <span> — </span>
+
+                        <span
+                            th:text="${#temporals.format(festival.endDate, 'dd MMM yyyy')}">
+                        </span>
+
+                    </div>
+
+
+                    <div class="card-line"></div>
+
+
+                    <div class="card-link">
+
+                        Scopri il festival
+
+                        <span>→</span>
+
+                    </div>
+
+                </div>
+
+            </a>
+
+        </div>
+
+
+
+        <!-- NESSUN FESTIVAL -->
+
+        <div
+            class="empty-state"
+            th:if="${festivals.isEmpty()}">
+
+            <div class="empty-icon">
+                ✦
+            </div>
+
+
+            <h3>
+
+                Il sipario sta per
+
+                <span class="gold-text">
+                    alzarsi.
+                </span>
+
+            </h3>
+
+
+            <p>
+
+                I festival cinematografici
+                non sono ancora stati pubblicati.
+
+                Presto questo spazio accoglierà
+                storie, proiezioni e grandi protagonisti.
+
+            </p>
+
+
+            <a
+                th:if="${isAdmin}"
+                th:href="@{/admin/festivals/new}"
+                class="btn btn-gold">
+
+                Crea il primo festival
+
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ===================================================
+     CINEMATIC CTA
+     =================================================== -->
+
+<section class="section" style="padding-top: 0;">
+
+    <div class="container">
+
+        <div class="feature-banner">
+
+            <div class="section-label">
+
+                THE SHOW MUST GO ON
+
+            </div>
+
+
+            <h2>
+
+                Ogni film è una storia.
+
+                <span class="gold-text italic-text">
+
+                    Ogni festival, un'emozione.
+
+                </span>
+
+            </h2>
+
+
+            <p>
+
+                Dai capolavori senza tempo
+                alle nuove voci del cinema.
+
+                Esplora la programmazione
+                e scopri le prossime proiezioni.
+
+            </p>
+
+
+            <a
+                th:href="@{/festivals}"
+                class="btn btn-gold">
+
+                Scopri la programmazione ↗
+
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ===================================================
+     FOOTER
+     =================================================== -->
+
+<footer class="site-footer">
+
+    <div class="container footer-inner">
+
+        <div class="footer-brand">
+
+            ✦ SiwCineFestival
+
+        </div>
+
+
+        <p class="footer-copy">
+
+            THE ART OF CINEMA · MADE WITH PASSION
+
+        </p>
+
+
+        <div class="footer-decoration">
+
+            ✦ ✦ ✦
+
+        </div>
+
+    </div>
+
+</footer>
+
+</body>
+</html>

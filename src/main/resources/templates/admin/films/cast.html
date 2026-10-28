@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title
+        th:text="'Cast di ' + ${film.title} + ' | SiwCineFestival'">
+        Gestione Cast
+    </title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+
+<!-- HEADER -->
+<section class="page-hero">
+
+    <div class="container">
+
+        <div class="breadcrumb">
+
+            <a th:href="@{/}">Home</a>
+
+            <span class="breadcrumb-separator">✦</span>
+
+            <a th:href="@{/admin}">Dashboard</a>
+
+            <span class="breadcrumb-separator">✦</span>
+
+            <a th:href="@{/admin/films}">Film</a>
+
+            <span class="breadcrumb-separator">✦</span>
+
+            <span>Cast</span>
+
+        </div>
+
+
+        <div class="eyebrow" style="margin-top:35px;">
+            THE PEOPLE BEHIND THE STORY
+        </div>
+
+
+        <h1>
+            I volti della
+            <em class="gold-text">
+                storia.
+            </em>
+        </h1>
+
+
+        <p>
+            Ogni storia prende vita grazie
+            ai suoi interpreti.
+
+            Costruisci il cast, assegna
+            i personaggi e scopri
+            chi porta la magia sullo schermo.
+        </p>
+
+
+        <div class="admin-page-actions">
+
+            <a
+                th:href="@{/admin/films/{id}/edit(id=${film.id})}"
+                class="btn btn-outline">
+                ← Modifica film
+            </a>
+
+            <a th:href="@{/admin/actors}"
+               class="btn btn-gold">
+                + Gestisci attori
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- CONTENT -->
+<main class="section">
+
+    <div class="container">
+
+        <!-- MESSAGGI -->
+        <div th:if="${successMessage != null}"
+             class="alert alert-success"
+             th:text="${successMessage}">
+        </div>
+
+        <div th:if="${errorMessage != null}"
+             class="alert alert-error"
+             th:text="${errorMessage}">
+        </div>
+
+
+        <!-- FILM SUMMARY -->
+        <div class="cast-film-summary">
+
+            <div class="cast-summary-symbol">
+                ✦
+            </div>
+
+            <div class="cast-summary-content">
+
+                <div class="section-label">
+                    NOW CASTING
+                </div>
+
+                <h2 th:text="${film.title}">
+                    Titolo del film
+                </h2>
+
+                <div class="cast-summary-meta">
+
+                    <span th:text="${film.year}">
+                        2026
+                    </span>
+
+                    <span>✦</span>
+
+                    <span th:text="${film.genre}">
+                        Drammatico
+                    </span>
+
+                    <span>✦</span>
+
+                    <span>
+                        <span th:text="${film.duration}">
+                            120
+                        </span>
+                        min
+                    </span>
+
+                </div>
+
+                <p>
+                    Diretto da
+
+                    <strong class="gold-text"
+                            th:text="${film.director.name + ' ' + film.director.surname}">
+                        Nome regista
+                    </strong>
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- SECTION HEADING -->
+        <div class="section-header"
+             style="margin-top:70px;">
+
+            <div>
+
+                <div class="section-label">
+                    ✦ The Official Cast
+                </div>
+
+                <h2>
+                    Il
+                    <span class="gold-text italic-text">
+                        cast.
+                    </span>
+                </h2>
+
+                <p class="section-description">
+                    Gestisci gli attori associati
+                    al film e i personaggi
+                    che interpretano.
+                </p>
+
+            </div>
+
+
+            <div class="meta-pill">
+
+                <span th:text="${#lists.size(castings)}">
+                    0
+                </span>
+
+                &nbsp; interpreti
+
+            </div>
+
+        </div>
+
+
+        <div class="cast-management-layout">
+
+            <!-- COLONNA CAST -->
+            <div>
+
+                <!-- ATTORI PRESENTI -->
+                <div class="cast-members"
+                     th:if="${!castings.isEmpty()}">
+
+                    <article class="cast-member-card"
+                             th:each="casting : ${castings}">
+
+                        <div class="cast-member-heading">
+
+                            <div class="cast-avatar">
+                                ★
+                            </div>
+
+                            <div>
+
+                                <div class="section-label">
+                                    CAST MEMBER
+                                </div>
+
+                                <h3
+                                    th:text="${casting.actor.name + ' ' + casting.actor.surname}">
+                                    Nome attore
+                                </h3>
+
+                                <p
+                                    th:text="${casting.actor.nationality}">
+                                    Nazionalità
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- MODIFICA PERSONAGGIO -->
+                        <div class="cast-character-editor">
+
+                            <div class="section-label">
+                                CHARACTER
+                            </div>
+
+                            <form
+                                th:action="@{/admin/films/{filmId}/cast/{castingId}/edit(filmId=${film.id},castingId=${casting.id})}"
+                                method="post">
+
+                                <input
+                                    type="hidden"
+                                    name="actorId"
+                                    th:value="${casting.actor.id}">
+
+
+                                <div class="cast-character-form">
+
+                                    <input
+                                        type="text"
+                                        name="characterName"
+                                        class="form-control"
+                                        th:value="${casting.characterName}"
+                                        placeholder="Personaggio interpretato"
+                                        maxlength="200"
+                                        required>
+
+                                    <button
+                                        type="submit"
+                                        class="btn btn-outline btn-small">
+                                        Salva
+                                    </button>
+
+                                </div>
+
+                            </form>
+
+                        </div>
+
+
+                        <!-- RIMOZIONE -->
+                        <div class="cast-member-footer">
+
+                            <span class="cast-member-label">
+                                ✦ Official Cast
+                            </span>
+
+                            <form
+                                th:action="@{/admin/films/{filmId}/cast/{castingId}/delete(filmId=${film.id},castingId=${casting.id})}"
+                                method="post"
+                                onsubmit="return confirm('Vuoi rimuovere questo attore dal cast?');">
+
+                                <button
+                                    type="submit"
+                                    class="cast-remove-button">
+                                    Rimuovi dal cast
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+
+                <!-- NESSUN ATTORE -->
+                <div class="empty-state"
+                     th:if="${castings.isEmpty()}">
+
+                    <div class="empty-icon">
+                        ★
+                    </div>
+
+                    <h3>
+                        Il palco aspetta
+                        <span class="gold-text">
+                            i protagonisti.
+                        </span>
+                    </h3>
+
+                    <p>
+                        Nessun attore è stato
+                        ancora associato al film.
+
+                        Aggiungi il primo interprete
+                        utilizzando il modulo accanto.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- SIDEBAR -->
+            <aside class="admin-form-sidebar">
+
+                <div class="admin-side-card">
+
+                    <div class="section-label">
+                        ✦ Add a Cast Member
+                    </div>
+
+                    <h3>
+                        Un nuovo
+                        <span class="gold-text">
+                            protagonista.
+                        </span>
+                    </h3>
+
+                    <p style="margin-bottom:25px;">
+                        Seleziona un attore
+                        dal catalogo e indica
+                        il personaggio interpretato.
+                    </p>
+
+
+                    <!-- AGGIUNGI ATTORE -->
+                    <form
+                        th:if="${!actors.isEmpty()}"
+                        th:object="${castingForm}"
+                        th:action="@{/admin/films/{id}/cast/add(id=${film.id})}"
+                        method="post">
+
+
+                        <!-- ERRORI GENERALI -->
+                        <div
+                            th:if="${#fields.hasGlobalErrors()}"
+                            class="alert alert-error">
+
+                            <div
+                                th:each="err : ${#fields.globalErrors()}"
+                                th:text="${err}">
+                            </div>
+
+                        </div>
+
+
+                        <!-- ATTORE -->
+                        <div class="form-group">
+
+                            <label for="actorId"
+                                   class="form-label">
+                                Attore *
+                            </label>
+
+                            <select
+                                id="actorId"
+                                th:field="*{actorId}"
+                                class="form-control"
+                                required>
+
+                                <option value="">
+                                    -- Seleziona un attore --
+                                </option>
+
+                                <option
+                                    th:each="actor : ${actors}"
+                                    th:value="${actor.id}"
+                                    th:text="${actor.name + ' ' + actor.surname}">
+                                    Nome attore
+                                </option>
+
+                            </select>
+
+                            <span
+                                th:if="${#fields.hasErrors('actorId')}"
+                                th:errors="*{actorId}"
+                                class="form-error">
+                            </span>
+
+                        </div>
+
+
+                        <!-- PERSONAGGIO -->
+                        <div class="form-group">
+
+                            <label for="characterName"
+                                   class="form-label">
+                                Personaggio *
+                            </label>
+
+                            <input
+                                id="characterName"
+                                type="text"
+                                th:field="*{characterName}"
+                                class="form-control"
+                                placeholder="Es. Michael Corleone"
+                                maxlength="200"
+                                required>
+
+                            <span
+                                th:if="${#fields.hasErrors('characterName')}"
+                                th:errors="*{characterName}"
+                                class="form-error">
+                            </span>
+
+                        </div>
+
+
+                        <button
+                            type="submit"
+                            class="btn btn-gold btn-full">
+
+                            ✦ Aggiungi al cast
+
+                        </button>
+
+                    </form>
+
+
+                    <!-- NESSUN ATTORE NEL DATABASE -->
+                    <div th:if="${actors.isEmpty()}">
+
+                        <div class="alert alert-error">
+                            Non ci sono ancora attori
+                            nel database.
+                        </div>
+
+                        <a
+                            th:href="@{/admin/actors}"
+                            class="btn btn-gold btn-full">
+                            Crea il primo attore
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <div class="admin-side-card admin-side-highlight">
+
+                    <div class="admin-side-symbol">
+                        ✦
+                    </div>
+
+                    <div class="section-label">
+                        BEHIND THE SCENES
+                    </div>
+
+                    <h3>
+                        Ogni ruolo
+                        <span class="gold-text italic-text">
+                            conta.
+                        </span>
+                    </h3>
+
+                    <p>
+                        Un attore può interpretare
+                        personaggi differenti
+                        in film diversi.
+
+                        Ogni associazione
+                        viene salvata nel database
+                        attraverso l'entità Casting.
+                    </p>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+
+        <!-- NEXT STEP -->
+        <div class="admin-next-actions">
+
+            <div>
+
+                <div class="section-label">
+                    ✦ Next Premiere
+                </div>
+
+                <h3>
+                    Pronto per il
+                    <span class="gold-text">
+                        festival?
+                    </span>
+                </h3>
+
+                <p>
+                    Ora puoi associare questo film
+                    a uno o più festival cinematografici.
+                </p>
+
+            </div>
+
+            <a
+                th:href="@{/admin/festivals}"
+                class="btn btn-gold">
+                Gestisci festival ↗
+            </a>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<!-- FOOTER -->
+<footer class="site-footer">
+
+    <div class="container footer-inner">
+
+        <div class="footer-brand">
+            ✦ SiwCineFestival
+        </div>
+
+        <p class="footer-copy">
+            THE ART OF CINEMA · CAST MANAGEMENT
+        </p>
+
+        <div class="footer-decoration">
+            ✦ ✦ ✦
+        </div>
+
+    </div>
+
+</footer>
+
+</body>
+</html>

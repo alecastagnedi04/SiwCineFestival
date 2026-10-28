@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title th:text="${isEdit} ? 'Modifica Sala | SiwCineFestival' : 'Nuova Sala | SiwCineFestival'">
+        Gestione Sala
+    </title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+
+<!-- HEADER -->
+<section class="page-hero">
+
+    <div class="container">
+
+        <div class="breadcrumb">
+
+            <a th:href="@{/}">Home</a>
+
+            <span class="breadcrumb-separator">✦</span>
+
+            <a th:href="@{/admin}">Dashboard</a>
+
+            <span class="breadcrumb-separator">✦</span>
+
+            <a th:href="@{/admin/rooms}">Sale</a>
+
+            <span class="breadcrumb-separator">✦</span>
+
+            <span th:text="${isEdit} ? 'Modifica' : 'Nuova'">
+                Nuova
+            </span>
+
+        </div>
+
+
+        <div class="eyebrow" style="margin-top:35px;"
+             th:text="${isEdit} ? 'EDIT THE CINEMA VENUE' : 'A NEW CINEMA VENUE'">
+            A NEW CINEMA VENUE
+        </div>
+
+
+        <h1 th:if="${!isEdit}">
+            Un nuovo
+            <em class="gold-text">palcoscenico.</em>
+        </h1>
+
+        <h1 th:if="${isEdit}">
+            La tua
+            <em class="gold-text">sala.</em>
+        </h1>
+
+
+        <p>
+            Definisci lo spazio in cui
+            prenderanno vita le proiezioni.
+
+            Inserisci il nome della sala,
+            l'indirizzo e il numero
+            di posti disponibili.
+        </p>
+
+
+        <div class="admin-page-actions">
+
+            <a th:href="@{/admin/rooms}"
+               class="btn btn-outline">
+                ← Tutte le sale
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- MAIN -->
+<main class="section">
+
+    <div class="container">
+
+        <div class="admin-form-layout">
+
+
+            <!-- FORM PRINCIPALE -->
+            <div class="admin-form-panel">
+
+                <div class="section-label">
+                    ✦ Venue Information
+                </div>
+
+
+                <h2 class="admin-panel-title">
+                    Dettagli
+                    <span class="gold-text italic-text">
+                        della sala.
+                    </span>
+                </h2>
+
+
+                <p class="admin-panel-description">
+                    Compila i campi richiesti.
+                    La capienza deve essere
+                    maggiore di zero.
+                </p>
+
+
+                <form
+                    th:object="${roomForm}"
+                    th:action="${isEdit} ? @{/admin/rooms/{id}/edit(id=${roomId})} : @{/admin/rooms/new}"
+                    method="post">
+
+
+                    <!-- ERRORI GENERALI -->
+                    <div
+                        th:if="${#fields.hasGlobalErrors()}"
+                        class="alert alert-error">
+
+                        <div th:each="err : ${#fields.globalErrors()}"
+                             th:text="${err}">
+                        </div>
+
+                    </div>
+
+
+                    <!-- NOME -->
+                    <div class="form-group">
+
+                        <label for="name"
+                               class="form-label">
+                            Nome della sala *
+                        </label>
+
+                        <input
+                            id="name"
+                            type="text"
+                            th:field="*{name}"
+                            class="form-control"
+                            placeholder="Es. Sala Grande"
+                            required>
+
+                        <span
+                            th:if="${#fields.hasErrors('name')}"
+                            th:errors="*{name}"
+                            class="form-error">
+                        </span>
+
+                    </div>
+
+
+                    <!-- INDIRIZZO -->
+                    <div class="form-group">
+
+                        <label for="address"
+                               class="form-label">
+                            Indirizzo *
+                        </label>
+
+                        <input
+                            id="address"
+                            type="text"
+                            th:field="*{address}"
+                            class="form-control"
+                            placeholder="Es. Via del Cinema 15, Venezia"
+                            required>
+
+                        <span
+                            th:if="${#fields.hasErrors('address')}"
+                            th:errors="*{address}"
+                            class="form-error">
+                        </span>
+
+                    </div>
+
+
+                    <!-- CAPIENZA -->
+                    <div class="form-group">
+
+                        <label for="capacity"
+                               class="form-label">
+                            Capienza *
+                        </label>
+
+                        <input
+                            id="capacity"
+                            type="number"
+                            th:field="*{capacity}"
+                            class="form-control"
+                            placeholder="Es. 200"
+                            min="1"
+                            required>
+
+                        <span
+                            th:if="${#fields.hasErrors('capacity')}"
+                            th:errors="*{capacity}"
+                            class="form-error">
+                        </span>
+
+
+                        <span class="admin-field-hint">
+                            Numero massimo di spettatori
+                            che la sala può ospitare.
+                        </span>
+
+                    </div>
+
+
+                    <!-- AZIONI -->
+                    <div class="admin-form-buttons">
+
+                        <button type="submit"
+                                class="btn btn-gold">
+
+                            <span th:if="${!isEdit}">
+                                ✦ Crea sala
+                            </span>
+
+                            <span th:if="${isEdit}">
+                                ✦ Salva modifiche
+                            </span>
+
+                        </button>
+
+
+                        <a th:href="@{/admin/rooms}"
+                           class="btn btn-outline">
+                            Annulla
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+
+            <!-- SIDEBAR -->
+            <aside class="admin-form-sidebar">
+
+
+                <div class="admin-side-card admin-side-highlight">
+
+                    <div class="admin-side-symbol">
+                        ✦
+                    </div>
+
+
+                    <div class="section-label">
+                        THE GRAND CINEMA
+                    </div>
+
+
+                    <h3>
+                        Il grande schermo
+                        <span class="gold-text italic-text">
+                            ti aspetta.
+                        </span>
+                    </h3>
+
+
+                    <p>
+                        Le sale cinematografiche
+                        sono il luogo in cui
+                        le storie prendono vita.
+
+                        Ogni dettaglio contribuisce
+                        a creare un'esperienza
+                        indimenticabile.
+                    </p>
+
+                </div>
+
+
+                <div class="admin-side-card">
+
+                    <div class="section-label">
+                        ✦ Venue Management
+                    </div>
+
+
+                    <h3>
+                        Uno spazio,
+                        <span class="gold-text">
+                            mille storie.
+                        </span>
+                    </h3>
+
+
+                    <p>
+                        Dopo aver creato una sala,
+                        potrai utilizzarla per programmare
+                        le proiezioni di diversi festival.
+
+                        Il sistema controllerà
+                        che non ci siano sovrapposizioni
+                        negli orari.
+                    </p>
+
+
+                    <a
+                        th:href="@{/admin/screenings/new}"
+                        class="btn btn-outline btn-full"
+                        style="margin-top:25px;">
+
+                        Programma proiezione ↗
+
+                    </a>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<!-- FOOTER -->
+<footer class="site-footer">
+
+    <div class="container footer-inner">
+
+        <div class="footer-brand">
+            ✦ SiwCineFestival
+        </div>
+
+        <p class="footer-copy">
+            THE ART OF CINEMA · VENUE EDITOR
+        </p>
+
+        <div class="footer-decoration">
+            ✦ ✦ ✦
+        </div>
+
+    </div>
+
+</footer>
+
+</body>
+</html>

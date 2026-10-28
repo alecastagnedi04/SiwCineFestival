@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Accedi | SiwCineFestival</title>
+
+    <link
+        rel="stylesheet"
+        th:href="@{/css/style.css}">
+
+</head>
+
+<body>
+
+
+<!-- NAVBAR -->
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+
+
+<!-- LOGIN SECTION -->
+
+<section class="auth-section">
+
+    <div class="auth-card animate-up">
+
+        <div class="auth-content">
+
+
+            <div class="auth-symbol">
+
+                ✦
+
+            </div>
+
+
+
+            <div class="center">
+
+                <span class="eyebrow">
+
+                    Welcome Back
+
+                </span>
+
+            </div>
+
+
+
+            <h1 class="auth-title">
+
+                Bentornato
+
+                <em class="gold-text">
+                    al cinema.
+                </em>
+
+            </h1>
+
+
+
+            <p class="auth-subtitle">
+
+                Accedi al tuo account
+                e continua a vivere
+                la magia della settima arte.
+
+            </p>
+
+
+
+            <!-- REGISTRAZIONE COMPLETATA -->
+
+            <div
+                th:if="${successMessage != null}"
+                class="alert alert-success"
+                th:text="${successMessage}">
+
+                Registrazione completata.
+
+            </div>
+
+
+
+            <!-- LOGIN NON VALIDO -->
+
+            <div
+                th:if="${param.error}"
+                class="alert alert-error">
+
+                Username o password non corretti.
+
+            </div>
+
+
+
+            <!-- LOGOUT COMPLETATO -->
+
+            <div
+                th:if="${param.logout}"
+                class="alert alert-success">
+
+                Logout effettuato con successo.
+
+            </div>
+
+
+
+            <!-- LOGIN FORM -->
+
+            <form
+                th:action="@{/login}"
+                method="post">
+
+
+                <div class="form-group">
+
+                    <label
+                        for="username"
+                        class="form-label">
+
+                        Username
+
+                    </label>
+
+
+                    <input
+                        id="username"
+                        name="username"
+                        type="text"
+                        class="form-control"
+                        placeholder="Il tuo username"
+                        autocomplete="username"
+                        required>
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label
+                        for="password"
+                        class="form-label">
+
+                        Password
+
+                    </label>
+
+
+                    <input
+                        id="password"
+                        name="password"
+                        type="password"
+                        class="form-control"
+                        placeholder="La tua password"
+                        autocomplete="current-password"
+                        required>
+
+                </div>
+
+
+
+                <button
+                    type="submit"
+                    class="btn btn-gold btn-full"
+                    style="margin-top: 15px;">
+
+                    Accedi al tuo account ↗
+
+                </button>
+
+            </form>
+
+
+
+            <div class="gold-divider"></div>
+
+
+
+            <p class="form-footer">
+
+                Non hai ancora un account?
+
+                <a th:href="@{/register}">
+
+                    Registrati
+
+                </a>
+
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- FOOTER -->
+
+<footer class="site-footer">
+
+    <div class="container footer-inner">
+
+        <div class="footer-brand">
+            ✦ SiwCineFestival
+        </div>
+
+        <p class="footer-copy">
+            YOUR SEAT IS WAITING
+        </p>
+
+        <div class="footer-decoration">
+            ✦ ✦ ✦
+        </div>
+
+    </div>
+
+</footer>
+
+</body>
+</html>

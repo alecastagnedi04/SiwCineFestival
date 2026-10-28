@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Programma Proiezioni | SiwCineFestival</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+
+<!-- HEADER -->
+<section class="page-hero">
+
+    <div class="container">
+
+        <div class="breadcrumb">
+
+            <a th:href="@{/}">Home</a>
+
+            <span class="breadcrumb-separator">✦</span>
+
+            <a th:href="@{/admin}">Dashboard</a>
+
+            <span class="breadcrumb-separator">✦</span>
+
+            <span>Programma proiezioni</span>
+
+        </div>
+
+
+        <div class="eyebrow" style="margin-top:35px;">
+            THE SCREENING SCHEDULE
+        </div>
+
+
+        <h1>
+            Il cinema
+            <em class="gold-text">va in scena.</em>
+        </h1>
+
+
+        <p>
+            Ogni proiezione è un appuntamento
+            con una nuova storia.
+
+            Organizza date, orari e sale
+            del programma cinematografico.
+        </p>
+
+
+        <div class="admin-page-actions">
+
+            <a th:href="@{/admin/screenings/new}"
+               class="btn btn-gold">
+                ✦ Nuova proiezione
+            </a>
+
+            <a th:href="@{/admin}"
+               class="btn btn-outline">
+                ← Dashboard
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- MAIN -->
+<main class="section">
+
+    <div class="container">
+
+
+        <!-- MESSAGGI -->
+        <div th:if="${successMessage != null}"
+             class="alert alert-success"
+             th:text="${successMessage}">
+        </div>
+
+        <div th:if="${errorMessage != null}"
+             class="alert alert-error"
+             th:text="${errorMessage}">
+        </div>
+
+
+        <!-- SEZIONE -->
+        <div class="section-header">
+
+            <div>
+
+                <div class="section-label">
+                    ✦ Festival Schedule
+                </div>
+
+
+                <h2>
+                    Il
+                    <span class="gold-text italic-text">
+                        programma.
+                    </span>
+                </h2>
+
+
+                <p class="section-description">
+                    Seleziona un festival per consultare
+                    le proiezioni previste.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- FILTRO FESTIVAL -->
+        <div class="screening-filter-panel">
+
+            <form
+                th:action="@{/admin/screenings}"
+                method="get"
+                class="screening-filter-form">
+
+
+                <div class="form-group">
+
+                    <label for="festivalId"
+                           class="form-label">
+                        Festival
+                    </label>
+
+
+                    <select
+                        id="festivalId"
+                        name="festivalId"
+                        class="form-control"
+                        required>
+
+
+                        <option value="">
+                            -- Seleziona un festival --
+                        </option>
+
+
+                        <option
+                            th:each="festival : ${festivals}"
+                            th:value="${festival.id}"
+                            th:text="${festival.name + ' (' + festival.year + ')'}"
+                            th:selected="${selectedFestivalId != null and selectedFestivalId.equals(festival.id)}">
+
+                            Festival
+
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <button type="submit"
+                        class="btn btn-gold">
+
+                    Visualizza programma ↗
+
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- NESSUN FESTIVAL SELEZIONATO -->
+        <div
+            th:if="${selectedFestivalId == null}"
+            class="empty-state">
+
+            <div class="empty-icon">
+                ✦
+            </div>
+
+
+            <div class="section-label">
+                CHOOSE YOUR FESTIVAL
+            </div>
+
+
+            <h3>
+                Seleziona il
+                <span class="gold-text">
+                    tuo festival.
+                </span>
+            </h3>
+
+
+            <p>
+                Scegli un festival dal menu
+                per visualizzare le proiezioni
+                programmate nelle sale.
+            </p>
+
+        </div>
+
+
+        <!-- FESTIVAL SELEZIONATO -->
+        <div th:if="${selectedFestivalId != null}">
+
+
+            <div class="section-header"
+                 style="margin-top:55px;">
+
+                <div>
+
+                    <div class="section-label">
+                        ✦ Official Screening Program
+                    </div>
+
+
+                    <h2>
+                        Le
+                        <span class="gold-text italic-text">
+                            proiezioni.
+                        </span>
+                    </h2>
+
+                </div>
+
+
+                <div class="screening-list-actions">
+
+                    <div class="meta-pill">
+
+                        <span th:text="${#lists.size(screenings)}">
+                            0
+                        </span>
+
+                        &nbsp; proiezioni
+
+                    </div>
+
+
+                    <a
+                        th:href="@{/admin/screenings/new(festivalId=${selectedFestivalId})}"
+                        class="btn btn-gold btn-small">
+
+                        + Aggiungi proiezione
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- PROIEZIONI PRESENTI -->
+            <div class="screening-admin-list"
+                 th:if="${!screenings.isEmpty()}">
+
+
+                <article
+                    class="screening-admin-card"
+                    th:each="screening : ${screenings}"
+                    th:classappend="${screening.status.name() == 'CANCELLED'} ? ' screening-cancelled' : ''">
+
+
+                    <!-- DATA E ORA -->
+                    <div class="screening-date-block">
+
+                        <div
+                            class="screening-date-day"
+                            th:text="${#temporals.format(screening.date, 'dd')}">
+
+                            10
+
+                        </div>
+
+
+                        <div
+                            class="screening-date-month"
+                            th:text="${#temporals.format(screening.date, 'MMM yyyy')}">
+
+                            NOV 2026
+
+                        </div>
+
+
+                        <div class="screening-date-divider"></div>
+
+
+                        <div
+                            class="screening-date-time"
+                            th:text="${#temporals.format(screening.time, 'HH:mm')}">
+
+                            18:00
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- FILM -->
+                    <div class="screening-admin-info">
+
+
+                        <div class="section-label">
+                            NOW SCREENING
+                        </div>
+
+
+                        <h3>
+
+                            <a
+                                th:href="@{/films/{id}(id=${screening.film.id})}"
+                                th:text="${screening.film.title}">
+
+                                Titolo film
+
+                            </a>
+
+                        </h3>
+
+
+                        <div class="screening-admin-meta">
+
+
+                            <span>
+
+                                ◇
+
+                                <span th:text="${screening.room.name}">
+                                    Sala Grande
+                                </span>
+
+                            </span>
+
+
+                            <span>
+
+                                ✦
+
+                                <span th:text="${screening.film.duration}">
+                                    169
+                                </span>
+
+                                minuti
+
+                            </span>
+
+                        </div>
+
+
+                        <!-- STATO -->
+                        <div
+                            class="status-badge"
+                            style="margin-top:17px;"
+                            th:text="${screening.status.name() == 'SCHEDULED' ? 'In programma' : (screening.status.name() == 'COMPLETED' ? 'Conclusa' : 'Annullata')}">
+
+                            In programma
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- AZIONI -->
+                    <div class="screening-admin-actions">
+
+
+                        <a
+                            th:href="@{/admin/screenings/{id}/edit(id=${screening.id})}"
+                            class="btn btn-gold btn-small">
+
+                            Modifica
+
+                        </a>
+
+
+                        <form
+                            th:action="@{/admin/screenings/{id}/delete(id=${screening.id})}"
+                            method="post"
+                            onsubmit="return confirm('Vuoi eliminare definitivamente questa proiezione?');">
+
+
+                            <button
+                                type="submit"
+                                class="btn btn-outline btn-small">
+
+                                Elimina
+
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </article>
+
+            </div>
+
+
+            <!-- NESSUNA PROIEZIONE -->
+            <div
+                class="empty-state"
+                th:if="${screenings.isEmpty()}">
+
+                <div class="empty-icon">
+                    ✦
+                </div>
+
+
+                <h3>
+                    Il programma è
+                    <span class="gold-text">
+                        ancora vuoto.
+                    </span>
+                </h3>
+
+
+                <p>
+                    Non sono ancora state programmate
+                    proiezioni per questo festival.
+
+                    Inizia scegliendo un film,
+                    una sala, una data e un orario.
+                </p>
+
+
+                <a
+                    th:href="@{/admin/screenings/new(festivalId=${selectedFestivalId})}"
+                    class="btn btn-gold">
+
+                    ✦ Programma la prima proiezione
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<!-- FOOTER -->
+<footer class="site-footer">
+
+    <div class="container footer-inner">
+
+        <div class="footer-brand">
+            ✦ SiwCineFestival
+        </div>
+
+        <p class="footer-copy">
+            THE ART OF CINEMA · SCREENING PROGRAM
+        </p>
+
+        <div class="footer-decoration">
+            ✦ ✦ ✦
+        </div>
+
+    </div>
+
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title th:text="${isEdit} ? 'Modifica Film | SiwCineFestival' : 'Nuovo Film | SiwCineFestival'">
+        Gestione Film
+    </title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/style.css}">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+
+<!-- HEADER -->
+<section class="page-hero">
+
+    <div class="container">
+
+        <div class="breadcrumb">
+
+            <a th:href="@{/}">Home</a>
+
+            <span class="breadcrumb-separator">✦</span>
+
+            <a th:href="@{/admin}">Dashboard</a>
+
+            <span class="breadcrumb-separator">✦</span>
+
+            <a th:href="@{/admin/films}">Film</a>
+
+            <span class="breadcrumb-separator">✦</span>
+
+            <span th:text="${isEdit} ? 'Modifica' : 'Nuovo'">
+                Nuovo
+            </span>
+
+        </div>
+
+
+        <div class="eyebrow" style="margin-top:35px;"
+             th:text="${isEdit} ? 'EDIT THE MOVIE' : 'A NEW STORY BEGINS'">
+            A NEW STORY BEGINS
+        </div>
+
+
+        <h1 th:if="${!isEdit}">
+            Una nuova
+            <em class="gold-text">storia.</em>
+        </h1>
+
+        <h1 th:if="${isEdit}">
+            Il tuo
+            <em class="gold-text">film.</em>
+        </h1>
+
+
+        <p th:if="${!isEdit}">
+            Ogni capolavoro inizia da un titolo.
+
+            Aggiungi una nuova opera al catalogo,
+            scegli il regista e prepara
+            il suo debutto nei festival.
+        </p>
+
+        <p th:if="${isEdit}">
+            Modifica le informazioni del film,
+            aggiorna la regia e completa
+            la sua scheda cinematografica.
+        </p>
+
+
+        <div class="admin-page-actions">
+
+            <a th:href="@{/admin/films}"
+               class="btn btn-outline">
+                ← Catalogo film
+            </a>
+
+            <a th:if="${isEdit}"
+               th:href="@{/admin/films/{id}/cast(id=${filmId})}"
+               class="btn btn-gold">
+                ✦ Gestisci il cast
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- FORM -->
+<main class="section">
+
+    <div class="container">
+
+        <div th:if="${successMessage != null}"
+             class="alert alert-success"
+             th:text="${successMessage}">
+        </div>
+
+
+        <div class="admin-form-layout">
+
+            <!-- FORM PRINCIPALE -->
+            <div class="admin-form-panel">
+
+                <div class="section-label">
+                    ✦ Film Information
+                </div>
+
+                <h2 class="admin-panel-title">
+                    Dettagli
+                    <span class="gold-text italic-text">
+                        cinematografici.
+                    </span>
+                </h2>
+
+                <p class="admin-panel-description">
+                    Inserisci i dati principali
+                    del film. Tutti i campi
+                    contrassegnati da * sono obbligatori.
+                </p>
+
+
+                <form
+                    th:object="${filmForm}"
+                    th:action="${isEdit} ? @{/admin/films/{id}/edit(id=${filmId})} : @{/admin/films/new}"
+                    method="post">
+
+
+                    <!-- ERRORI GLOBALI -->
+                    <div
+                        th:if="${#fields.hasGlobalErrors()}"
+                        class="alert alert-error">
+
+                        <div th:each="err : ${#fields.globalErrors()}"
+                             th:text="${err}">
+                        </div>
+
+                    </div>
+
+
+                    <!-- TITOLO -->
+                    <div class="form-group">
+
+                        <label for="title"
+                               class="form-label">
+                            Titolo del film *
+                        </label>
+
+                        <input
+                            id="title"
+                            type="text"
+                            th:field="*{title}"
+                            class="form-control"
+                            placeholder="Es. Interstellar"
+                            maxlength="255"
+                            required>
+
+                        <span
+                            th:if="${#fields.hasErrors('title')}"
+                            th:errors="*{title}"
+                            class="form-error">
+                        </span>
+
+                    </div>
+
+
+                    <!-- ANNO / DURATA -->
+                    <div class="admin-form-row">
+
+                        <div class="form-group">
+
+                            <label for="year"
+                                   class="form-label">
+                                Anno *
+                            </label>
+
+                            <input
+                                id="year"
+                                type="number"
+                                th:field="*{year}"
+                                class="form-control"
+                                placeholder="2014"
+                                min="1888"
+                                required>
+
+                            <span
+                                th:if="${#fields.hasErrors('year')}"
+                                th:errors="*{year}"
+                                class="form-error">
+                            </span>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="duration"
+                                   class="form-label">
+                                Durata (minuti) *
+                            </label>
+
+                            <input
+                                id="duration"
+                                type="number"
+                                th:field="*{duration}"
+                                class="form-control"
+                                placeholder="169"
+                                min="1"
+                                required>
+
+                            <span
+                                th:if="${#fields.hasErrors('duration')}"
+                                th:errors="*{duration}"
+                                class="form-error">
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- GENERE -->
+                    <div class="form-group">
+
+                        <label for="genre"
+                               class="form-label">
+                            Genere *
+                        </label>
+
+                        <input
+                            id="genre"
+                            type="text"
+                            th:field="*{genre}"
+                            class="form-control"
+                            placeholder="Es. Fantascienza"
+                            required>
+
+                        <span
+                            th:if="${#fields.hasErrors('genre')}"
+                            th:errors="*{genre}"
+                            class="form-error">
+                        </span>
+
+                    </div>
+
+
+                    <!-- PAESE -->
+                    <div class="form-group">
+
+                        <label for="productionCountry"
+                               class="form-label">
+                            Paese di produzione *
+                        </label>
+
+                        <input
+                            id="productionCountry"
+                            type="text"
+                            th:field="*{productionCountry}"
+                            class="form-control"
+                            placeholder="Es. Stati Uniti"
+                            required>
+
+                        <span
+                            th:if="${#fields.hasErrors('productionCountry')}"
+                            th:errors="*{productionCountry}"
+                            class="form-error">
+                        </span>
+
+                    </div>
+
+
+                    <!-- REGISTA -->
+                    <div class="form-group">
+
+                        <label for="directorId"
+                               class="form-label">
+                            Regista *
+                        </label>
+
+                        <select
+                            id="directorId"
+                            th:field="*{directorId}"
+                            class="form-control"
+                            required>
+
+                            <option value="">
+                                -- Seleziona un regista --
+                            </option>
+
+                            <option
+                                th:each="director : ${directors}"
+                                th:value="${director.id}"
+                                th:text="${director.name + ' ' + director.surname}">
+                                Regista
+                            </option>
+
+                        </select>
+
+                        <span
+                            th:if="${#fields.hasErrors('directorId')}"
+                            th:errors="*{directorId}"
+                            class="form-error">
+                        </span>
+
+                        <span class="admin-field-hint">
+                            Il regista deve essere
+                            già presente nel database.
+                        </span>
+
+                    </div>
+
+
+                    <!-- NESSUN REGISTA -->
+                    <div
+                        th:if="${directors.isEmpty()}"
+                        class="alert alert-error">
+
+                        Nessun regista disponibile.
+                        Devi crearne uno prima
+                        di aggiungere un film.
+
+                    </div>
+
+
+                    <div style="margin-bottom:30px;">
+
+                        <a th:href="@{/admin/directors}"
+                           class="film-text-link">
+                            + Aggiungi un nuovo regista ↗
+                        </a>
+
+                    </div>
+
+
+                    <!-- AZIONI -->
+                    <div class="admin-form-buttons">
+
+                        <button
+                            type="submit"
+                            class="btn btn-gold"
+                            th:disabled="${directors.isEmpty()}">
+
+                            <span th:if="${!isEdit}">
+                                ✦ Crea film
+                            </span>
+
+                            <span th:if="${isEdit}">
+                                ✦ Salva modifiche
+                            </span>
+
+                        </button>
+
+                        <a th:href="@{/admin/films}"
+                           class="btn btn-outline">
+                            Annulla
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+
+            <!-- SIDEBAR -->
+            <aside class="admin-form-sidebar">
+
+                <div class="admin-side-card admin-side-highlight">
+
+                    <div class="admin-side-symbol">
+                        ✦
+                    </div>
+
+                    <div class="section-label">
+                        THE ART OF STORYTELLING
+                    </div>
+
+                    <h3>
+                        Il cinema è
+                        <span class="gold-text italic-text">
+                            magia.
+                        </span>
+                    </h3>
+
+                    <p>
+                        Da un'idea nasce una storia.
+
+                        Da una storia nasce un film.
+
+                        E da un film può nascere
+                        qualcosa di indimenticabile.
+                    </p>
+
+                </div>
+
+
+                <div class="admin-side-card">
+
+                    <div class="section-label">
+                        ✦ The Production Process
+                    </div>
+
+                    <h3>
+                        Dall'idea allo
+                        <span class="gold-text">
+                            schermo.
+                        </span>
+                    </h3>
+
+                    <div class="admin-steps">
+
+                        <div class="admin-step">
+
+                            <span class="admin-step-number">01</span>
+
+                            <div>
+                                <strong>Definisci il film</strong>
+
+                                <p>
+                                    Inserisci titolo, anno,
+                                    genere e durata.
+                                </p>
+                            </div>
+
+                        </div>
+
+
+                        <div class="admin-step">
+
+                            <span class="admin-step-number">02</span>
+
+                            <div>
+                                <strong>Scegli il regista</strong>
+
+                                <p>
+                                    Associa il film
+                                    a un regista.
+                                </p>
+                            </div>
+
+                        </div>
+
+
+                        <div class="admin-step">
+
+                            <span class="admin-step-number">03</span>
+
+                            <div>
+                                <strong>Completa il cast</strong>
+
+                                <p>
+                                    Aggiungi gli interpreti
+                                    e i personaggi.
+                                </p>
+                            </div>
+
+                        </div>
+
+
+                        <div class="admin-step">
+
+                            <span class="admin-step-number">04</span>
+
+                            <div>
+                                <strong>Entra nei festival</strong>
+
+                                <p>
+                                    Associa il film a una
+                                    o più edizioni.
+                                </p>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="admin-side-card"
+                     th:if="${isEdit}">
+
+                    <div class="section-label">
+                        ✦ Next Step
+                    </div>
+
+                    <h3>
+                        Il tuo
+                        <span class="gold-text">
+                            cast.
+                        </span>
+                    </h3>
+
+                    <p style="margin-bottom:20px;">
+                        Il film è pronto per accogliere
+                        i suoi protagonisti.
+                    </p>
+
+                    <a
+                        th:href="@{/admin/films/{id}/cast(id=${filmId})}"
+                        class="btn btn-gold btn-full">
+                        Gestisci cast ↗
+                    </a>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<!-- FOOTER -->
+<footer class="site-footer">
+
+    <div class="container footer-inner">
+
+        <div class="footer-brand">
+            ✦ SiwCineFestival
+        </div>
+
+        <p class="footer-copy">
+            THE ART OF CINEMA · FILM EDITOR
+        </p>
+
+        <div class="footer-decoration">
+            ✦ ✦ ✦
+        </div>
+
+    </div>
+
+</footer>
+
+</body>
+</html>

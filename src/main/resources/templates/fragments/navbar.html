@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+<header
+    class="site-header"
+    th:fragment="navbar">
+
+    <div class="container navbar">
+
+        <!-- LOGO -->
+
+        <a th:href="@{/}" class="brand">
+
+            <div class="brand-symbol">
+                <span>✦</span>
+            </div>
+
+            <div>
+
+                <div class="brand-name">
+                    SIW<strong>CINE</strong>FESTIVAL
+                </div>
+
+                <span class="brand-subtitle">
+                    THE ART OF CINEMA
+                </span>
+
+            </div>
+
+        </a>
+
+
+        <!-- NAVIGAZIONE -->
+
+        <nav class="nav-links" aria-label="Navigazione principale">
+
+            <a
+                th:href="@{/}"
+                class="nav-link">
+                Home
+            </a>
+
+            <a
+                th:href="@{/festivals}"
+                class="nav-link">
+                Festival
+            </a>
+
+
+            <!-- SOLO ADMIN -->
+
+            <a
+                th:if="${isAdmin}"
+                th:href="@{/admin}"
+                class="nav-link nav-admin">
+                ✦ Dashboard
+            </a>
+
+
+            <!-- UTENTE AUTENTICATO -->
+
+            <span
+                th:if="${isAuthenticated}"
+                class="nav-user">
+
+                ✦
+                <span th:text="${currentUsername}">
+                    Username
+                </span>
+
+            </span>
+
+
+            <!-- VISITATORE -->
+
+            <a
+                th:if="${!isAuthenticated}"
+                th:href="@{/login}"
+                class="nav-link">
+                Accedi
+            </a>
+
+            <a
+                th:if="${!isAuthenticated}"
+                th:href="@{/register}"
+                class="btn btn-gold btn-small">
+                Registrati
+            </a>
+
+
+            <!-- LOGOUT -->
+
+            <form
+                th:if="${isAuthenticated}"
+                th:action="@{/logout}"
+                method="post"
+                class="nav-logout-form">
+
+                <button
+                    type="submit"
+                    class="nav-logout">
+                    Esci ↗
+                </button>
+
+            </form>
+
+        </nav>
+
+    </div>
+
+</header>
+
+</body>
+</html>

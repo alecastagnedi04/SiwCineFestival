@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title
+        th:text="${isEdit} ? 'Modifica Festival | SiwCineFestival' : 'Nuovo Festival | SiwCineFestival'">
+
+        Gestione Festival
+
+    </title>
+
+    <link
+        rel="stylesheet"
+        th:href="@{/css/style.css}">
+
+</head>
+
+<body>
+
+
+<!-- ===================================================
+     NAVBAR
+     =================================================== -->
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+
+
+<!-- ===================================================
+     HEADER
+     =================================================== -->
+
+<section class="page-hero">
+
+    <div class="container">
+
+
+
+        <!-- BREADCRUMB -->
+
+        <div class="breadcrumb">
+
+            <a th:href="@{/}">
+                Home
+            </a>
+
+
+            <span class="breadcrumb-separator">
+                ✦
+            </span>
+
+
+            <a th:href="@{/admin}">
+                Dashboard
+            </a>
+
+
+            <span class="breadcrumb-separator">
+                ✦
+            </span>
+
+
+            <a th:href="@{/admin/festivals}">
+                Festival
+            </a>
+
+
+            <span class="breadcrumb-separator">
+                ✦
+            </span>
+
+
+            <span th:text="${isEdit} ? 'Modifica' : 'Nuovo'">
+
+                Nuovo
+
+            </span>
+
+        </div>
+
+
+
+        <!-- EYEBROW -->
+
+        <div
+            class="eyebrow"
+            style="margin-top: 35px;"
+            th:text="${isEdit} ? 'EDIT THE FESTIVAL' : 'CREATE THE NEXT PREMIERE'">
+
+            CREATE THE NEXT PREMIERE
+
+        </div>
+
+
+
+        <!-- TITOLO -->
+
+        <h1 th:if="${!isEdit}">
+
+            Una nuova
+
+            <em class="gold-text">
+
+                première.
+
+            </em>
+
+        </h1>
+
+
+        <h1 th:if="${isEdit}">
+
+            Il tuo
+
+            <em class="gold-text">
+
+                festival.
+
+            </em>
+
+        </h1>
+
+
+
+        <!-- DESCRIZIONE -->
+
+        <p th:if="${!isEdit}">
+
+            I grandi eventi prendono vita
+            dai dettagli.
+
+            Scegli il nome del festival,
+            la città, l'anno e le date.
+
+            Il prossimo capitolo della storia
+            del cinema inizia qui.
+
+        </p>
+
+
+        <p th:if="${isEdit}">
+
+            Aggiorna le informazioni del festival,
+            gestisci la selezione cinematografica
+            e prepara il programma
+            delle proiezioni.
+
+        </p>
+
+
+
+        <!-- AZIONI -->
+
+        <div class="admin-page-actions">
+
+
+            <a
+                th:href="@{/admin/festivals}"
+                class="btn btn-outline">
+
+                ← Tutti i festival
+
+            </a>
+
+
+
+            <a
+                th:if="${isEdit}"
+                th:href="@{/festivals/{id}(id=${festivalId})}"
+                class="btn btn-gold">
+
+                Visualizza festival ↗
+
+            </a>
+
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ===================================================
+     CONTENUTO PRINCIPALE
+     =================================================== -->
+
+<main class="section">
+
+    <div class="container">
+
+
+        <!-- MESSAGGIO SUCCESSO -->
+
+        <div
+            th:if="${successMessage != null}"
+            class="alert alert-success"
+            th:text="${successMessage}">
+
+            Operazione completata.
+
+        </div>
+
+
+
+        <!-- MESSAGGIO ERRORE -->
+
+        <div
+            th:if="${errorMessage != null}"
+            class="alert alert-error"
+            th:text="${errorMessage}">
+
+            Errore.
+
+        </div>
+
+
+
+        <div class="admin-form-layout">
+
+
+
+            <!-- ===================================================
+                 COLONNA SINISTRA: FORM FESTIVAL
+                 =================================================== -->
+
+            <div class="admin-form-panel">
+
+
+                <div class="section-label">
+
+                    ✦ Festival Details
+
+                </div>
+
+
+
+                <h2 class="admin-panel-title">
+
+                    Informazioni
+
+                    <span class="gold-text italic-text">
+
+                        principali.
+
+                    </span>
+
+                </h2>
+
+
+
+                <p class="admin-panel-description">
+
+                    Compila i campi richiesti
+                    per definire l'identità
+                    del tuo festival cinematografico.
+
+                </p>
+
+
+
+                <!-- ===================================================
+                     FORM CREAZIONE / MODIFICA
+                     =================================================== -->
+
+                <form
+                    th:object="${festivalForm}"
+                    th:action="${isEdit} ? @{/admin/festivals/{id}/edit(id=${festivalId})} : @{/admin/festivals/new}"
+                    method="post">
+
+
+
+                    <!-- ERRORI GENERALI -->
+
+                    <div
+                        class="alert alert-error"
+                        th:if="${#fields.hasGlobalErrors()}">
+
+
+                        <div
+                            th:each="err : ${#fields.globalErrors()}"
+                            th:text="${err}">
+
+                            Errore di validazione.
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- ===================================================
+                         NOME FESTIVAL
+                         =================================================== -->
+
+                    <div class="form-group">
+
+
+                        <label
+                            for="name"
+                            class="form-label">
+
+                            Nome del festival *
+
+                        </label>
+
+
+
+                        <input
+                            id="name"
+                            type="text"
+                            th:field="*{name}"
+                            class="form-control"
+                            placeholder="Es. Festival Internazionale del Cinema"
+                            maxlength="255"
+                            required>
+
+
+
+                        <span
+                            class="form-error"
+                            th:if="${#fields.hasErrors('name')}"
+                            th:errors="*{name}">
+
+                            Nome non valido.
+
+                        </span>
+
+                    </div>
+
+
+
+                    <!-- ===================================================
+                         ANNO E CITTÀ
+                         =================================================== -->
+
+                    <div class="admin-form-row">
+
+
+
+                        <!-- ANNO -->
+
+                        <div class="form-group">
+
+
+                            <label
+                                for="year"
+                                class="form-label">
+
+                                Anno *
+
+                            </label>
+
+
+
+                            <input
+                                id="year"
+                                type="number"
+                                th:field="*{year}"
+                                class="form-control"
+                                placeholder="2026"
+                                min="1895"
+                                required>
+
+
+
+                            <span
+                                class="form-error"
+                                th:if="${#fields.hasErrors('year')}"
+                                th:errors="*{year}">
+
+                                Anno non valido.
+
+                            </span>
+
+                        </div>
+
+
+
+                        <!-- CITTÀ -->
+
+                        <div class="form-group">
+
+
+                            <label
+                                for="city"
+                                class="form-label">
+
+                                Città *
+
+                            </label>
+
+
+
+                            <input
+                                id="city"
+                                type="text"
+                                th:field="*{city}"
+                                class="form-control"
+                                placeholder="Es. Venezia"
+                                required>
+
+
+
+                            <span
+                                class="form-error"
+                                th:if="${#fields.hasErrors('city')}"
+                                th:errors="*{city}">
+
+                                Città non valida.
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- ===================================================
+                         DATE FESTIVAL
+                         =================================================== -->
+
+                    <div class="admin-form-row">
+
+
+
+                        <!-- DATA INIZIO -->
+
+                        <div class="form-group">
+
+
+                            <label
+                                for="startDate"
+                                class="form-label">
+
+                                Data di inizio *
+
+                            </label>
+
+
+
+                            <input
+                                id="startDate"
+                                type="date"
+                                th:field="*{startDate}"
+                                class="form-control"
+                                required>
+
+
+
+                            <span
+                                class="form-error"
+                                th:if="${#fields.hasErrors('startDate')}"
+                                th:errors="*{startDate}">
+
+                                Data non valida.
+
+                            </span>
+
+                        </div>
+
+
+
+                        <!-- DATA FINE -->
+
+                        <div class="form-group">
+
+
+                            <label
+                                for="endDate"
+                                class="form-label">
+
+                                Data di fine *
+
+                            </label>
+
+
+
+                            <input
+                                id="endDate"
+                                type="date"
+                                th:field="*{endDate}"
+                                class="form-control"
+                                required>
+
+
+
+                            <span
+                                class="form-error"
+                                th:if="${#fields.hasErrors('endDate')}"
+                                th:errors="*{endDate}">
+
+                                Data non valida.
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- ===================================================
+                         DESCRIZIONE
+                         =================================================== -->
+
+                    <div class="form-group">
+
+
+                        <label
+                            for="description"
+                            class="form-label">
+
+                            Descrizione
+
+                        </label>
+
+
+
+                        <textarea
+                            id="description"
+                            th:field="*{description}"
+                            class="form-control"
+                            rows="5"
+                            maxlength="255"
+                            placeholder="Racconta l'atmosfera e l'identità del festival...">
+                        </textarea>
+
+
+
+                        <span class="admin-field-hint">
+
+                            Una breve presentazione
+                            che sarà visibile
+                            nella pagina pubblica.
+
+                        </span>
+
+
+
+                        <span
+                            class="form-error"
+                            th:if="${#fields.hasErrors('description')}"
+                            th:errors="*{description}">
+
+                            Descrizione non valida.
+
+                        </span>
+
+                    </div>
+
+
+
+                    <!-- ===================================================
+                         PULSANTI SALVATAGGIO
+                         =================================================== -->
+
+                    <div class="admin-form-buttons">
+
+
+                        <button
+                            type="submit"
+                            class="btn btn-gold">
+
+
+                            <span th:if="${!isEdit}">
+
+                                ✦ Crea festival
+
+                            </span>
+
+
+                            <span th:if="${isEdit}">
+
+                                ✦ Salva modifiche
+
+                            </span>
+
+
+                        </button>
+
+
+
+                        <a
+                            th:href="@{/admin/festivals}"
+                            class="btn btn-outline">
+
+                            Annulla
+
+                        </a>
+
+                    </div>
+
+
+                </form>
+
+            </div>
+
+
+
+            <!-- ===================================================
+                 COLONNA DESTRA: INFORMAZIONI
+                 =================================================== -->
+
+            <aside class="admin-form-sidebar">
+
+
+
+                <!-- CARD DECORATIVA -->
+
+                <div class="admin-side-card admin-side-highlight">
+
+
+                    <div class="admin-side-symbol">
+
+                        ✦
+
+                    </div>
+
+
+
+                    <div class="section-label">
+
+                        THE ART OF ORGANIZATION
+
+                    </div>
+
+
+
+                    <h3>
+
+                        Ogni grande film
+
+                        <span class="gold-text italic-text">
+
+                            merita un festival.
+
+                        </span>
+
+                    </h3>
+
+
+
+                    <p>
+
+                        Il cinema è fatto di storie.
+
+                        Un festival è il luogo
+                        in cui queste storie
+                        incontrano il pubblico.
+
+                    </p>
+
+
+                </div>
+
+
+
+                <!-- CARD INFORMAZIONI -->
+
+                <div class="admin-side-card">
+
+
+                    <div class="section-label">
+
+                        ✦ Come funziona
+
+                    </div>
+
+
+
+                    <h3>
+
+                        Tre semplici
+
+                        <span class="gold-text">
+
+                            passi.
+
+                        </span>
+
+                    </h3>
+
+
+
+                    <div class="admin-steps">
+
+
+                        <div class="admin-step">
+
+
+                            <span class="admin-step-number">
+
+                                01
+
+                            </span>
+
+
+
+                            <div>
+
+                                <strong>
+
+                                    Crea il festival
+
+                                </strong>
+
+
+                                <p>
+
+                                    Inserisci le informazioni
+                                    principali e le date.
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="admin-step">
+
+
+                            <span class="admin-step-number">
+
+                                02
+
+                            </span>
+
+
+
+                            <div>
+
+                                <strong>
+
+                                    Seleziona i film
+
+                                </strong>
+
+
+                                <p>
+
+                                    Associa i film
+                                    che parteciperanno
+                                    al festival.
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="admin-step">
+
+
+                            <span class="admin-step-number">
+
+                                03
+
+                            </span>
+
+
+
+                            <div>
+
+                                <strong>
+
+                                    Programma le proiezioni
+
+                                </strong>
+
+
+                                <p>
+
+                                    Organizza sale, date
+                                    e orari.
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+
+
+        <!-- ===================================================
+             GESTIONE FILM ASSOCIATI
+             VISIBILE SOLO IN MODIFICA
+             =================================================== -->
+
+        <section
+            th:if="${isEdit}"
+            class="admin-association-section">
+
+
+
+            <div class="section-header">
+
+
+                <div>
+
+
+                    <div class="section-label">
+
+                        ✦ Official Selection
+
+                    </div>
+
+
+
+                    <h2>
+
+                        Film
+
+                        <span class="gold-text italic-text">
+
+                            partecipanti.
+
+                        </span>
+
+                    </h2>
+
+
+
+                    <p class="section-description">
+
+                        Seleziona le opere cinematografiche
+                        che fanno parte del festival.
+
+                        Puoi aggiungere e rimuovere
+                        i film dal programma.
+
+                    </p>
+
+                </div>
+
+
+
+                <a
+                    th:href="@{/admin/films/new}"
+                    class="btn btn-outline btn-small">
+
+                    + Nuovo film
+
+                </a>
+
+            </div>
+
+
+
+            <div class="admin-form-layout">
+
+
+
+                <!-- ===================================================
+                     ELENCO FILM ASSOCIATI
+                     =================================================== -->
+
+                <div class="admin-form-panel">
+
+
+                    <h3 class="admin-subsection-title">
+
+                        La selezione ufficiale
+
+                    </h3>
+
+
+
+                    <!-- FILM PRESENTI -->
+
+                    <div
+                        class="admin-associated-films"
+                        th:if="${!festivalFilms.isEmpty()}">
+
+
+                        <div
+                            class="admin-associated-film"
+                            th:each="film : ${festivalFilms}">
+
+
+
+                            <!-- INFORMAZIONI FILM -->
+
+                            <div class="admin-associated-film-info">
+
+
+                                <div class="admin-film-symbol">
+
+                                    ◈
+
+                                </div>
+
+
+
+                                <div>
+
+
+                                    <a
+                                        th:href="@{/films/{id}(id=${film.id})}"
+                                        class="admin-associated-film-title"
+                                        th:text="${film.title}">
+
+                                        Titolo film
+
+                                    </a>
+
+
+
+                                    <p>
+
+                                        <span th:text="${film.year}">
+
+                                            2026
+
+                                        </span>
+
+
+                                        <span>
+
+                                            &nbsp; • &nbsp;
+
+                                        </span>
+
+
+                                        <span th:text="${film.genre}">
+
+                                            Drammatico
+
+                                        </span>
+
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <!-- RIMOZIONE ASSOCIAZIONE -->
+
+                            <form
+                                th:action="@{/admin/festivals/{id}/films/{filmId}/remove(id=${festivalId},filmId=${film.id})}"
+                                method="post"
+
+                                onsubmit="return confirm('Vuoi rimuovere questo film dal festival?');">
+
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-outline btn-small">
+
+                                    Rimuovi
+
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- NESSUN FILM ASSOCIATO -->
+
+                    <div
+                        class="admin-empty-inline"
+                        th:if="${festivalFilms.isEmpty()}">
+
+
+                        <div class="empty-icon">
+
+                            ✦
+
+                        </div>
+
+
+
+                        <h3>
+
+                            Nessun film selezionato.
+
+                        </h3>
+
+
+
+                        <p>
+
+                            Il festival non ha ancora
+                            film partecipanti.
+
+                            Utilizza il modulo accanto
+                            per aggiungerne uno.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- ===================================================
+                     AGGIUNGI FILM
+                     =================================================== -->
+
+                <aside class="admin-form-sidebar">
+
+
+                    <div class="admin-side-card">
+
+
+                        <div class="section-label">
+
+                            ✦ Add to Selection
+
+                        </div>
+
+
+
+                        <h3>
+
+                            Aggiungi
+
+                            <span class="gold-text">
+
+                                un film.
+
+                            </span>
+
+                        </h3>
+
+
+
+                        <p style="margin-bottom: 25px;">
+
+                            Scegli un film dal catalogo
+                            cinematografico.
+
+                        </p>
+
+
+
+                        <!-- FORM ASSOCIAZIONE -->
+
+                        <form
+                            th:if="${!allFilms.isEmpty()}"
+                            th:action="@{/admin/festivals/{id}/films/add(id=${festivalId})}"
+                            method="post">
+
+
+
+                            <div class="form-group">
+
+
+                                <label
+                                    for="filmId"
+                                    class="form-label">
+
+                                    Seleziona film
+
+                                </label>
+
+
+
+                                <select
+                                    id="filmId"
+                                    name="filmId"
+                                    class="form-control"
+                                    required>
+
+
+
+                                    <option value="">
+
+                                        -- Seleziona un film --
+
+                                    </option>
+
+
+
+                                    <option
+                                        th:each="film : ${allFilms}"
+                                        th:value="${film.id}"
+                                        th:text="${film.title + ' (' + film.year + ')'}">
+
+                                        Film
+
+                                    </option>
+
+
+                                </select>
+
+                            </div>
+
+
+
+                            <button
+                                type="submit"
+                                class="btn btn-gold btn-full">
+
+                                ✦ Aggiungi al festival
+
+                            </button>
+
+
+                        </form>
+
+
+
+                        <!-- CATALOGO VUOTO -->
+
+                        <div th:if="${allFilms.isEmpty()}">
+
+
+                            <p>
+
+                                Il catalogo cinematografico
+                                è ancora vuoto.
+
+                                Crea prima un film.
+
+                            </p>
+
+
+
+                            <a
+                                th:href="@{/admin/films/new}"
+                                class="btn btn-gold btn-full"
+                                style="margin-top: 20px;">
+
+                                Crea il primo film
+
+                            </a>
+
+                        </div>
+
+
+
+                        <p
+                            class="admin-field-hint"
+                            style="margin-top: 17px;">
+
+                            Puoi associare un film
+                            a più festival.
+
+                        </p>
+
+                    </div>
+
+
+                </aside>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ===================================================
+             AZIONI SUCCESSIVE
+             =================================================== -->
+
+        <div
+            class="admin-next-actions"
+            th:if="${isEdit}">
+
+
+            <div>
+
+
+                <div class="section-label">
+
+                    ✦ Next Step
+
+                </div>
+
+
+
+                <h3>
+
+                    Pronto per il
+
+                    <span class="gold-text">
+
+                        grande schermo?
+
+                    </span>
+
+                </h3>
+
+
+
+                <p>
+
+                    Dopo aver associato i film,
+                    organizza il programma
+                    delle proiezioni
+                    nelle sale cinematografiche.
+
+                </p>
+
+            </div>
+
+
+
+            <a
+                th:href="@{/admin/screenings/new(festivalId=${festivalId})}"
+                class="btn btn-gold">
+
+                Programma proiezione ↗
+
+            </a>
+
+
+        </div>
+
+    </div>
+
+</main>
+
+
+
+<!-- ===================================================
+     FOOTER
+     =================================================== -->
+
+<footer class="site-footer">
+
+    <div class="container footer-inner">
+
+
+        <div class="footer-brand">
+
+            ✦ SiwCineFestival
+
+        </div>
+
+
+        <p class="footer-copy">
+
+            THE ART OF CINEMA · FESTIVAL EDITOR
+
+        </p>
+
+
+        <div class="footer-decoration">
+
+            ✦ ✦ ✦
+
+        </div>
+
+    </div>
+
+</footer>
+
+
+</body>
+</html>

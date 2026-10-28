@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard ADMIN | SiwCineFestival</title>
+
+    <link
+        rel="stylesheet"
+        th:href="@{/css/style.css}">
+
+</head>
+
+<body>
+
+
+<!-- ===================================================
+     NAVBAR
+     =================================================== -->
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+
+
+<!-- ===================================================
+     ADMIN HERO
+     =================================================== -->
+
+<section class="admin-hero">
+
+    <div class="container">
+
+        <div class="breadcrumb">
+
+            <a th:href="@{/}">
+                Home
+            </a>
+
+            <span class="breadcrumb-separator">
+                ✦
+            </span>
+
+            <span>
+                Area amministratore
+            </span>
+
+        </div>
+
+
+        <div class="admin-hero-content">
+
+            <div>
+
+                <span class="eyebrow">
+
+                    THE DIRECTOR'S OFFICE
+
+                </span>
+
+
+                <h1 class="admin-title">
+
+                    Dietro le
+
+                    <em class="gold-text">
+                        quinte.
+                    </em>
+
+                </h1>
+
+
+                <p class="admin-description">
+
+                    Ogni grande spettacolo ha bisogno
+                    di una grande organizzazione.
+
+                    Gestisci i festival, seleziona i film
+                    e prepara il programma
+                    delle prossime proiezioni.
+
+                </p>
+
+
+                <div class="admin-welcome">
+
+                    ✦ &nbsp; Bentornato,
+
+                    <strong th:text="${currentUsername}">
+                        amministratore
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="admin-hero-decoration">
+
+                <div class="admin-deco-frame">
+
+                    <div class="admin-deco-star">
+                        ✦
+                    </div>
+
+                    <div class="admin-deco-label">
+                        CINEMA
+                    </div>
+
+                    <div class="admin-deco-subtitle">
+                        MANAGEMENT
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ===================================================
+     STATISTICHE
+     =================================================== -->
+
+<section class="section admin-stats-section">
+
+    <div class="container">
+
+
+        <div class="section-header">
+
+            <div>
+
+                <div class="section-label">
+
+                    ✦ Festival Overview
+
+                </div>
+
+
+                <h2 class="section-heading">
+
+                    Il tuo mondo
+
+                    <span class="gold-text italic-text">
+                        cinematografico.
+                    </span>
+
+                </h2>
+
+
+                <p class="section-description">
+
+                    Una panoramica delle informazioni
+                    presenti nel database.
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="admin-stats-grid">
+
+
+            <!-- FESTIVAL -->
+
+            <a
+                th:href="@{/admin/festivals}"
+                class="admin-stat-card">
+
+                <div class="admin-stat-icon">
+                    ✦
+                </div>
+
+
+                <div
+                    class="admin-stat-number"
+                    th:text="${festivalCount}">
+
+                    0
+
+                </div>
+
+
+                <div class="admin-stat-label">
+
+                    Festival
+
+                </div>
+
+
+                <div class="admin-stat-link">
+
+                    Gestisci →
+
+                </div>
+
+            </a>
+
+
+
+            <!-- FILM -->
+
+            <a
+                th:href="@{/admin/films}"
+                class="admin-stat-card">
+
+                <div class="admin-stat-icon">
+                    ◈
+                </div>
+
+
+                <div
+                    class="admin-stat-number"
+                    th:text="${filmCount}">
+
+                    0
+
+                </div>
+
+
+                <div class="admin-stat-label">
+
+                    Film
+
+                </div>
+
+
+                <div class="admin-stat-link">
+
+                    Gestisci →
+
+                </div>
+
+            </a>
+
+
+
+            <!-- ATTORI -->
+
+            <a
+                th:href="@{/admin/actors}"
+                class="admin-stat-card">
+
+                <div class="admin-stat-icon">
+                    ★
+                </div>
+
+
+                <div
+                    class="admin-stat-number"
+                    th:text="${actorCount}">
+
+                    0
+
+                </div>
+
+
+                <div class="admin-stat-label">
+
+                    Attori
+
+                </div>
+
+
+                <div class="admin-stat-link">
+
+                    Gestisci →
+
+                </div>
+
+            </a>
+
+
+
+            <!-- REGISTI -->
+
+            <a
+                th:href="@{/admin/directors}"
+                class="admin-stat-card">
+
+                <div class="admin-stat-icon">
+                    ✧
+                </div>
+
+
+                <div
+                    class="admin-stat-number"
+                    th:text="${directorCount}">
+
+                    0
+
+                </div>
+
+
+                <div class="admin-stat-label">
+
+                    Registi
+
+                </div>
+
+
+                <div class="admin-stat-link">
+
+                    Gestisci →
+
+                </div>
+
+            </a>
+
+
+
+            <!-- SALE -->
+
+            <a
+                th:href="@{/admin/rooms}"
+                class="admin-stat-card">
+
+                <div class="admin-stat-icon">
+                    ◇
+                </div>
+
+
+                <div
+                    class="admin-stat-number"
+                    th:text="${roomCount}">
+
+                    0
+
+                </div>
+
+
+                <div class="admin-stat-label">
+
+                    Sale
+
+                </div>
+
+
+                <div class="admin-stat-link">
+
+                    Gestisci →
+
+                </div>
+
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ===================================================
+     AZIONI RAPIDE
+     =================================================== -->
+
+<section class="section admin-actions-section">
+
+    <div class="container">
+
+
+        <div class="section-header">
+
+            <div>
+
+                <div class="section-label">
+
+                    ✦ Quick Actions
+
+                </div>
+
+
+                <h2>
+
+                    Prendi la
+
+                    <span class="gold-text italic-text">
+                        regia.
+                    </span>
+
+                </h2>
+
+
+                <p class="section-description">
+
+                    Le operazioni principali
+                    per organizzare il tuo festival.
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="admin-actions-grid">
+
+
+            <!-- CREA FESTIVAL -->
+
+            <div class="admin-action-card">
+
+                <div class="admin-action-symbol">
+
+                    ✦
+
+                </div>
+
+
+                <h3>
+
+                    Nuovo festival
+
+                </h3>
+
+
+                <p>
+
+                    Organizza una nuova edizione:
+                    scegli nome, città, anno
+                    e date dell'evento.
+
+                </p>
+
+
+                <a
+                    th:href="@{/admin/festivals/new}"
+                    class="btn btn-gold">
+
+                    Crea festival ↗
+
+                </a>
+
+            </div>
+
+
+
+            <!-- CREA FILM -->
+
+            <div class="admin-action-card">
+
+                <div class="admin-action-symbol">
+
+                    ◈
+
+                </div>
+
+
+                <h3>
+
+                    Aggiungi un film
+
+                </h3>
+
+
+                <p>
+
+                    Arricchisci il catalogo
+                    cinematografico con nuovi film,
+                    registi e interpreti.
+
+                </p>
+
+
+                <a
+                    th:href="@{/admin/films/new}"
+                    class="btn btn-outline">
+
+                    Nuovo film ↗
+
+                </a>
+
+            </div>
+
+
+
+            <!-- PROGRAMMA PROIEZIONE -->
+
+            <div class="admin-action-card">
+
+                <div class="admin-action-symbol">
+
+                    ★
+
+                </div>
+
+
+                <h3>
+
+                    Programma una proiezione
+
+                </h3>
+
+
+                <p>
+
+                    Scegli il festival, il film
+                    e la sala.
+
+                    Organizza date e orari
+                    senza sovrapposizioni.
+
+                </p>
+
+
+                <a
+                    th:href="@{/admin/screenings/new}"
+                    class="btn btn-outline">
+
+                    Nuova proiezione ↗
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ===================================================
+     GESTIONE COMPLETA
+     =================================================== -->
+
+<section class="section admin-management-section">
+
+    <div class="container">
+
+
+        <div class="section-label">
+
+            ✦ Administration
+
+        </div>
+
+
+        <h2 class="section-heading">
+
+            Tutto sotto
+
+            <span class="gold-text italic-text">
+                controllo.
+            </span>
+
+        </h2>
+
+
+        <p
+            class="section-description"
+            style="margin-bottom: 35px;">
+
+            Accedi alle diverse sezioni
+            dell'amministrazione e gestisci
+            tutte le informazioni del festival.
+
+        </p>
+
+
+
+        <div class="admin-management-grid">
+
+
+            <a
+                th:href="@{/admin/festivals}"
+                class="admin-management-item">
+
+                <span>01</span>
+
+                <strong>Gestione festival</strong>
+
+                <span>↗</span>
+
+            </a>
+
+
+            <a
+                th:href="@{/admin/films}"
+                class="admin-management-item">
+
+                <span>02</span>
+
+                <strong>Catalogo film</strong>
+
+                <span>↗</span>
+
+            </a>
+
+
+            <a
+                th:href="@{/admin/actors}"
+                class="admin-management-item">
+
+                <span>03</span>
+
+                <strong>Gestione attori</strong>
+
+                <span>↗</span>
+
+            </a>
+
+
+            <a
+                th:href="@{/admin/directors}"
+                class="admin-management-item">
+
+                <span>04</span>
+
+                <strong>Gestione registi</strong>
+
+                <span>↗</span>
+
+            </a>
+
+
+            <a
+                th:href="@{/admin/rooms}"
+                class="admin-management-item">
+
+                <span>05</span>
+
+                <strong>Sale cinematografiche</strong>
+
+                <span>↗</span>
+
+            </a>
+
+
+            <a
+                th:href="@{/admin/screenings}"
+                class="admin-management-item">
+
+                <span>06</span>
+
+                <strong>Programma proiezioni</strong>
+
+                <span>↗</span>
+
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ===================================================
+     FOOTER
+     =================================================== -->
+
+<footer class="site-footer">
+
+    <div class="container footer-inner">
+
+        <div class="footer-brand">
+
+            ✦ SiwCineFestival
+
+        </div>
+
+
+        <p class="footer-copy">
+
+            THE ART OF CINEMA · ADMINISTRATION
+
+        </p>
+
+
+        <div class="footer-decoration">
+
+            ✦ ✦ ✦
+
+        </div>
+
+    </div>
+
+</footer>
+
+
+</body>
+</html>

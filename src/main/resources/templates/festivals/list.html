@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Gestione Festival | SiwCineFestival
+    </title>
+
+    <link
+        rel="stylesheet"
+        th:href="@{/css/style.css}">
+
+</head>
+
+<body>
+
+
+<!-- ===================================================
+     NAVBAR
+     =================================================== -->
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+
+
+<!-- ===================================================
+     HEADER
+     =================================================== -->
+
+<section class="page-hero">
+
+    <div class="container">
+
+
+        <!-- BREADCRUMB -->
+
+        <div class="breadcrumb">
+
+            <a th:href="@{/}">
+                Home
+            </a>
+
+            <span class="breadcrumb-separator">
+                ✦
+            </span>
+
+            <a th:href="@{/admin}">
+                Dashboard
+            </a>
+
+            <span class="breadcrumb-separator">
+                ✦
+            </span>
+
+            <span>
+                Gestione festival
+            </span>
+
+        </div>
+
+
+
+        <!-- TITOLO -->
+
+        <div class="eyebrow" style="margin-top: 35px;">
+
+            THE FESTIVAL COLLECTION
+
+        </div>
+
+
+        <h1>
+
+            I festival.
+
+            <em class="gold-text">
+
+                La nostra storia.
+
+            </em>
+
+        </h1>
+
+
+        <p>
+
+            Ogni grande evento cinematografico
+            inizia da un'idea.
+
+            Crea nuove edizioni, modifica
+            le informazioni e organizza
+            i film partecipanti.
+
+        </p>
+
+
+
+        <!-- PULSANTI -->
+
+        <div class="admin-page-actions">
+
+            <a
+                th:href="@{/admin/festivals/new}"
+                class="btn btn-gold">
+
+                ✦ Nuovo festival
+
+            </a>
+
+
+            <a
+                th:href="@{/admin}"
+                class="btn btn-outline">
+
+                Torna alla dashboard
+
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ===================================================
+     CONTENUTO
+     =================================================== -->
+
+<main class="section">
+
+    <div class="container">
+
+
+
+        <!-- MESSAGGI DI SUCCESSO -->
+
+        <div
+            th:if="${successMessage != null}"
+            class="alert alert-success"
+            th:text="${successMessage}">
+
+            Operazione completata.
+
+        </div>
+
+
+
+        <!-- MESSAGGI DI ERRORE -->
+
+        <div
+            th:if="${errorMessage != null}"
+            class="alert alert-error"
+            th:text="${errorMessage}">
+
+            Si è verificato un errore.
+
+        </div>
+
+
+
+        <!-- INTESTAZIONE -->
+
+        <div class="section-header">
+
+            <div>
+
+                <div class="section-label">
+
+                    ✦ Festival Management
+
+                </div>
+
+
+                <h2>
+
+                    Tutti i
+
+                    <span class="gold-text italic-text">
+
+                        festival.
+
+                    </span>
+
+                </h2>
+
+
+                <p class="section-description">
+
+                    Gestisci le edizioni presenti
+                    nel sistema e accedi rapidamente
+                    alle relative informazioni.
+
+                </p>
+
+            </div>
+
+
+
+            <!-- CONTATORE -->
+
+            <div class="meta-pill">
+
+                ✦
+
+                <span th:text="${#lists.size(festivals)}">
+
+                    0
+
+                </span>
+
+                festival
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ===================================================
+             TABELLA FESTIVAL
+             =================================================== -->
+
+        <div
+            class="admin-table-container"
+            th:if="${!festivals.isEmpty()}">
+
+
+            <table class="admin-table">
+
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Festival
+                        </th>
+
+                        <th>
+                            Edizione
+                        </th>
+
+                        <th>
+                            Città
+                        </th>
+
+                        <th>
+                            Periodo
+                        </th>
+
+                        <th>
+                            Azioni
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+
+                <tbody>
+
+
+                    <tr th:each="festival : ${festivals}">
+
+
+                        <!-- NOME -->
+
+                        <td>
+
+                            <div class="table-main-title">
+
+                                <span class="table-star">
+                                    ✦
+                                </span>
+
+                                <span th:text="${festival.name}">
+
+                                    Festival di Venezia
+
+                                </span>
+
+                            </div>
+
+                        </td>
+
+
+
+                        <!-- ANNO -->
+
+                        <td>
+
+                            <span
+                                class="admin-year-badge"
+                                th:text="${festival.year}">
+
+                                2026
+
+                            </span>
+
+                        </td>
+
+
+
+                        <!-- CITTÀ -->
+
+                        <td>
+
+                            <span th:text="${festival.city}">
+
+                                Venezia
+
+                            </span>
+
+                        </td>
+
+
+
+                        <!-- DATE -->
+
+                        <td>
+
+                            <div class="table-date">
+
+                                <span
+                                    th:text="${#temporals.format(festival.startDate, 'dd/MM/yyyy')}">
+
+                                    02/09/2026
+
+                                </span>
+
+
+                                <span class="table-date-separator">
+
+                                    →
+
+                                </span>
+
+
+                                <span
+                                    th:text="${#temporals.format(festival.endDate, 'dd/MM/yyyy')}">
+
+                                    12/09/2026
+
+                                </span>
+
+                            </div>
+
+                        </td>
+
+
+
+                        <!-- AZIONI -->
+
+                        <td>
+
+                            <div class="table-actions">
+
+
+                                <a
+                                    th:href="@{/admin/festivals/{id}/edit(id=${festival.id})}"
+                                    class="btn btn-gold btn-small">
+
+                                    Modifica
+
+                                </a>
+
+
+
+                                <a
+                                    th:href="@{/festivals/{id}(id=${festival.id})}"
+                                    class="btn btn-outline btn-small">
+
+                                    Visualizza ↗
+
+                                </a>
+
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+
+        <!-- ===================================================
+             NESSUN FESTIVAL
+             =================================================== -->
+
+        <div
+            class="empty-state"
+            th:if="${festivals.isEmpty()}">
+
+
+            <div class="empty-icon">
+
+                ✦
+
+            </div>
+
+
+
+            <div class="section-label">
+
+                THE FIRST PREMIERE
+
+            </div>
+
+
+
+            <h3>
+
+                Ogni leggenda ha
+
+                <span class="gold-text">
+
+                    un inizio.
+
+                </span>
+
+            </h3>
+
+
+
+            <p>
+
+                Non hai ancora creato
+                nessun festival.
+
+                Organizza il tuo primo evento
+                cinematografico e preparati
+                ad accogliere i grandi protagonisti
+                del cinema.
+
+            </p>
+
+
+
+            <a
+                th:href="@{/admin/festivals/new}"
+                class="btn btn-gold">
+
+                ✦ Crea il primo festival
+
+            </a>
+
+        </div>
+
+
+
+        <!-- ===================================================
+             INFORMAZIONI
+             =================================================== -->
+
+        <div class="admin-info-banner">
+
+
+            <div class="admin-info-icon">
+
+                ✧
+
+            </div>
+
+
+
+            <div>
+
+                <h3>
+
+                    Il prossimo passo?
+
+                </h3>
+
+
+                <p>
+
+                    Dopo aver creato un festival,
+                    potrai associargli i film
+                    del catalogo e programmare
+                    le proiezioni nelle sale
+                    cinematografiche.
+
+                </p>
+
+            </div>
+
+
+
+            <a
+                th:href="@{/admin/films}"
+                class="btn btn-outline btn-small">
+
+                Gestisci film ↗
+
+            </a>
+
+
+        </div>
+
+    </div>
+
+</main>
+
+
+
+<!-- ===================================================
+     FOOTER
+     =================================================== -->
+
+<footer class="site-footer">
+
+    <div class="container footer-inner">
+
+        <div class="footer-brand">
+
+            ✦ SiwCineFestival
+
+        </div>
+
+
+        <p class="footer-copy">
+
+            THE ART OF CINEMA · FESTIVAL MANAGEMENT
+
+        </p>
+
+
+        <div class="footer-decoration">
+
+            ✦ ✦ ✦
+
+        </div>
+
+    </div>
+
+</footer>
+
+
+</body>
+</html>
