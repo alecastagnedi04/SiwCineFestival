@@ -89,22 +89,23 @@ public class SecurityConfig {
                  */
 
                 .requestMatchers(
-                    HttpMethod.GET,
+    HttpMethod.GET,
 
-                    "/",
-                    "/login",
-                    "/register",
+    "/",
+    "/login",
+    "/register",
 
-                    "/festivals",
-                    "/festivals/**",
+    "/festivals",
+    "/festivals/**",
 
-                    "/films/*",
+    "/films/*",
 
-                    "/films/*/reviews",
+    "/films/*/reviews",
 
-                    "/api/festivals/*/screenings"
+    "/api/festivals",
+    "/api/festivals/*/screenings"
 
-                ).permitAll()
+).permitAll()
 
 
                 /*
