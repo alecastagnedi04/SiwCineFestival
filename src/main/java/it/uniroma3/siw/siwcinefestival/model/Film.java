@@ -53,6 +53,16 @@ public class Film {
     @Column(nullable = false)
     private String productionCountry;
 
+    /*
+ * Locandina del film.
+ *
+ * Memorizziamo soltanto il nome del file.
+ * Il campo può essere null.
+ */
+
+@Column(name = "image_file_name")
+private String imageFileName;
+
 
 
     /*
@@ -249,4 +259,12 @@ public class Film {
     public List<Review> getReviews() {
         return reviews;
     }
+
+    public String getImageFileName() {
+    return imageFileName;
+}
+
+public void setImageFileName(String imageFileName) {
+    this.imageFileName = imageFileName;
+}
 }

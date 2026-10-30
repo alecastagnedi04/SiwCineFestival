@@ -19,6 +19,12 @@ import it.uniroma3.siw.siwcinefestival.service.FilmService;
 import it.uniroma3.siw.siwcinefestival.service.ReviewService;
 import it.uniroma3.siw.siwcinefestival.service.ScreeningService;
 
+import org.springframework.data.domain.Page;
+
+import org.springframework.web.bind.annotation.RequestParam;
+
+import it.uniroma3.siw.siwcinefestival.model.Review;
+
 
 @Controller
 @RequestMapping("/films")
@@ -51,123 +57,158 @@ public class FilmController {
      * Esempio:
      * GET /films/5
      */
-    @GetMapping("/{id}")
-    public String showFilm(
+    /*
+ * =====================================================
+ * DETTAGLIO FILM CON RECENSIONI PAGINATE
+ * =====================================================
+ *
+ * GET /films/{id}
+ *
+ * GET /films/{id}?reviewPage=0
+ *
+ * GET /films/{id}?reviewPage=1
+ *
+ * Mostriamo al massimo 3 recensioni
+ * per pagina.
+ */
 
-            @PathVariable("id") Long id,
+@GetMapping("/{id}")
+public String showFilm(
 
-            Model model,
+        @PathVariable("id") Long id,
 
-            Principal principal) {
+        @RequestParam(
+                name = "reviewPage",
+                defaultValue = "0"
+        )
+        int reviewPage,
 
-        /*
-         * Recuperiamo il film
-         * con regista e cast.
-         */
+        Model model,
 
-        Film film = filmService
-                .findByIdWithDirectorAndCast(id)
-                .orElseThrow(() ->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                "Film non trovato."
-                        )
-                );
-
-
-        /*
-         * Informazioni principali.
-         */
-
-        model.addAttribute(
-                "film",
-                film
-        );
+        Principal principal) {
 
 
-        /*
-         * Cast del film.
-         *
-         * L'associazione viene caricata
-         * nel metodo EntityGraph.
-         */
+    /*
+     * Recuperiamo il film
+     * con regista e cast.
+     */
 
-        model.addAttribute(
-                "castings",
-                film.getCastings()
-        );
-
-
-        /*
-         * Regista.
-         */
-
-        model.addAttribute(
-                "director",
-                film.getDirector()
-        );
-
-
-        /*
-         * Festival ai quali
-         * partecipa il film.
-         *
-         * Questa associazione deve essere
-         * inizializzata nel Service.
-         */
-
-        model.addAttribute(
-                "festivals",
-                film.getFestivals()
-        );
-
-
-        /*
-         * Proiezioni del film.
-         */
-
-        model.addAttribute(
-                "screenings",
-                screeningService.findByFilmId(id)
-        );
-
-
-        /*
-         * Recensioni del film.
-         */
-
-        model.addAttribute(
-                "reviews",
-                reviewService.findByFilmId(id)
-        );
-
-
-        /*
-         * Se l'utente è autenticato,
-         * cerchiamo una sua eventuale
-         * recensione già pubblicata.
-         */
-
-        if (principal != null) {
-
-            model.addAttribute(
-                    "myReview",
-                    reviewService.findByFilmIdAndUsername(
-                            id,
-                            principal.getName()
-                    ).orElse(null)
+    Film film = filmService
+            .findByIdWithDirectorAndCast(id)
+            .orElseThrow(() ->
+                    new ResponseStatusException(
+                            HttpStatus.NOT_FOUND,
+                            "Film non trovato."
+                    )
             );
 
-        } else {
 
-            model.addAttribute(
-                    "myReview",
-                    null
+    /*
+     * Informazioni principali.
+     */
+
+    model.addAttribute(
+            "film",
+            film
+    );
+
+
+    /*
+     * Cast del film.
+     */
+
+    model.addAttribute(
+            "castings",
+            film.getCastings()
+    );
+
+
+    /*
+     * Regista.
+     */
+
+    model.addAttribute(
+            "director",
+            film.getDirector()
+    );
+
+
+    /*
+     * Festival ai quali partecipa.
+     */
+
+    model.addAttribute(
+            "festivals",
+            film.getFestivals()
+    );
+
+
+    /*
+     * Proiezioni del film.
+     */
+
+    model.addAttribute(
+            "screenings",
+            screeningService.findByFilmId(id)
+    );
+
+
+    /*
+     * Recuperiamo soltanto
+     * 3 recensioni per pagina.
+     */
+
+    Page<Review> result =
+            reviewService.findPageByFilmId(
+                    id,
+                    reviewPage
             );
-        }
 
 
-        return "films/show";
+    /*
+     * Elenco delle recensioni
+     * presenti nella pagina corrente.
+     */
+
+    model.addAttribute(
+            "reviews",
+            result.getContent()
+    );
+
+
+    /*
+     * Informazioni sulla paginazione.
+     */
+
+    model.addAttribute(
+            "reviewPage",
+            result
+    );
+
+
+    /*
+     * Recensione dell'utente autenticato.
+     */
+
+    if (principal != null) {
+
+        model.addAttribute(
+                "myReview",
+                reviewService.findByFilmIdAndUsername(
+                        id,
+                        principal.getName()
+                ).orElse(null)
+        );
+
+    } else {
+
+        model.addAttribute(
+                "myReview",
+                null
+        );
     }
 
+
+    return "films/show";
+}
 }

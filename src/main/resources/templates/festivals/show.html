@@ -145,7 +145,21 @@
 
 </section>
 
+<!-- COPERTINA DEL FESTIVAL -->
 
+<div
+    class="container"
+    th:if="${festival.imageFileName != null}">
+
+    <div class="festival-detail-cover">
+
+        <img
+            th:src="@{/media/{file}(file=${festival.imageFileName})}"
+            th:alt="|Copertina del festival ${festival.name}|">
+
+    </div>
+
+</div>
 
 <!-- FESTIVAL CONTENT -->
 
@@ -358,13 +372,50 @@
                 </h3>
 
 
+                <!-- RICERCA FILM DEL FESTIVAL -->
+
+<div
+    class="catalog-search"
+    th:if="${!films.isEmpty()}">
+
+    <span class="catalog-search-icon">
+        ⌕
+    </span>
+
+    <input
+        type="search"
+        class="catalog-search-input"
+        placeholder="Cerca un film del festival..."
+        aria-label="Cerca film del festival"
+        data-search-input="festival-films">
+
+    <span
+        class="catalog-search-count"
+        data-search-count="festival-films">
+    </span>
+
+</div>
+
+<p
+    class="catalog-search-empty"
+    data-search-empty="festival-films"
+    hidden>
+
+    Nessun film trovato in questo festival.
+
+</p>
+
+
 
                 <ul
                     class="elegant-list"
                     th:if="${!films.isEmpty()}">
 
 
-                    <li th:each="film : ${films}">
+                    <li
+    th:each="film : ${films}"
+    data-search-item="festival-films"
+    th:attr="data-search-text=${film.title + ' ' + film.year}">
 
 
                         <a

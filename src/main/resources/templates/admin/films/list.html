@@ -116,16 +116,61 @@
 
         </div>
 
+        <!-- RICERCA CATALOGO -->
+
+<div class="catalog-search">
+
+    <span class="catalog-search-icon">
+        ⌕
+    </span>
+
+    <input
+        type="search"
+        class="catalog-search-input"
+        placeholder="Cerca per titolo, genere, anno o paese..."
+        aria-label="Cerca nel catalogo film"
+        data-search-input="admin-films">
+
+    <span
+        class="catalog-search-count"
+        data-search-count="admin-films">
+    </span>
+
+</div>
+
+<p
+    class="catalog-search-empty"
+    data-search-empty="admin-films"
+    hidden>
+
+    Nessun film corrisponde alla ricerca.
+
+</p>
+
 
         <!-- CATALOGO -->
         <div class="film-directory-grid"
              th:if="${!films.isEmpty()}">
 
-            <article class="film-directory-card"
-                     th:each="film : ${films}">
+            <article
+    class="film-directory-card"
+    th:each="film : ${films}"
+
+    data-search-item="admin-films"
+
+    th:attr="data-search-text=${film.title + ' ' + film.genre + ' ' + film.year + ' ' + film.productionCountry}">
 
                 <!-- LOCANDINA DECORATIVA -->
                 <div class="film-poster-art">
+
+                    <!-- LOCANDINA CARICATA -->
+
+<img
+    th:if="${film.imageFileName != null}"
+    th:src="@{/media/{file}(file=${film.imageFileName})}"
+    th:alt="|Locandina di ${film.title}|"
+    class="uploaded-film-poster"
+    loading="lazy">
 
                     <div class="film-poster-border">
 

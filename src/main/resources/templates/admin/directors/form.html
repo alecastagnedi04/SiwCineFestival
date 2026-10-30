@@ -277,6 +277,37 @@
 
             </div>
 
+            <!-- RICERCA REGISTI -->
+
+<div class="catalog-search">
+
+    <span class="catalog-search-icon">
+        ⌕
+    </span>
+
+    <input
+        type="search"
+        class="catalog-search-input"
+        placeholder="Cerca un regista per nome o cognome..."
+        aria-label="Cerca registi"
+        data-search-input="admin-directors">
+
+    <span
+        class="catalog-search-count"
+        data-search-count="admin-directors">
+    </span>
+
+</div>
+
+<p
+    class="catalog-search-empty"
+    data-search-empty="admin-directors"
+    hidden>
+
+    Nessun regista trovato.
+
+</p>
+
 
             <div class="admin-table-container"
                  th:if="${!directors.isEmpty()}">
@@ -292,7 +323,12 @@
 
                     <tbody>
 
-                        <tr th:each="director : ${directors}">
+                        <tr
+    th:each="director : ${directors}"
+
+    data-search-item="admin-directors"
+
+    th:attr="data-search-text=${director.name + ' ' + director.surname}">
 
                             <td>
 

@@ -15,6 +15,12 @@ import it.uniroma3.siw.siwcinefestival.repository.FestivalRepository;
 import it.uniroma3.siw.siwcinefestival.repository.FilmRepository;
 import it.uniroma3.siw.siwcinefestival.repository.ScreeningRepository;
 
+import java.util.Locale;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 @Service
 public class FestivalService {
@@ -309,4 +315,162 @@ public class FestivalService {
             );
         }
     }
+
+    /*
+ * =====================================================
+ * PAGINAZIONE FESTIVAL — HOMEPAGE
+ * =====================================================
+ *
+ * Mostriamo 3 festival per pagina.
+ *
+ * Il metodo è utilizzato soltanto
+ * nella homepage.
+ *
+ * La pagina /festivals continuerà
+ * a recuperare tutti i festival.
+ */
+
+@Transactional(readOnly = true)
+public Page<Festival> findHomePage(
+        String query,
+        int requestedPage) {
+
+    /*
+     * Numero di festival per pagina.
+     */
+
+    final int PAGE_SIZE = 3;
+
+
+    /*
+     * Il numero di pagina non può
+     * essere negativo.
+     */
+
+    int pageNumber = Math.max(0, requestedPage);
+
+
+    /*
+     * Normalizziamo il testo cercato.
+     */
+
+    String search = query == null
+            ? ""
+            : query.trim().toLowerCase(Locale.ROOT);
+
+
+    /*
+     * Ordinamento:
+     * prima i festival più recenti.
+     *
+     * L'ID garantisce un ordinamento
+     * stabile quando le date coincidono.
+     */
+
+    Sort sort = Sort.by(
+            Sort.Order.desc("startDate"),
+            Sort.Order.desc("id")
+    );
+
+
+    /*
+     * Creiamo Pageable.
+     */
+
+    Pageable pageable = PageRequest.of(
+            pageNumber,
+            PAGE_SIZE,
+            sort
+    );
+
+
+    /*
+     * Se l'utente cerca un anno,
+     * ad esempio 2026,
+     * lo riconosciamo.
+     *
+     * -1 indica che non è stato
+     * cercato un anno valido.
+     */
+
+    Integer year = -1;
+
+    if (search.matches("\\d{4}")) {
+        year = Integer.parseInt(search);
+    }
+
+
+    /*
+     * Interroghiamo il Repository.
+     */
+
+    Page<Festival> result;
+
+    if (search.isBlank()) {
+
+        result = festivalRepository.findAll(
+                pageable
+        );
+
+    } else {
+
+        result = festivalRepository.searchForHome(
+                search,
+                year,
+                pageable
+        );
+    }
+
+
+    /*
+     * Se viene richiesta una pagina
+     * oltre l'ultima disponibile,
+     * ritorniamo all'ultima pagina.
+     */
+
+    if (result.getTotalPages() > 0
+            && pageNumber >= result.getTotalPages()) {
+
+        int lastPage =
+                result.getTotalPages() - 1;
+
+        pageable = PageRequest.of(
+                lastPage,
+                PAGE_SIZE,
+                sort
+        );
+
+        if (search.isBlank()) {
+
+            result = festivalRepository.findAll(
+                    pageable
+            );
+
+        } else {
+
+            result = festivalRepository.searchForHome(
+                    search,
+                    year,
+                    pageable
+            );
+        }
+    }
+
+    return result;
+}
+
+
+/*
+ * =====================================================
+ * NUMERO TOTALE DEI FESTIVAL
+ * =====================================================
+ *
+ * Serve per il contatore della homepage.
+ */
+
+@Transactional(readOnly = true)
+public long countFestivals() {
+
+    return festivalRepository.count();
+}
 }

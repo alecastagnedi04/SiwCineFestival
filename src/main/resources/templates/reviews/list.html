@@ -275,6 +275,37 @@
 
         </div>
 
+        <!-- RICERCA RECENSIONI -->
+
+<div class="catalog-search">
+
+    <span class="catalog-search-icon">
+        ⌕
+    </span>
+
+    <input
+        type="search"
+        class="catalog-search-input"
+        placeholder="Cerca nelle recensioni o per autore..."
+        aria-label="Cerca recensioni"
+        data-search-input="film-reviews">
+
+    <span
+        class="catalog-search-count"
+        data-search-count="film-reviews">
+    </span>
+
+</div>
+
+<p
+    class="catalog-search-empty"
+    data-search-empty="film-reviews"
+    hidden>
+
+    Nessuna recensione corrisponde alla ricerca.
+
+</p>
+
 
 
         <!-- ELENCO RECENSIONI -->
@@ -285,9 +316,13 @@
 
 
             <article
-                class="review-page-card"
-                th:each="review : ${reviews}">
+    class="review-page-card"
 
+    th:each="review : ${reviews}"
+
+    data-search-item="film-reviews"
+
+    th:attr="data-search-text=${review.author.username + ' ' + review.text}">
 
                 <!-- AUTORE -->
 

@@ -74,11 +74,23 @@ public class SecurityConfig {
 
                 .requestMatchers(
                     "/css/**",
+                    "/js/**",
                     "/images/**",
                     "/react-program/**",
                     "/favicon.ico",
                     "/error"
                 ).permitAll()
+
+
+                /*
+ * Le immagini caricate possono
+ * essere visualizzate da tutti.
+ */
+
+.requestMatchers(
+    HttpMethod.GET,
+    "/media/**"
+).permitAll()
 
 
                 /*
@@ -174,7 +186,7 @@ public class SecurityConfig {
 
                 .loginProcessingUrl("/login")
 
-                .defaultSuccessUrl("/", false)
+                .defaultSuccessUrl("/", true)
 
                 .failureUrl("/login?error")
 

@@ -53,6 +53,13 @@ public class Festival {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    /*
+ * Copertina del festival.
+ */
+
+@Column(name = "image_file_name")
+private String imageFileName;
+
 
 
     /*
@@ -269,4 +276,12 @@ public class Festival {
 
         film.getFestivals().remove(this);
     }
+
+    public String getImageFileName() {
+    return imageFileName;
+}
+
+public void setImageFileName(String imageFileName) {
+    this.imageFileName = imageFileName;
+}
 }

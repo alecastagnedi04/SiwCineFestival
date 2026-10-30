@@ -8,6 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import it.uniroma3.siw.siwcinefestival.model.Review;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 
 public interface ReviewRepository
         extends JpaRepository<Review, Long> {
@@ -96,5 +99,46 @@ public interface ReviewRepository
 
             Long authorId
     );
+
+    /*
+ * =====================================================
+ * RECENSIONI DEL PROFILO UTENTE
+ * =====================================================
+ *
+ * Recupera tutte le recensioni scritte
+ * da un determinato utente.
+ *
+ * Le ordina dalla più recente.
+ *
+ * EntityGraph carica anche il film
+ * associato alla recensione.
+ *
+ * Evitiamo query aggiuntive quando
+ * mostriamo i titoli dei film.
+ */
+
+@EntityGraph(attributePaths = {"film"})
+List<Review> findByAuthorUsernameOrderByDateDescIdDesc(
+        String username
+);
+
+/*
+ * =====================================================
+ * RECENSIONI PAGINATE DI UN FILM
+ * =====================================================
+ *
+ * Recuperiamo le recensioni di un film,
+ * mostrando soltanto quelle della pagina
+ * richiesta.
+ *
+ * EntityGraph carica anche l'autore
+ * per visualizzare lo username.
+ */
+
+@EntityGraph(attributePaths = {"author"})
+Page<Review> findByFilmId(
+        Long filmId,
+        Pageable pageable
+);
 
 }

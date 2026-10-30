@@ -29,18 +29,24 @@ public class FilmService {
     private final DirectorRepository directorRepository;
     private final ScreeningRepository screeningRepository;
     private final CinemaRoomRepository cinemaRoomRepository;
+/*
+ * Utilizziamo anche il Service dei registi.
+ */
+    private final DirectorService directorService;
 
 
     public FilmService(
             FilmRepository filmRepository,
             DirectorRepository directorRepository,
             ScreeningRepository screeningRepository,
-            CinemaRoomRepository cinemaRoomRepository) {
+            CinemaRoomRepository cinemaRoomRepository,
+            DirectorService directorService) {
 
         this.filmRepository = filmRepository;
         this.directorRepository = directorRepository;
         this.screeningRepository = screeningRepository;
         this.cinemaRoomRepository = cinemaRoomRepository;
+        this.directorService = directorService;
     }
 
 
@@ -136,6 +142,162 @@ public Optional<Film> findByIdWithDirectorAndCast(
 
         return filmRepository.save(film);
     }
+
+    /*
+ * =====================================================
+ * CREAZIONE FILM CON REGISTA ESISTENTE O NUOVO
+ * =====================================================
+ *
+ * Permette di:
+ *
+ * 1. Selezionare un regista esistente.
+ *
+ * 2. Creare un nuovo regista e associarlo
+ *    immediatamente al nuovo film.
+ *
+ * Le operazioni vengono effettuate
+ * nella stessa transazione.
+ */
+
+@Transactional
+public Film createFilmWithDirectorOption(
+
+        String title,
+
+        Integer year,
+
+        Integer duration,
+
+        String genre,
+
+        String productionCountry,
+
+        String directorMode,
+
+        Long directorId,
+
+        String newDirectorName,
+
+        String newDirectorSurname) {
+
+
+    /*
+     * =================================================
+     * VALIDAZIONE DATI FILM
+     * =================================================
+     */
+
+    validateFilm(
+            title,
+            year,
+            duration,
+            genre,
+            productionCountry
+    );
+
+
+    /*
+     * =================================================
+     * REGISTA NUOVO
+     * =================================================
+     */
+
+    if ("new".equals(directorMode)) {
+
+        /*
+         * DirectorService valida nome e cognome.
+         *
+         * Se i dati non sono validi,
+         * viene generata un'eccezione.
+         */
+
+        Director newDirector =
+                directorService.createDirector(
+                        newDirectorName,
+                        newDirectorSurname
+                );
+
+
+        /*
+         * Il regista appena creato
+         * possiede ora un ID.
+         *
+         * Possiamo riutilizzare il metodo
+         * createFilm() già esistente.
+         */
+
+        return createFilm(
+
+                title,
+
+                year,
+
+                duration,
+
+                genre,
+
+                productionCountry,
+
+                newDirector.getId()
+        );
+    }
+
+
+    /*
+     * =================================================
+     * REGISTA ESISTENTE
+     * =================================================
+     */
+
+    if ("existing".equals(directorMode)) {
+
+        /*
+         * Se è stato selezionato
+         * un regista esistente,
+         * l'ID è obbligatorio.
+         */
+
+        if (directorId == null) {
+
+            throw new IllegalArgumentException(
+                    "Seleziona un regista dal catalogo."
+            );
+        }
+
+
+        /*
+         * Il metodo createFilm() recupera
+         * il regista dal Repository
+         * e lo associa al film.
+         */
+
+        return createFilm(
+
+                title,
+
+                year,
+
+                duration,
+
+                genre,
+
+                productionCountry,
+
+                directorId
+        );
+    }
+
+
+    /*
+     * =================================================
+     * MODALITÀ NON VALIDA
+     * =================================================
+     */
+
+    throw new IllegalArgumentException(
+            "Seleziona una modalità valida per il regista."
+    );
+}
 
 
     /*

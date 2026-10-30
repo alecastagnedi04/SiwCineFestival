@@ -135,13 +135,49 @@
 
         </div>
 
+        <!-- RICERCA SALE -->
+
+<div class="catalog-search">
+
+    <span class="catalog-search-icon">
+        ⌕
+    </span>
+
+    <input
+        type="search"
+        class="catalog-search-input"
+        placeholder="Cerca una sala per nome o indirizzo..."
+        aria-label="Cerca sale cinematografiche"
+        data-search-input="admin-rooms">
+
+    <span
+        class="catalog-search-count"
+        data-search-count="admin-rooms">
+    </span>
+
+</div>
+
+<p
+    class="catalog-search-empty"
+    data-search-empty="admin-rooms"
+    hidden>
+
+    Nessuna sala trovata.
+
+</p>
+
 
         <!-- ELENCO SALE -->
         <div class="cinema-rooms-grid"
              th:if="${!rooms.isEmpty()}">
 
-            <article class="cinema-room-card"
-                     th:each="room : ${rooms}">
+            <article
+    class="cinema-room-card"
+    th:each="room : ${rooms}"
+
+    data-search-item="admin-rooms"
+
+    th:attr="data-search-text=${room.name + ' ' + room.address + ' ' + room.capacity}">
 
 
                 <!-- PARTE DECORATIVA -->

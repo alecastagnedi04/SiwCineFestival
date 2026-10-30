@@ -37,6 +37,13 @@ public class Actor {
 
     private String nationality;
 
+    /*
+ * Fotografia dell'attore.
+ */
+
+@Column(name = "image_file_name")
+private String imageFileName;
+
 
 
     /*
@@ -118,4 +125,12 @@ public class Actor {
     public List<Casting> getCastings() {
         return castings;
     }
+
+    public String getImageFileName() {
+    return imageFileName;
+}
+
+public void setImageFileName(String imageFileName) {
+    this.imageFileName = imageFileName;
+}
 }

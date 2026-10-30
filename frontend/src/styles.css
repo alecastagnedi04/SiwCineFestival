@@ -997,3 +997,121 @@ a {
         font-size: 43px;
     }
 }
+
+/* =====================================================
+   REACT — COMPACT DESIGN
+   ===================================================== */
+
+.react-navbar .react-nav-inner {
+    min-height: 68px;
+}
+
+.react-hero {
+    padding: 55px 0 60px;
+}
+
+.react-hero h1 {
+    font-size: clamp(46px, 5vw, 70px);
+    margin: 18px auto;
+}
+
+.react-hero p {
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.react-hero-line {
+    margin-top: 24px;
+}
+
+.react-main {
+    padding: 48px 0 65px;
+}
+
+.react-festival-panel {
+    padding: 22px;
+    margin-bottom: 28px;
+}
+
+.react-selected-festival h2 {
+    font-size: 30px;
+}
+
+.react-filter-panel {
+    padding: 25px;
+}
+
+.react-filter-heading {
+    margin-bottom: 22px;
+}
+
+.react-filter-heading h2 {
+    font-size: 29px;
+}
+
+.react-field input,
+.react-field select {
+    min-height: 41px;
+    padding: 9px 13px;
+    font-size: 12px;
+}
+
+.react-section-heading {
+    margin: 45px 0 25px;
+}
+
+.react-section-heading h2 {
+    font-size: 40px;
+}
+
+.react-day-heading h3 {
+    font-size: 29px;
+}
+
+.react-screening-card {
+    padding: 18px;
+}
+
+.react-screening-time strong {
+    font-size: 32px;
+}
+
+.react-screening-content h4 {
+    font-size: 29px;
+}
+
+.react-stat-card {
+    padding: 22px;
+}
+
+.react-stat-card strong {
+    font-size: 48px;
+    margin-top: 12px;
+}
+
+.react-chart-card {
+    padding: 20px;
+}
+
+.react-chart-card h3 {
+    font-size: 25px;
+}
+
+.react-footer {
+    padding: 25px 0;
+}
+
+@media (max-width: 650px) {
+
+    .react-hero h1 {
+        font-size: 45px;
+    }
+
+    .react-section-heading h2 {
+        font-size: 34px;
+    }
+
+    .react-screening-content h4 {
+        font-size: 27px;
+    }
+}

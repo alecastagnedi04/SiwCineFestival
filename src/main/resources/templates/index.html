@@ -52,15 +52,11 @@
 
             <h1 class="hero-title">
 
-                Dove il<br>
+    Dove il <em>cinema</em><br>
 
-                <em>cinema</em><br>
+    diventa leggenda.
 
-                diventa<br>
-
-                leggenda.
-
-            </h1>
+</h1>
 
 
             <p class="hero-description">
@@ -139,24 +135,25 @@
                 </div>
 
 
-                <div>
+                <!-- TESTO CENTRALE DEL POSTER -->
 
-                    <div class="stage-stars" aria-hidden="true">
-                        ✦ ✦ ✦
-                    </div>
+<div class="stage-center">
 
+    <div class="stage-stars" aria-hidden="true">
+        ✦ ✦ ✦
+    </div>
 
-                    <h2 class="stage-title">
+    <h2 class="stage-title">
 
-                        Lights.<br>
+        Lights.<br>
 
-                        Camera.<br>
+        Camera.<br>
 
-                        <em>Magic.</em>
+        <em>Magic.</em>
 
-                    </h2>
+    </h2>
 
-                </div>
+</div>
 
 
                 <div class="stage-bottom">
@@ -184,10 +181,10 @@
     <div class="intro-item">
 
         <span
-            class="intro-number"
-            th:text="${#lists.size(festivals)}">
-            0
-        </span>
+    class="intro-number"
+    th:text="${totalFestivalCount}">
+    0
+</span>
 
         <div class="intro-label">
             Festival disponibili
@@ -226,24 +223,26 @@
 
 
 <!-- ===================================================
-     FESTIVAL SECTION
+     FESTIVAL SECTION — HOMEPAGE
+     RICERCA + IMMAGINI + PAGINAZIONE
      =================================================== -->
 
-<section class="section">
+<section class="section" id="home-festivals">
 
     <div class="container">
 
+
+        <!-- ==========================================
+             INTESTAZIONE
+             ========================================== -->
 
         <div class="section-header">
 
             <div>
 
                 <div class="section-label">
-
-                    ✦ La nostra selezione
-
+                    ✦ LA NOSTRA SELEZIONE
                 </div>
-
 
                 <h2 class="section-heading">
 
@@ -255,19 +254,17 @@
 
                 </h2>
 
-
                 <p class="section-description">
 
                     Dai grandi festival internazionali
                     alle nuove storie da scoprire.
 
-                    Ogni festival è una porta aperta
-                    verso il mondo del cinema.
-
                 </p>
 
             </div>
 
+
+            <!-- CATALOGO COMPLETO -->
 
             <a
                 th:href="@{/festivals}"
@@ -281,27 +278,119 @@
 
 
 
-        <!-- FESTIVAL PRESENTI -->
+        <!-- ==========================================
+             BARRA DI RICERCA
+             ========================================== -->
+
+        <form
+            class="home-festival-search"
+            th:action="@{/}"
+            method="get">
+
+
+            <!-- ICONA -->
+
+            <span class="home-search-icon">
+                ⌕
+            </span>
+
+
+            <!-- CAMPO DI RICERCA -->
+
+            <input
+                type="search"
+                name="q"
+                th:value="${q}"
+                placeholder="Cerca festival per nome, città o anno..."
+                aria-label="Cerca festival"
+                class="home-search-input">
+
+
+            <!-- PULSANTE CERCA -->
+
+            <button
+                type="submit"
+                class="btn btn-gold btn-small">
+
+                Cerca
+
+            </button>
+
+
+            <!-- CANCELLA RICERCA -->
+
+            <a
+                th:if="${!q.isBlank()}"
+                th:href="@{/}"
+                class="btn btn-outline btn-small">
+
+                Cancella
+
+            </a>
+
+        </form>
+
+
+
+        <!-- ==========================================
+             FESTIVAL PRESENTI
+             MASSIMO 3 PER PAGINA
+             ========================================== -->
 
         <div
             class="festival-grid"
             th:if="${!festivals.isEmpty()}">
 
 
+            <!-- SINGOLA CARD FESTIVAL -->
+
             <a
                 th:each="festival : ${festivals}"
-                th:href="@{/festivals/{id}(id=${festival.id})}"
-                class="festival-card">
 
+                th:href="@{/festivals/{id}(id=${festival.id})}"
+
+                class="festival-card"
+
+                th:classappend="${festival.imageFileName != null} ? 'has-cover' : ''">
+
+
+
+                <!-- ==========================
+                     IMMAGINE DI COPERTINA
+                     ========================== -->
+
+                <img
+                    th:if="${festival.imageFileName != null}"
+
+                    th:src="@{/media/{file}(file=${festival.imageFileName})}"
+
+                    th:alt="|Copertina di ${festival.name}|"
+
+                    class="uploaded-festival-cover"
+
+                    loading="lazy">
+
+
+
+                <!-- ==========================
+                     PARTE SUPERIORE
+                     ========================== -->
 
                 <div class="festival-card-top">
+
+
+                    <!-- ANNO -->
 
                     <span
                         class="festival-year"
                         th:text="${festival.year}">
+
                         2026
+
                     </span>
 
+
+                    <!-- ETICHETTA -->
 
                     <span class="festival-tag">
 
@@ -312,8 +401,15 @@
                 </div>
 
 
+
+                <!-- ==========================
+                     CONTENUTO CARD
+                     ========================== -->
+
                 <div class="festival-card-body">
 
+
+                    <!-- CITTÀ -->
 
                     <div
                         class="festival-city"
@@ -324,30 +420,52 @@
                     </div>
 
 
+
+                    <!-- NOME FESTIVAL -->
+
                     <h3 th:text="${festival.name}">
 
-                        Festival del Cinema
+                        Festival Internazionale
+                        del Cinema di Venezia
 
                     </h3>
 
 
+
+                    <!-- DATE -->
+
                     <div class="festival-date">
+
 
                         <span
                             th:text="${#temporals.format(festival.startDate, 'dd MMM yyyy')}">
+
+                            02 set 2026
+
                         </span>
+
 
                         <span> — </span>
 
+
                         <span
                             th:text="${#temporals.format(festival.endDate, 'dd MMM yyyy')}">
+
+                            12 set 2026
+
                         </span>
 
                     </div>
 
 
+
+                    <!-- DIVISORE -->
+
                     <div class="card-line"></div>
 
+
+
+                    <!-- COLLEGAMENTO DETTAGLIO -->
 
                     <div class="card-link">
 
@@ -365,11 +483,111 @@
 
 
 
-        <!-- NESSUN FESTIVAL -->
+        <!-- ==========================================
+             PAGINAZIONE FESTIVAL
+             ========================================== -->
+
+        <nav
+            class="cine-pagination"
+            th:if="${festivalPage.totalPages > 1}"
+            aria-label="Navigazione pagine festival">
+
+
+            <!-- PAGINA PRECEDENTE -->
+
+            <a
+                th:if="${festivalPage.number > 0}"
+
+                th:href="@{/(festivalPage=${festivalPage.number - 1},q=${q})} + '#home-festivals'"
+
+                class="cine-pagination-arrow"
+                aria-label="Pagina precedente">
+
+                ←
+
+            </a>
+
+
+
+            <!-- NUMERI DELLE PAGINE -->
+
+            <a
+                th:each="pageNumber : ${#numbers.sequence(0, festivalPage.totalPages - 1)}"
+
+                th:href="@{/(festivalPage=${pageNumber},q=${q})} + '#home-festivals'"
+
+                th:text="${pageNumber + 1}"
+
+                th:classappend="${pageNumber == festivalPage.number} ? 'is-active' : ''"
+
+                th:attr="aria-current=${pageNumber == festivalPage.number ? 'page' : null}"
+
+                class="cine-pagination-number">
+
+                1
+
+            </a>
+
+
+
+            <!-- PAGINA SUCCESSIVA -->
+
+            <a
+                th:if="${festivalPage.number < festivalPage.totalPages - 1}"
+
+                th:href="@{/(festivalPage=${festivalPage.number + 1},q=${q})} + '#home-festivals'"
+
+                class="cine-pagination-arrow"
+                aria-label="Pagina successiva">
+
+                →
+
+            </a>
+
+        </nav>
+
+
+
+        <!-- ==========================================
+             CONTATORE PAGINAZIONE
+             ========================================== -->
+
+        <div
+            class="cine-pagination-info"
+            th:if="${festivalPage.totalPages > 0}">
+
+            Pagina
+
+            <span th:text="${festivalPage.number + 1}">
+                1
+            </span>
+
+            di
+
+            <span th:text="${festivalPage.totalPages}">
+                3
+            </span>
+
+            ·
+
+            <span th:text="${festivalPage.totalElements}">
+                8
+            </span>
+
+            festival trovati
+
+        </div>
+
+
+
+        <!-- ==========================================
+             NESSUN FESTIVAL NEL DATABASE
+             ========================================== -->
 
         <div
             class="empty-state"
-            th:if="${festivals.isEmpty()}">
+            th:if="${festivals.isEmpty() and q.isBlank()}">
+
 
             <div class="empty-icon">
                 ✦
@@ -389,11 +607,8 @@
 
             <p>
 
-                I festival cinematografici
-                non sono ancora stati pubblicati.
-
-                Presto questo spazio accoglierà
-                storie, proiezioni e grandi protagonisti.
+                Non sono ancora disponibili
+                festival cinematografici.
 
             </p>
 
@@ -409,6 +624,55 @@
 
         </div>
 
+
+
+        <!-- ==========================================
+             NESSUN RISULTATO DELLA RICERCA
+             ========================================== -->
+
+        <div
+            class="empty-state"
+            th:if="${festivals.isEmpty() and !q.isBlank()}">
+
+
+            <div class="empty-icon">
+                ⌕
+            </div>
+
+
+            <h3>
+
+                Nessun festival
+
+                <span class="gold-text">
+                    trovato.
+                </span>
+
+            </h3>
+
+
+            <p>
+
+                Non ci sono festival
+                corrispondenti alla ricerca.
+
+                Prova con un altro nome,
+                una città o un anno.
+
+            </p>
+
+
+            <a
+                th:href="@{/}"
+                class="btn btn-outline">
+
+                Mostra tutti i festival
+
+            </a>
+
+        </div>
+
+
     </div>
 
 </section>
@@ -416,53 +680,35 @@
 
 
 <!-- ===================================================
-     CINEMATIC CTA
+     HOME — FRASE CONCLUSIVA
      =================================================== -->
 
-<section class="section" style="padding-top: 0;">
+<section class="home-closing-section">
 
     <div class="container">
 
-        <div class="feature-banner">
+        <div class="home-closing-note">
 
-            <div class="section-label">
+            <!-- PICCOLA ETICHETTA -->
 
-                THE SHOW MUST GO ON
+            <span class="home-closing-label">
 
-            </div>
+                ✦ THE SHOW MUST GO ON ✦
+
+            </span>
 
 
-            <h2>
+            <!-- FRASE CONCLUSIVA -->
+
+            <p class="home-closing-text">
 
                 Ogni film è una storia.
 
-                <span class="gold-text italic-text">
-
+                <em>
                     Ogni festival, un'emozione.
-
-                </span>
-
-            </h2>
-
-
-            <p>
-
-                Dai capolavori senza tempo
-                alle nuove voci del cinema.
-
-                Esplora la programmazione
-                e scopri le prossime proiezioni.
+                </em>
 
             </p>
-
-
-            <a
-                th:href="@{/festivals}"
-                class="btn btn-gold">
-
-                Scopri la programmazione ↗
-
-            </a>
 
         </div>
 

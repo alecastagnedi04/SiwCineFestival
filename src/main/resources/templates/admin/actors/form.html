@@ -269,6 +269,77 @@
 
                 </form>
 
+                <!-- ===================================================
+     UPLOAD FOTOGRAFIA ATTORE
+     =================================================== -->
+
+<div
+    class="image-upload-panel"
+    th:if="${isEdit}">
+
+    <div class="section-label">
+        ✦ ACTOR PORTRAIT
+    </div>
+
+    <h3>
+        Fotografia
+        <span class="gold-text">attore.</span>
+    </h3>
+
+    <p>
+        Aggiungi una fotografia dell'attore
+        da mostrare nel cast dei film.
+    </p>
+
+
+    <div
+        class="alert alert-error"
+        th:if="${errorMessage != null}"
+        th:text="${errorMessage}">
+    </div>
+
+
+    <form
+        th:action="@{/admin/media/actor/{id}(id=${actorId})}"
+        method="post"
+        enctype="multipart/form-data">
+
+        <div class="form-group">
+
+            <label
+                class="form-label"
+                for="actorImage">
+
+                Seleziona fotografia
+
+            </label>
+
+            <input
+                id="actorImage"
+                name="image"
+                type="file"
+                class="form-control"
+                accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+                required>
+
+        </div>
+
+        <button
+            type="submit"
+            class="btn btn-gold">
+
+            ✦ Carica fotografia
+
+        </button>
+
+    </form>
+
+    <p class="image-upload-hint">
+        JPG o PNG · Massimo 3 MB
+    </p>
+
+</div>
+
             </div>
 
 
@@ -339,6 +410,37 @@
             </div>
 
 
+            <!-- RICERCA ATTORI -->
+
+<div class="catalog-search">
+
+    <span class="catalog-search-icon">
+        ⌕
+    </span>
+
+    <input
+        type="search"
+        class="catalog-search-input"
+        placeholder="Cerca un attore per nome, cognome o nazionalità..."
+        aria-label="Cerca attori"
+        data-search-input="admin-actors">
+
+    <span
+        class="catalog-search-count"
+        data-search-count="admin-actors">
+    </span>
+
+</div>
+
+<p
+    class="catalog-search-empty"
+    data-search-empty="admin-actors"
+    hidden>
+
+    Nessun attore trovato.
+
+</p>
+
             <div class="admin-table-container"
                  th:if="${!actors.isEmpty()}">
 
@@ -358,7 +460,12 @@
 
                     <tbody>
 
-                        <tr th:each="actor : ${actors}">
+                        <tr
+    th:each="actor : ${actors}"
+
+    data-search-item="admin-actors"
+
+    th:attr="data-search-text=${actor.name + ' ' + actor.surname + ' ' + actor.nationality}">
 
                             <td>
 

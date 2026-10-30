@@ -7,15 +7,10 @@ import it.uniroma3.siw.siwcinefestival.model.Festival;
 public record FestivalSummaryResponse(
 
         Long id,
-
         String name,
-
         Integer year,
-
         String city,
-
         LocalDate startDate,
-
         LocalDate endDate
 
 ) {
@@ -31,15 +26,10 @@ public record FestivalSummaryResponse(
         return new FestivalSummaryResponse(
 
                 festival.getId(),
-
                 festival.getName(),
-
                 festival.getYear(),
-
                 festival.getCity(),
-
                 festival.getStartDate(),
-
                 festival.getEndDate()
         );
     }

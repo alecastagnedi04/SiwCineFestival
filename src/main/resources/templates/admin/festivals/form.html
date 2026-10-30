@@ -603,6 +603,234 @@
 
                 </form>
 
+                <!-- ===================================================
+     UPLOAD COPERTINA FESTIVAL
+     =================================================== -->
+<!-- ===================================================
+     COPERTINA FESTIVAL
+     VISUALIZZAZIONE E MODIFICA
+     =================================================== -->
+
+<div
+    class="image-upload-panel"
+    th:if="${isEdit}">
+
+
+    <!-- TITOLO -->
+
+    <div class="section-label">
+
+        ✦ FESTIVAL COVER
+
+    </div>
+
+
+    <h3>
+
+        Copertina del
+
+        <span class="gold-text">
+
+            festival.
+
+        </span>
+
+    </h3>
+
+
+
+    <!-- ===================================================
+         COPERTINA GIÀ PRESENTE
+         =================================================== -->
+
+    <div
+        class="festival-current-cover"
+        th:if="${festival.imageFileName != null}">
+
+
+        <div class="festival-cover-label">
+
+            ✦ COPERTINA ATTUALE
+
+        </div>
+
+
+        <!-- ANTEPRIMA -->
+
+        <div class="festival-cover-preview">
+
+            <img
+                th:src="@{/media/{file}(file=${festival.imageFileName})}"
+
+                th:alt="|Copertina attuale di ${festival.name}|"
+
+                loading="lazy">
+
+        </div>
+
+
+        <!-- MESSAGGIO -->
+
+        <p class="festival-cover-saved">
+
+            ✓ Copertina salvata correttamente.
+
+        </p>
+
+
+        <p class="festival-cover-description">
+
+            Questa immagine è già associata
+            al festival e rimarrà salvata.
+
+            Puoi modificare nome, città, date
+            e descrizione senza doverla
+            caricare nuovamente.
+
+        </p>
+
+    </div>
+
+
+
+    <!-- ===================================================
+         NESSUNA COPERTINA
+         =================================================== -->
+
+    <div
+        class="festival-no-cover"
+        th:if="${festival.imageFileName == null}">
+
+
+        <div class="festival-cover-placeholder">
+
+            ✦
+
+        </div>
+
+
+        <p>
+
+            Questo festival non ha ancora
+            una copertina.
+
+            Caricane una per personalizzare
+            la sua pagina e la card nella homepage.
+
+        </p>
+
+    </div>
+
+
+
+    <!-- ===================================================
+         EVENTUALE MESSAGGIO DI ERRORE
+         =================================================== -->
+
+    <div
+        th:if="${errorMessage != null}"
+        class="alert alert-error"
+        th:text="${errorMessage}">
+    </div>
+
+
+
+    <!-- ===================================================
+         FORM PER CARICARE UNA NUOVA COPERTINA
+         =================================================== -->
+
+    <form
+
+        th:action="@{/admin/media/festival/{id}(id=${festivalId})}"
+
+        method="post"
+
+        enctype="multipart/form-data">
+
+
+        <div class="form-group">
+
+
+            <label
+                for="festivalImage"
+                class="form-label">
+
+                <span
+                    th:if="${festival.imageFileName == null}">
+
+                    Carica una copertina
+
+                </span>
+
+
+                <span
+                    th:if="${festival.imageFileName != null}">
+
+                    Sostituisci la copertina attuale
+
+                </span>
+
+            </label>
+
+
+            <input
+                id="festivalImage"
+
+                name="image"
+
+                type="file"
+
+                class="form-control"
+
+                accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+
+                required>
+
+
+        </div>
+
+
+
+        <!-- PULSANTE -->
+
+        <button
+            type="submit"
+            class="btn btn-gold">
+
+
+            <span
+                th:if="${festival.imageFileName == null}">
+
+                ✦ Carica copertina
+
+            </span>
+
+
+            <span
+                th:if="${festival.imageFileName != null}">
+
+                ✦ Sostituisci copertina
+
+            </span>
+
+
+        </button>
+
+    </form>
+
+
+
+    <!-- INFORMAZIONI -->
+
+    <p class="image-upload-hint">
+
+        JPG o PNG · Massimo 3 MB
+
+    </p>
+
+
+</div>
+
             </div>
 
 

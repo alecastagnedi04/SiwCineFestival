@@ -38,3 +38,6 @@ frontend/node_modules/
 frontend/dist/
 frontend/.vite/
 frontend/.env.local
+
+# Immagini caricate dal sito
+/uploads/

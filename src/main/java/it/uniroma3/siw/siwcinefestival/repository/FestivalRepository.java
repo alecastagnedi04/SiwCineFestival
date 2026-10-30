@@ -10,6 +10,9 @@ import org.springframework.data.repository.query.Param;
 
 import it.uniroma3.siw.siwcinefestival.model.Festival;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 
 public interface FestivalRepository
         extends JpaRepository<Festival, Long> {
@@ -91,5 +94,37 @@ public interface FestivalRepository
             @Param("filmId")
             Long filmId
     );
+
+    /*
+ * =====================================================
+ * RICERCA FESTIVAL CON PAGINAZIONE
+ * =====================================================
+ *
+ * Utilizzata nella homepage.
+ *
+ * Cerca per:
+ * - nome
+ * - città
+ * - anno
+ *
+ * Pageable stabilisce quanti risultati
+ * devono essere recuperati dal database.
+ */
+
+@Query("""
+    SELECT f
+    FROM Festival f
+    WHERE LOWER(f.name) LIKE CONCAT('%', :search, '%')
+       OR LOWER(f.city) LIKE CONCAT('%', :search, '%')
+       OR f.year = :year
+    """)
+Page<Festival> searchForHome(
+
+        @Param("search") String search,
+
+        @Param("year") Integer year,
+
+        Pageable pageable
+);
 
 }

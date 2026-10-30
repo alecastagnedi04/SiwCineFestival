@@ -67,18 +67,26 @@
             </a>
 
 
-            <!-- UTENTE AUTENTICATO -->
+            <!-- ===================================================
+     PROFILO UTENTE
+     =================================================== -->
 
-            <span
-                th:if="${isAuthenticated}"
-                class="nav-user">
+<a
+    th:if="${isAuthenticated}"
+    th:href="@{/profile}"
+    class="nav-user cine-profile-nav-link"
 
-                ✦
-                <span th:text="${currentUsername}">
-                    Username
-                </span>
+    title="Apri il mio profilo">
 
-            </span>
+    ✦
+
+    <span th:text="${currentUsername}">
+
+        Username
+
+    </span>
+
+</a>
 
 
             <!-- VISITATORE -->
@@ -117,6 +125,11 @@
         </nav>
 
     </div>
+
+    <script
+    th:src="@{/js/site-search.js}"
+    defer>
+</script>
 
 </header>
 

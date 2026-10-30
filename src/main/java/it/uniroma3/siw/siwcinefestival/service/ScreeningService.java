@@ -168,184 +168,333 @@ public List<ScreeningResponse> findProgramForApi(
 
 
     /*
-     * =====================================================
-     * CREAZIONE PROIEZIONE
-     * =====================================================
+ * =====================================================
+ * CREAZIONE PROIEZIONE
+ * =====================================================
+ *
+ * Crea una proiezione e, se necessario,
+ * associa automaticamente il film al festival.
+ *
+ * Tutto avviene nella stessa transazione.
+ */
+
+@Transactional
+public Screening createScreening(
+        Long festivalId,
+        Long filmId,
+        Long roomId,
+        LocalDate date,
+        LocalTime time,
+        ScreeningStatus status) {
+
+
+    /*
+     * ================================================
+     * 1. VALIDAZIONE CAMPI OBBLIGATORI
+     * ================================================
      */
 
-    @Transactional
-    public Screening createScreening(
-            Long festivalId,
-            Long filmId,
-            Long roomId,
-            LocalDate date,
-            LocalTime time,
-            ScreeningStatus status) {
+    validateRequiredFields(
+            festivalId,
+            filmId,
+            roomId,
+            date,
+            time
+    );
 
-        validateRequiredFields(
-                festivalId,
-                filmId,
+
+    /*
+     * ================================================
+     * 2. RECUPERIAMO FESTIVAL E FILM
+     * ================================================
+     */
+
+    Festival festival = requireFestival(festivalId);
+
+    Film film = requireFilm(filmId);
+
+
+    /*
+     * ================================================
+     * 3. BLOCCO DELLA SALA
+     * ================================================
+     *
+     * Acquisiamo un lock sulla sala
+     * per gestire correttamente
+     * eventuali operazioni concorrenti.
+     */
+
+    CinemaRoom room = lockRoom(roomId);
+
+
+    /*
+     * ================================================
+     * 4. STATO DELLA PROIEZIONE
+     * ================================================
+     */
+
+    ScreeningStatus finalStatus =
+            status != null
+                    ? status
+                    : ScreeningStatus.SCHEDULED;
+
+
+    /*
+     * ================================================
+     * 5. CONTROLLO DATA DEL FESTIVAL
+     * ================================================
+     *
+     * La data deve essere compresa
+     * tra l'inizio e la fine del festival.
+     */
+
+    validateDateInFestival(
+            date,
+            festival
+    );
+
+
+    /*
+     * ================================================
+     * 6. CONTROLLO DISPONIBILITÀ DELLA SALA
+     * ================================================
+     *
+     * Le proiezioni annullate
+     * non occupano la sala.
+     */
+
+    if (finalStatus != ScreeningStatus.CANCELLED) {
+
+        validateRoomAvailability(
                 roomId,
+                null,
                 date,
-                time
+                time,
+                film.getDuration()
         );
-
-        Festival festival = requireFestival(festivalId);
-        Film film = requireFilm(filmId);
-
-        /*
-         * Acquisiamo il lock sulla sala.
-         *
-         * Tutti i controlli e il salvataggio
-         * devono avvenire nella stessa transazione.
-         */
-
-        CinemaRoom room = lockRoom(roomId);
-
-        ScreeningStatus finalStatus =
-                status != null
-                        ? status
-                        : ScreeningStatus.SCHEDULED;
-
-        validateFilmInFestival(
-                festivalId,
-                filmId
-        );
-
-        validateDateInFestival(
-                date,
-                festival
-        );
-
-        /*
-         * Le proiezioni cancellate
-         * non occupano la sala.
-         */
-
-        if (finalStatus != ScreeningStatus.CANCELLED) {
-
-            validateRoomAvailability(
-                    roomId,
-                    null,
-                    date,
-                    time,
-                    film.getDuration()
-            );
-        }
-
-        Screening screening = new Screening();
-
-        screening.setFestival(festival);
-        screening.setFilm(film);
-        screening.setRoom(room);
-        screening.setDate(date);
-        screening.setTime(time);
-        screening.setStatus(finalStatus);
-
-        return screeningRepository.save(screening);
     }
 
 
     /*
-     * =====================================================
-     * MODIFICA PROIEZIONE
-     * =====================================================
+     * ================================================
+     * 7. ASSOCIAZIONE AUTOMATICA FILM - FESTIVAL
+     * ================================================
+     *
+     * Se il film non partecipa ancora
+     * al festival, viene aggiunto.
+     *
+     * Se partecipa già, non succede nulla.
      */
 
-    @Transactional
-    public Screening updateScreening(
-            Long screeningId,
-            Long festivalId,
-            Long filmId,
-            Long roomId,
-            LocalDate date,
-            LocalTime time,
-            ScreeningStatus status) {
+    ensureFilmInFestival(
+            festival,
+            film
+    );
 
-        validateRequiredFields(
-                festivalId,
-                filmId,
-                roomId,
-                date,
-                time
-        );
 
-        Screening screening = screeningRepository
-                .findById(screeningId)
-                .orElseThrow(() ->
-                        new NoSuchElementException(
-                                "Proiezione non trovata."
-                        )
-                );
+    /*
+     * ================================================
+     * 8. CREAZIONE DELLA PROIEZIONE
+     * ================================================
+     */
 
-        /*
-         * Blocchiamo la sala precedente
-         * e quella nuova, se diversa.
-         *
-         * L'ordine crescente aiuta
-         * a evitare deadlock.
-         */
+    Screening screening = new Screening();
 
-        Long oldRoomId = screening.getRoom().getId();
+    screening.setFestival(festival);
 
-        lockRoomsInOrder(
-                oldRoomId,
-                roomId
-        );
+    screening.setFilm(film);
 
-        Festival festival = requireFestival(festivalId);
-        Film film = requireFilm(filmId);
+    screening.setRoom(room);
 
-        CinemaRoom room = cinemaRoomRepository
-                .findById(roomId)
-                .orElseThrow(() ->
-                        new NoSuchElementException(
-                                "Sala non trovata."
-                        )
-                );
+    screening.setDate(date);
 
-        ScreeningStatus finalStatus =
-                status != null
-                        ? status
-                        : ScreeningStatus.SCHEDULED;
+    screening.setTime(time);
 
-        validateFilmInFestival(
-                festivalId,
-                filmId
-        );
+    screening.setStatus(finalStatus);
 
-        validateDateInFestival(
-                date,
-                festival
-        );
 
-        if (finalStatus != ScreeningStatus.CANCELLED) {
+    /*
+     * ================================================
+     * 9. SALVATAGGIO
+     * ================================================
+     *
+     * Anche il salvataggio dell'associazione
+     * Film-Festival appartiene a questa
+     * transazione.
+     */
 
-            /*
-             * Escludiamo dal controllo
-             * la stessa proiezione che
-             * stiamo modificando.
-             */
+    return screeningRepository.save(screening);
+}
 
-            validateRoomAvailability(
-                    roomId,
-                    screeningId,
-                    date,
-                    time,
-                    film.getDuration()
+
+    /*
+ * =====================================================
+ * MODIFICA PROIEZIONE
+ * =====================================================
+ *
+ * Modifica una proiezione esistente.
+ *
+ * Se il film selezionato non appartiene
+ * ancora al festival, lo associa
+ * automaticamente.
+ */
+
+@Transactional
+public Screening updateScreening(
+        Long screeningId,
+        Long festivalId,
+        Long filmId,
+        Long roomId,
+        LocalDate date,
+        LocalTime time,
+        ScreeningStatus status) {
+
+
+    /*
+     * ================================================
+     * 1. VALIDAZIONE
+     * ================================================
+     */
+
+    validateRequiredFields(
+            festivalId,
+            filmId,
+            roomId,
+            date,
+            time
+    );
+
+
+    /*
+     * ================================================
+     * 2. RECUPERIAMO LA PROIEZIONE
+     * ================================================
+     */
+
+    Screening screening = screeningRepository
+            .findById(screeningId)
+            .orElseThrow(() ->
+                    new NoSuchElementException(
+                            "Proiezione non trovata."
+                    )
             );
-        }
 
-        screening.setFestival(festival);
-        screening.setFilm(film);
-        screening.setRoom(room);
-        screening.setDate(date);
-        screening.setTime(time);
-        screening.setStatus(finalStatus);
 
-        return screeningRepository.save(screening);
+    /*
+     * ================================================
+     * 3. BLOCCO DELLE SALE
+     * ================================================
+     */
+
+    Long oldRoomId =
+            screening.getRoom().getId();
+
+    lockRoomsInOrder(
+            oldRoomId,
+            roomId
+    );
+
+
+    /*
+     * ================================================
+     * 4. RECUPERIAMO LE ENTITÀ
+     * ================================================
+     */
+
+    Festival festival = requireFestival(festivalId);
+
+    Film film = requireFilm(filmId);
+
+    CinemaRoom room = cinemaRoomRepository
+            .findById(roomId)
+            .orElseThrow(() ->
+                    new NoSuchElementException(
+                            "Sala non trovata."
+                    )
+            );
+
+
+    /*
+     * ================================================
+     * 5. STATO DELLA PROIEZIONE
+     * ================================================
+     */
+
+    ScreeningStatus finalStatus =
+            status != null
+                    ? status
+                    : ScreeningStatus.SCHEDULED;
+
+
+    /*
+     * ================================================
+     * 6. CONTROLLO DATA
+     * ================================================
+     */
+
+    validateDateInFestival(
+            date,
+            festival
+    );
+
+
+    /*
+     * ================================================
+     * 7. CONTROLLO DISPONIBILITÀ
+     * ================================================
+     */
+
+    if (finalStatus != ScreeningStatus.CANCELLED) {
+
+        validateRoomAvailability(
+                roomId,
+                screeningId,
+                date,
+                time,
+                film.getDuration()
+        );
     }
 
+
+    /*
+     * ================================================
+     * 8. ASSOCIAZIONE AUTOMATICA
+     * ================================================
+     */
+
+    ensureFilmInFestival(
+            festival,
+            film
+    );
+
+
+    /*
+     * ================================================
+     * 9. AGGIORNAMENTO PROIEZIONE
+     * ================================================
+     */
+
+    screening.setFestival(festival);
+
+    screening.setFilm(film);
+
+    screening.setRoom(room);
+
+    screening.setDate(date);
+
+    screening.setTime(time);
+
+    screening.setStatus(finalStatus);
+
+
+    /*
+     * ================================================
+     * 10. SALVATAGGIO
+     * ================================================
+     */
+
+    return screeningRepository.save(screening);
+}
 
     /*
      * =====================================================
@@ -441,29 +590,82 @@ public List<ScreeningResponse> findProgramForApi(
 
 
     /*
-     * =====================================================
-     * CONTROLLA FILM-FESTIVAL
-     * =====================================================
+ * =====================================================
+ * ASSOCIAZIONE AUTOMATICA FILM - FESTIVAL
+ * =====================================================
+ *
+ * Quando programmiamo una proiezione:
+ *
+ * 1. Controlliamo se il film appartiene al festival.
+ *
+ * 2. Se appartiene già al festival,
+ *    non dobbiamo fare nulla.
+ *
+ * 3. Se non appartiene ancora al festival,
+ *    creiamo automaticamente l'associazione.
+ *
+ * L'operazione viene eseguita all'interno
+ * della transazione della proiezione.
+ */
+
+private void ensureFilmInFestival(
+        Festival festival,
+        Film film) {
+
+    /*
+     * Recuperiamo gli ID.
      */
 
-    private void validateFilmInFestival(
-            Long festivalId,
-            Long filmId) {
+    Long festivalId = festival.getId();
 
-        boolean belongs =
-                festivalRepository.isFilmInFestival(
-                        festivalId,
-                        filmId
-                );
+    Long filmId = film.getId();
 
-        if (!belongs) {
 
-            throw new IllegalStateException(
-                    "Il film selezionato non partecipa "
-                    + "al festival."
+    /*
+     * Controlliamo se l'associazione
+     * esiste già nel database.
+     */
+
+    boolean alreadyAssociated =
+            festivalRepository.isFilmInFestival(
+                    festivalId,
+                    filmId
             );
-        }
+
+
+    /*
+     * Se il film partecipa già al festival,
+     * non creiamo un'associazione duplicata.
+     */
+
+    if (alreadyAssociated) {
+        return;
     }
+
+
+    /*
+     * Il film non appartiene ancora
+     * al festival.
+     *
+     * Utilizziamo il metodo addFilm()
+     * che abbiamo già definito in Festival.
+     *
+     * Questo metodo aggiorna entrambi
+     * i lati della relazione ManyToMany.
+     */
+
+    festival.addFilm(film);
+
+
+    /*
+     * Salviamo l'associazione.
+     *
+     * La nuova relazione sarà registrata
+     * nella tabella festival_films.
+     */
+
+    festivalRepository.save(festival);
+}
 
 
     /*

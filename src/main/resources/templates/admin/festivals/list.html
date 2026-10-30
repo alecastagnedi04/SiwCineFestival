@@ -223,6 +223,37 @@
 
         </div>
 
+        <!-- RICERCA FESTIVAL -->
+
+<div class="catalog-search">
+
+    <span class="catalog-search-icon">
+        ⌕
+    </span>
+
+    <input
+        type="search"
+        class="catalog-search-input"
+        placeholder="Cerca festival per nome, città o anno..."
+        aria-label="Cerca festival"
+        data-search-input="admin-festivals">
+
+    <span
+        class="catalog-search-count"
+        data-search-count="admin-festivals">
+    </span>
+
+</div>
+
+<p
+    class="catalog-search-empty"
+    data-search-empty="admin-festivals"
+    hidden>
+
+    Nessun festival trovato.
+
+</p>
+
 
 
         <!-- ===================================================
@@ -270,7 +301,12 @@
                 <tbody>
 
 
-                    <tr th:each="festival : ${festivals}">
+                    <tr
+    th:each="festival : ${festivals}"
+
+    data-search-item="admin-festivals"
+
+    th:attr="data-search-text=${festival.name + ' ' + festival.city + ' ' + festival.year}">
 
 
                         <!-- NOME -->

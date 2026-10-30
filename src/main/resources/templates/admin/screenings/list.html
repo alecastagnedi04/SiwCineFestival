@@ -261,6 +261,37 @@
 
             </div>
 
+            <!-- RICERCA PROIEZIONI -->
+
+<div class="catalog-search">
+
+    <span class="catalog-search-icon">
+        ⌕
+    </span>
+
+    <input
+        type="search"
+        class="catalog-search-input"
+        placeholder="Cerca proiezioni per film, sala o stato..."
+        aria-label="Cerca proiezioni"
+        data-search-input="admin-screenings">
+
+    <span
+        class="catalog-search-count"
+        data-search-count="admin-screenings">
+    </span>
+
+</div>
+
+<p
+    class="catalog-search-empty"
+    data-search-empty="admin-screenings"
+    hidden>
+
+    Nessuna proiezione corrisponde alla ricerca.
+
+</p>
+
 
             <!-- PROIEZIONI PRESENTI -->
             <div class="screening-admin-list"
@@ -268,9 +299,15 @@
 
 
                 <article
-                    class="screening-admin-card"
-                    th:each="screening : ${screenings}"
-                    th:classappend="${screening.status.name() == 'CANCELLED'} ? ' screening-cancelled' : ''">
+    class="screening-admin-card"
+
+    th:each="screening : ${screenings}"
+
+    th:classappend="${screening.status.name() == 'CANCELLED'} ? ' screening-cancelled' : ''"
+
+    data-search-item="admin-screenings"
+
+    th:attr="data-search-text=${screening.film.title + ' ' + screening.room.name + ' ' + screening.status.name() + ' ' + screening.date}">
 
 
                     <!-- DATA E ORA -->

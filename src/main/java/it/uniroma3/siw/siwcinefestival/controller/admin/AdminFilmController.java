@@ -75,127 +75,318 @@ public class AdminFilmController {
 
 
     /*
-     * =====================================================
-     * FORM NUOVO FILM
-     * =====================================================
+ * =====================================================
+ * FORM NUOVO FILM
+ * =====================================================
+ *
+ * Permette di scegliere tra:
+ *
+ * - Regista esistente
+ * - Nuovo regista
+ */
+
+@GetMapping("/new")
+public String newFilmForm(Model model) {
+
+    FilmForm form = new FilmForm();
+
+
+    /*
+     * Se non esistono registi,
+     * selezioniamo automaticamente
+     * la modalità di creazione.
      */
 
-    @GetMapping("/new")
-    public String newFilmForm(Model model) {
+    if (directorService.findAll().isEmpty()) {
 
-        model.addAttribute(
-                "filmForm",
-                new FilmForm()
+        form.setDirectorMode("new");
+    }
+
+
+    model.addAttribute(
+            "filmForm",
+            form
+    );
+
+
+    prepareFilmForm(
+            model,
+            false,
+            null
+    );
+
+
+    return "admin/films/form";
+}
+
+
+    /*
+ * =====================================================
+ * CREAZIONE FILM
+ * =====================================================
+ *
+ * Gestisce sia un regista esistente
+ * sia la creazione di uno nuovo.
+ */
+
+@PostMapping("/new")
+public String createFilm(
+
+        @Valid
+        @ModelAttribute("filmForm")
+        FilmForm form,
+
+        BindingResult bindingResult,
+
+        Model model,
+
+        RedirectAttributes redirectAttributes) {
+
+
+    /*
+     * =================================================
+     * ERRORI DI VALIDAZIONE
+     * =================================================
+     */
+
+    if (bindingResult.hasErrors()) {
+
+        prepareFilmForm(
+                model,
+                false,
+                null
         );
-
-        prepareFilmForm(model, false, null);
 
         return "admin/films/form";
     }
 
 
-    /*
-     * =====================================================
-     * CREAZIONE FILM
-     * =====================================================
-     */
+    try {
 
-    @PostMapping("/new")
-    public String createFilm(
+        /*
+         * =================================================
+         * CREAZIONE FILM E REGISTA
+         * =================================================
+         */
 
-            @Valid
-            @ModelAttribute("filmForm")
-            FilmForm form,
+        Film film =
+                filmService.createFilmWithDirectorOption(
 
-            BindingResult bindingResult,
+                        form.getTitle(),
 
-            Model model,
+                        form.getYear(),
 
-            RedirectAttributes redirectAttributes) {
+                        form.getDuration(),
 
-        if (bindingResult.hasErrors()) {
+                        form.getGenre(),
 
-            prepareFilmForm(model, false, null);
+                        form.getProductionCountry(),
 
-            return "admin/films/form";
-        }
+                        form.getDirectorMode(),
 
-        try {
+                        form.getDirectorId(),
 
-            Film film = filmService.createFilm(
-                    form.getTitle(),
-                    form.getYear(),
-                    form.getDuration(),
-                    form.getGenre(),
-                    form.getProductionCountry(),
-                    form.getDirectorId()
-            );
+                        form.getNewDirectorName(),
 
-            redirectAttributes.addFlashAttribute(
-                    "successMessage",
-                    "Film creato con successo!"
-            );
-
-            return "redirect:/admin/films/"
-                    + film.getId()
-                    + "/cast";
-
-        } catch (IllegalArgumentException
-                 | IllegalStateException
-                 | NoSuchElementException ex) {
-
-            bindingResult.reject(
-                    "filmError",
-                    ex.getMessage()
-            );
-
-            prepareFilmForm(model, false, null);
-
-            return "admin/films/form";
-        }
-    }
+                        form.getNewDirectorSurname()
+                );
 
 
-    /*
-     * =====================================================
-     * FORM MODIFICA FILM
-     * =====================================================
-     */
+        /*
+         * =================================================
+         * MESSAGGIO
+         * =================================================
+         */
 
-    @GetMapping("/{id}/edit")
-    public String editFilmForm(
-
-            @PathVariable("id") Long id,
-
-            Model model) {
-
-        Film film = requireFilm(id);
-
-        FilmForm form = new FilmForm();
-
-        form.setTitle(film.getTitle());
-        form.setYear(film.getYear());
-        form.setDuration(film.getDuration());
-        form.setGenre(film.getGenre());
-
-        form.setProductionCountry(
-                film.getProductionCountry()
+        redirectAttributes.addFlashAttribute(
+                "successMessage",
+                "Film creato con successo! "
+                + "Ora puoi aggiungere la locandina."
         );
 
-        form.setDirectorId(
-                film.getDirector().getId()
+
+        /*
+         * =================================================
+         * REINDIRIZZAMENTO
+         * =================================================
+         *
+         * Dopo la creazione andiamo
+         * alla modifica del film.
+         *
+         * Da lì possiamo:
+         *
+         * - caricare la locandina
+         * - gestire il cast
+         * - modificare i dati
+         */
+
+        return "redirect:/admin/films/"
+                + film.getId()
+                + "/edit";
+
+
+    } catch (
+            IllegalArgumentException
+            | IllegalStateException
+            | NoSuchElementException ex
+    ) {
+
+        /*
+         * Mostriamo l'errore nel form.
+         */
+
+        bindingResult.reject(
+                "filmError",
+                ex.getMessage()
         );
 
-        model.addAttribute(
-                "filmForm",
-                form
+
+        prepareFilmForm(
+                model,
+                false,
+                null
         );
 
-        prepareFilmForm(model, true, id);
 
         return "admin/films/form";
     }
+}
 
+
+/*
+ * =====================================================
+ * FORM MODIFICA FILM
+ * =====================================================
+ *
+ * GET /admin/films/{id}/edit
+ *
+ * Apre la pagina di modifica di un film
+ * già presente nel database.
+ *
+ * Permette di:
+ *
+ * - Visualizzare i dati del film.
+ * - Modificare le informazioni.
+ * - Cambiare il regista.
+ * - Caricare la locandina.
+ * - Accedere alla gestione del cast.
+ */
+
+@GetMapping("/{id}/edit")
+public String editFilmForm(
+
+        @PathVariable("id") Long id,
+
+        Model model) {
+
+
+    /*
+     * =================================================
+     * RECUPERIAMO IL FILM
+     * =================================================
+     */
+
+    Film film = requireFilm(id);
+
+
+    /*
+     * =================================================
+     * CREIAMO IL DTO
+     * =================================================
+     *
+     * Utilizziamo FilmForm per passare
+     * i dati dal Controller al form HTML.
+     */
+
+    FilmForm form = new FilmForm();
+
+
+    /*
+     * =================================================
+     * INSERIAMO I DATI DEL FILM
+     * =================================================
+     */
+
+    form.setTitle(
+            film.getTitle()
+    );
+
+    form.setYear(
+            film.getYear()
+    );
+
+    form.setDuration(
+            film.getDuration()
+    );
+
+    form.setGenre(
+            film.getGenre()
+    );
+
+    form.setProductionCountry(
+            film.getProductionCountry()
+    );
+
+
+    /*
+     * =================================================
+     * REGISTA
+     * =================================================
+     *
+     * In fase di modifica scegliamo
+     * un regista già presente.
+     *
+     * La creazione di un nuovo regista
+     * direttamente dal form è prevista
+     * soltanto quando creiamo un film.
+     */
+
+    form.setDirectorMode("existing");
+
+    form.setDirectorId(
+            film.getDirector().getId()
+    );
+
+
+    /*
+     * =================================================
+     * PASSIAMO IL FORM A THYMELEAF
+     * =================================================
+     */
+
+    model.addAttribute(
+            "filmForm",
+            form
+    );
+
+
+    /*
+     * =================================================
+     * PREPARIAMO LA PAGINA
+     * =================================================
+     *
+     * isEdit = true
+     *
+     * filmId = ID del film
+     *
+     * directors = elenco registi
+     */
+
+    prepareFilmForm(
+            model,
+            true,
+            id
+    );
+
+
+    /*
+     * =================================================
+     * MOSTRIAMO LA PAGINA
+     * =================================================
+     */
+
+    return "admin/films/form";
+}
 
     /*
      * =====================================================
@@ -475,26 +666,82 @@ public class AdminFilmController {
     }
 
 
-    private void prepareFilmForm(
-            Model model,
-            boolean isEdit,
-            Long filmId) {
+    /*
+ * =====================================================
+ * PREPARAZIONE FORM FILM
+ * =====================================================
+ *
+ * Prepara i dati necessari per:
+ *
+ * - Creazione film
+ * - Modifica film
+ * - Visualizzazione locandina già salvata
+ */
+
+private void prepareFilmForm(
+        Model model,
+        boolean isEdit,
+        Long filmId) {
+
+    /*
+     * Indichiamo se siamo in modifica.
+     */
+
+    model.addAttribute(
+            "isEdit",
+            isEdit
+    );
+
+    /*
+     * Identificativo del film.
+     */
+
+    model.addAttribute(
+            "filmId",
+            filmId
+    );
+
+    /*
+     * Elenco dei registi.
+     */
+
+    model.addAttribute(
+            "directors",
+            directorService.findAll()
+    );
+
+    /*
+     * =================================================
+     * FILM GIÀ SALVATO
+     * =================================================
+     *
+     * In modalità modifica recuperiamo
+     * il film dal database.
+     *
+     * Ci servirà per mostrare:
+     *
+     * - La locandina attuale
+     * - Il nome del file
+     * - Il messaggio di conferma
+     */
+
+    if (isEdit && filmId != null) {
+
+        Film currentFilm = filmService
+                .findById(filmId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Film non trovato."
+                        )
+                );
 
         model.addAttribute(
-                "isEdit",
-                isEdit
-        );
-
-        model.addAttribute(
-                "filmId",
-                filmId
-        );
-
-        model.addAttribute(
-                "directors",
-                directorService.findAll()
+                "currentFilm",
+                currentFilm
         );
     }
+}
 
 
     private void prepareCastPage(

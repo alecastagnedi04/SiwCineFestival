@@ -16,6 +16,10 @@ import it.uniroma3.siw.siwcinefestival.repository.FilmRepository;
 import it.uniroma3.siw.siwcinefestival.repository.ReviewRepository;
 import it.uniroma3.siw.siwcinefestival.repository.UserRepository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+
 
 @Service
 public class ReviewService {
@@ -237,4 +241,121 @@ public class ReviewService {
             );
         }
     }
+
+    /*
+ * =====================================================
+ * RECENSIONI SCRITTE DA UN UTENTE
+ * =====================================================
+ *
+ * Utilizzato nella pagina profilo.
+ *
+ * Operazione di sola lettura.
+ */
+
+@Transactional(readOnly = true)
+public List<Review> findByAuthorUsername(
+        String username) {
+
+    return reviewRepository
+            .findByAuthorUsernameOrderByDateDescIdDesc(
+                    username
+            );
+}
+
+/*
+ * =====================================================
+ * PAGINAZIONE RECENSIONI
+ * =====================================================
+ *
+ * Mostriamo 3 recensioni per pagina.
+ *
+ * Utilizzato nel dettaglio del film.
+ *
+ * La pagina con tutte le recensioni
+ * continuerà a usare findByFilmId().
+ */
+
+@Transactional(readOnly = true)
+public Page<Review> findPageByFilmId(
+        Long filmId,
+        int requestedPage) {
+
+
+    /*
+     * Tre recensioni per pagina.
+     */
+
+    final int PAGE_SIZE = 3;
+
+
+    /*
+     * Numero della pagina richiesta.
+     */
+
+    int pageNumber = Math.max(
+            0,
+            requestedPage
+    );
+
+
+    /*
+     * Ordiniamo dalla recensione
+     * più recente alla più vecchia.
+     */
+
+    Sort sort = Sort.by(
+            Sort.Order.desc("date"),
+            Sort.Order.desc("id")
+    );
+
+
+    /*
+     * Creiamo Pageable.
+     */
+
+    PageRequest pageable = PageRequest.of(
+            pageNumber,
+            PAGE_SIZE,
+            sort
+    );
+
+
+    /*
+     * Recuperiamo le recensioni.
+     */
+
+    Page<Review> result =
+            reviewRepository.findByFilmId(
+                    filmId,
+                    pageable
+            );
+
+
+    /*
+     * Se la pagina richiesta
+     * non esiste più,
+     * ritorniamo all'ultima disponibile.
+     */
+
+    if (result.getTotalPages() > 0
+            && pageNumber >= result.getTotalPages()) {
+
+        int lastPage =
+                result.getTotalPages() - 1;
+
+        pageable = PageRequest.of(
+                lastPage,
+                PAGE_SIZE,
+                sort
+        );
+
+        result = reviewRepository.findByFilmId(
+                filmId,
+                pageable
+        );
+    }
+
+
+    return result;
+}
 }

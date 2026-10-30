@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+
+<html lang="it"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Il mio profilo | SiwCineFestival
+    </title>
+
+    <link
+        rel="stylesheet"
+        th:href="@{/css/style.css}">
+
+</head>
+
+<body>
+
+
+<!-- =====================================================
+     NAVBAR
+     ===================================================== -->
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+
+<!-- =====================================================
+     PROFILE HEADER
+     ===================================================== -->
+
+<section class="cine-profile-header">
+
+    <div class="container">
+
+
+        <!-- BREADCRUMB -->
+
+        <div class="breadcrumb">
+
+            <a th:href="@{/}">
+                Home
+            </a>
+
+            <span class="breadcrumb-separator">
+                ✦
+            </span>
+
+            <span>
+                Il mio profilo
+            </span>
+
+        </div>
+
+
+        <div class="cine-profile-heading">
+
+            <span class="eyebrow">
+
+                ✦ THE CINEMA COMMUNITY
+
+            </span>
+
+
+            <h1>
+
+                Il mio
+
+                <em class="gold-text">
+                    profilo.
+                </em>
+
+            </h1>
+
+
+            <p>
+
+                Il tuo spazio personale
+                nel mondo di SiwCineFestival.
+
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     PROFILE CONTENT
+     ===================================================== -->
+
+<main class="cine-profile-main">
+
+    <div class="container">
+
+
+        <!-- =================================================
+             USER CARD
+             ================================================= -->
+
+        <section class="cine-profile-card">
+
+
+            <!-- AVATAR -->
+
+            <div class="cine-profile-avatar">
+
+                <span
+                    th:text="${#strings.toUpperCase(#strings.substring(profileUser.username, 0, 1))}">
+
+                    A
+
+                </span>
+
+            </div>
+
+
+            <!-- INFORMAZIONI UTENTE -->
+
+            <div class="cine-profile-identity">
+
+
+                <span class="section-label">
+
+                    ✦ CINEMA MEMBER
+
+                </span>
+
+
+                <h2 th:text="${profileUser.username}">
+
+                    alessia04
+
+                </h2>
+
+
+                <p class="cine-profile-welcome">
+
+                    Benvenuto nel tuo angolo
+                    dedicato alla settima arte.
+
+                </p>
+
+
+                <!-- DETTAGLI -->
+
+                <div class="cine-profile-details">
+
+
+                    <!-- EMAIL -->
+
+                    <div class="cine-profile-detail">
+
+                        <span>
+                            EMAIL
+                        </span>
+
+                        <strong
+                            th:text="${profileUser.email}">
+
+                            esempio@email.com
+
+                        </strong>
+
+                    </div>
+
+
+                    <!-- RUOLO -->
+
+                    <div class="cine-profile-detail">
+
+                        <span>
+                            ACCOUNT
+                        </span>
+
+                        <strong
+                            th:text="${profileUser.role.name() == 'ADMIN' ? 'Amministratore' : 'Spettatore'}">
+
+                            Spettatore
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- STATISTICA -->
+
+            <div class="cine-profile-stat">
+
+                <span class="section-label">
+
+                    MY CINEMA DIARY
+
+                </span>
+
+
+                <strong th:text="${reviewCount}">
+
+                    0
+
+                </strong>
+
+
+                <span>
+
+                    Recensioni pubblicate
+
+                </span>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             SEZIONE RECENSIONI
+             ================================================= -->
+
+        <section class="cine-profile-reviews">
+
+
+            <!-- INTESTAZIONE -->
+
+            <div class="cine-profile-section-heading">
+
+
+                <div>
+
+                    <span class="section-label">
+
+                        ✦ MY MOVIE JOURNAL
+
+                    </span>
+
+
+                    <h2>
+
+                        Il mio diario
+
+                        <span class="gold-text italic-text">
+
+                            cinematografico.
+
+                        </span>
+
+                    </h2>
+
+
+                    <p>
+
+                        Tutti i film che hai recensito,
+                        le tue opinioni e i tuoi voti.
+
+                    </p>
+
+                </div>
+
+
+                <div class="cine-profile-count">
+
+                    ✦
+
+                    <span th:text="${reviewCount}">
+                        0
+                    </span>
+
+                    recensioni
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =============================================
+                 RECENSIONI PRESENTI
+                 ============================================= -->
+
+            <div
+                class="cine-profile-review-grid"
+                th:if="${!reviews.isEmpty()}">
+
+
+                <article
+                    class="cine-profile-review-card"
+                    th:each="review : ${reviews}">
+
+
+                    <!-- DATA -->
+
+                    <div class="cine-profile-review-top">
+
+
+                        <span class="section-label">
+
+                            OFFICIAL REVIEW
+
+                        </span>
+
+
+                        <span
+                            class="cine-profile-review-date"
+                            th:text="${#temporals.format(review.date, 'dd/MM/yyyy')}">
+
+                            28/10/2026
+
+                        </span>
+
+                    </div>
+
+
+
+                    <!-- TITOLO FILM -->
+
+                    <h3 th:text="${review.film.title}">
+
+                        Interstellar
+
+                    </h3>
+
+
+
+                    <!-- VOTO -->
+
+                    <div class="cine-profile-rating">
+
+                        <span>
+
+                            ★
+
+                        </span>
+
+
+                        <strong
+                            th:text="|${review.rating}/5|">
+
+                            5/5
+
+                        </strong>
+
+                    </div>
+
+
+
+                    <!-- TESTO RECENSIONE -->
+
+                    <p
+                        class="cine-profile-review-text"
+                        th:text="${review.text}">
+
+                        Film bellissimo,
+                        una storia emozionante.
+
+                    </p>
+
+
+
+                    <!-- AZIONI -->
+
+                    <div class="cine-profile-review-actions">
+
+
+                        <!-- DETTAGLIO FILM -->
+
+                        <a
+                            th:href="@{/films/{id}(id=${review.film.id})}"
+                            class="btn btn-outline btn-small">
+
+                            Vedi film ↗
+
+                        </a>
+
+
+
+                        <!-- MODIFICA RECENSIONE -->
+
+                        <a
+                            th:href="@{/films/{filmId}/reviews/{reviewId}/edit(
+                                filmId=${review.film.id},
+                                reviewId=${review.id}
+                            )}"
+                            class="btn btn-outline btn-small">
+
+                            Modifica
+
+                        </a>
+
+                    </div>
+
+                </article>
+
+            </div>
+
+
+
+            <!-- =============================================
+                 NESSUNA RECENSIONE
+                 ============================================= -->
+
+            <div
+                class="cine-profile-empty"
+                th:if="${reviews.isEmpty()}">
+
+
+                <div class="cine-profile-empty-icon">
+
+                    ✦
+
+                </div>
+
+
+                <h3>
+
+                    Il tuo diario è ancora
+
+                    <span class="gold-text">
+
+                        vuoto.
+
+                    </span>
+
+                </h3>
+
+
+                <p>
+
+                    Non hai ancora pubblicato
+                    nessuna recensione.
+
+                    Esplora i festival,
+                    scopri i film e condividi
+                    la tua opinione.
+
+                </p>
+
+
+                <a
+                    th:href="@{/festivals}"
+                    class="btn btn-gold">
+
+                    ✦ Esplora i festival
+
+                </a>
+
+            </div>
+
+
+        </section>
+
+    </div>
+
+</main>
+
+
+<!-- =====================================================
+     FOOTER
+     ===================================================== -->
+
+<footer class="site-footer">
+
+    <div class="container footer-inner">
+
+
+        <div class="footer-brand">
+
+            ✦ SiwCineFestival
+
+        </div>
+
+
+        <p class="footer-copy">
+
+            YOUR PERSONAL CINEMA JOURNEY
+
+        </p>
+
+
+        <div class="footer-decoration">
+
+            ✦ ✦ ✦
+
+        </div>
+
+    </div>
+
+</footer>
+
+
+</body>
+
+</html>

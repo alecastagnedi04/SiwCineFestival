@@ -75,6 +75,15 @@
 
             <div class="movie-premiere-poster">
 
+                <!-- LOCANDINA DEL FILM -->
+
+<img
+    th:if="${film.imageFileName != null}"
+    th:src="@{/media/{file}(file=${film.imageFileName})}"
+    th:alt="|Locandina di ${film.title}|"
+    class="uploaded-film-poster"
+    loading="eager">
+
                 <div class="movie-premiere-inner">
 
 
@@ -387,11 +396,25 @@
                 th:each="casting : ${castings}">
 
 
-                <div class="movie-cast-symbol">
+                <!-- FOTO ATTORE -->
 
-                    ★
+<img
+    th:if="${casting.actor.imageFileName != null}"
+    th:src="@{/media/{file}(file=${casting.actor.imageFileName})}"
+    th:alt="|Fotografia di ${casting.actor.name} ${casting.actor.surname}|"
+    class="uploaded-actor-photo"
+    loading="lazy">
 
-                </div>
+
+<!-- STELLA DI DEFAULT -->
+
+<div
+    class="movie-cast-symbol"
+    th:if="${casting.actor.imageFileName == null}">
+
+    ★
+
+</div>
 
 
 
@@ -708,7 +731,7 @@
      RECENSIONI
      =================================================== -->
 
-<section class="section">
+<section class="section" id="film-reviews">
 
     <div class="container">
 
@@ -889,6 +912,94 @@
             </article>
 
         </div>
+
+        <!-- ===================================================
+     PAGINAZIONE RECENSIONI
+     =================================================== -->
+
+<nav
+    class="cine-pagination"
+    th:if="${reviewPage.totalPages > 1}"
+    aria-label="Navigazione recensioni">
+
+
+    <!-- PRECEDENTE -->
+
+    <a
+        th:if="${reviewPage.number > 0}"
+
+        th:href="@{/films/{id}(id=${film.id},reviewPage=${reviewPage.number - 1})} + '#film-reviews'"
+
+        class="cine-pagination-arrow">
+
+        ←
+
+    </a>
+
+
+    <!-- NUMERI PAGINE -->
+
+    <a
+        th:each="pageNumber : ${#numbers.sequence(0, reviewPage.totalPages - 1)}"
+
+        th:href="@{/films/{id}(id=${film.id},reviewPage=${pageNumber})} + '#film-reviews'"
+
+        th:text="${pageNumber + 1}"
+
+        th:classappend="${pageNumber == reviewPage.number} ? 'is-active' : ''"
+
+        th:attr="aria-current=${pageNumber == reviewPage.number ? 'page' : null}"
+
+        class="cine-pagination-number">
+
+        1
+
+    </a>
+
+
+    <!-- SUCCESSIVA -->
+
+    <a
+        th:if="${reviewPage.number < reviewPage.totalPages - 1}"
+
+        th:href="@{/films/{id}(id=${film.id},reviewPage=${reviewPage.number + 1})} + '#film-reviews'"
+
+        class="cine-pagination-arrow">
+
+        →
+
+    </a>
+
+</nav>
+
+
+<!-- CONTEGGIO RECENSIONI -->
+
+<div
+    class="cine-pagination-info"
+    th:if="${reviewPage.totalPages > 0}">
+
+    Pagina
+
+    <span th:text="${reviewPage.number + 1}">
+        1
+    </span>
+
+    di
+
+    <span th:text="${reviewPage.totalPages}">
+        3
+    </span>
+
+    ·
+
+    <span th:text="${reviewPage.totalElements}">
+        8
+    </span>
+
+    recensioni totali
+
+</div>
 
 
 

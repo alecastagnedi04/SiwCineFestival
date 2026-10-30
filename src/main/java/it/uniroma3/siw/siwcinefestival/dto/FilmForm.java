@@ -3,12 +3,18 @@ package it.uniroma3.siw.siwcinefestival.dto;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
 
 public class FilmForm {
 
+    /*
+     * =====================================================
+     * DATI DEL FILM
+     * =====================================================
+     */
 
     @NotBlank(message = "Il titolo del film è obbligatorio.")
     @Size(max = 255, message = "Il titolo è troppo lungo.")
@@ -33,15 +39,80 @@ public class FilmForm {
     private String productionCountry;
 
 
-    @NotNull(message = "Seleziona un regista.")
+
+    /*
+     * =====================================================
+     * MODALITÀ DI SELEZIONE DEL REGISTA
+     * =====================================================
+     *
+     * existing:
+     *   utilizziamo un regista già presente.
+     *
+     * new:
+     *   creiamo un nuovo regista insieme al film.
+     *
+     * Durante la modifica del film
+     * utilizziamo sempre la modalità existing.
+     */
+
+    @NotBlank(message = "Seleziona una modalità per il regista.")
+    @Pattern(
+        regexp = "existing|new",
+        message = "Modalità regista non valida."
+    )
+    private String directorMode = "existing";
+
+
+
+    /*
+     * =====================================================
+     * REGISTA ESISTENTE
+     * =====================================================
+     *
+     * Non utilizziamo @NotNull.
+     *
+     * Se l'utente sceglie un nuovo regista,
+     * directorId può essere null.
+     *
+     * Il controllo viene effettuato
+     * nel Service in base alla modalità.
+     */
+
     private Long directorId;
 
 
+
+    /*
+     * =====================================================
+     * NUOVO REGISTA
+     * =====================================================
+     */
+
+    @Size(max = 255, message = "Il nome del regista è troppo lungo.")
+    private String newDirectorName;
+
+
+    @Size(max = 255, message = "Il cognome del regista è troppo lungo.")
+    private String newDirectorSurname;
+
+
+
+    /*
+     * =====================================================
+     * COSTRUTTORE
+     * =====================================================
+     */
 
     public FilmForm() {
     }
 
 
+
+    /*
+     * =====================================================
+     * GETTER E SETTER — FILM
+     * =====================================================
+     */
 
     public String getTitle() {
         return title;
@@ -93,6 +164,23 @@ public class FilmForm {
     }
 
 
+
+    /*
+     * =====================================================
+     * GETTER E SETTER — REGISTA
+     * =====================================================
+     */
+
+    public String getDirectorMode() {
+        return directorMode;
+    }
+
+
+    public void setDirectorMode(String directorMode) {
+        this.directorMode = directorMode;
+    }
+
+
     public Long getDirectorId() {
         return directorId;
     }
@@ -100,5 +188,25 @@ public class FilmForm {
 
     public void setDirectorId(Long directorId) {
         this.directorId = directorId;
+    }
+
+
+    public String getNewDirectorName() {
+        return newDirectorName;
+    }
+
+
+    public void setNewDirectorName(String newDirectorName) {
+        this.newDirectorName = newDirectorName;
+    }
+
+
+    public String getNewDirectorSurname() {
+        return newDirectorSurname;
+    }
+
+
+    public void setNewDirectorSurname(String newDirectorSurname) {
+        this.newDirectorSurname = newDirectorSurname;
     }
 }
