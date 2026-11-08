@@ -12,13 +12,11 @@ import it.uniroma3.siw.siwcinefestival.model.Role;
 import it.uniroma3.siw.siwcinefestival.model.User;
 import it.uniroma3.siw.siwcinefestival.repository.UserRepository;
 
-
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
 
     public UserService(
             UserRepository userRepository,
@@ -28,12 +26,7 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-
-    /*
-     * =====================================================
-     * ELENCO UTENTI
-     * =====================================================
-     */
+    /*ELENCO UTENTI */
 
     @Transactional(readOnly = true)
     public List<User> findAll() {
@@ -41,12 +34,7 @@ public class UserService {
         return userRepository.findAllByOrderByUsernameAsc();
     }
 
-
-    /*
-     * =====================================================
-     * RICERCA UTENTE
-     * =====================================================
-     */
+    /* RICERCA UTENTE*/
 
     @Transactional(readOnly = true)
     public Optional<User> findByUsername(String username) {
@@ -56,16 +44,10 @@ public class UserService {
         }
 
         return userRepository.findByUsername(
-                username.trim().toLowerCase(Locale.ROOT)
-        );
+                username.trim().toLowerCase(Locale.ROOT));
     }
 
-
-    /*
-     * =====================================================
-     * REGISTRAZIONE UTENTE
-     * =====================================================
-     */
+    /* REGISTRAZIONE UTENTE*/
 
     @Transactional
     public User register(
@@ -75,12 +57,9 @@ public class UserService {
 
         validateRegistration(username, email, password);
 
-        String normalizedUsername =
-                username.trim().toLowerCase(Locale.ROOT);
+        String normalizedUsername = username.trim().toLowerCase(Locale.ROOT);
 
-        String normalizedEmail =
-                email.trim().toLowerCase(Locale.ROOT);
-
+        String normalizedEmail = email.trim().toLowerCase(Locale.ROOT);
 
         // Controlliamo se lo username esiste già
 
@@ -88,10 +67,8 @@ public class UserService {
                 normalizedUsername)) {
 
             throw new IllegalStateException(
-                    "Username già utilizzato."
-            );
+                    "Username già utilizzato.");
         }
-
 
         // Controlliamo se l'email esiste già
 
@@ -99,10 +76,8 @@ public class UserService {
                 normalizedEmail)) {
 
             throw new IllegalStateException(
-                    "Email già utilizzata."
-            );
+                    "Email già utilizzata.");
         }
-
 
         // Creiamo il nuovo utente
 
@@ -111,30 +86,21 @@ public class UserService {
         user.setUsername(normalizedUsername);
         user.setEmail(normalizedEmail);
 
-
         // Password cifrata con BCrypt
 
         user.setPassword(
-                passwordEncoder.encode(password)
-        );
-
+                passwordEncoder.encode(password));
 
         // Ogni nuovo utente è USER
 
         user.setRole(Role.USER);
-
 
         // Salviamo nel database
 
         return userRepository.save(user);
     }
 
-
-    /*
-     * =====================================================
-     * VALIDAZIONE REGISTRAZIONE
-     * =====================================================
-     */
+    /* VALIDAZIONE REGISTRAZIONE */
 
     private void validateRegistration(
             String username,
@@ -144,40 +110,31 @@ public class UserService {
         if (username == null || username.isBlank()) {
 
             throw new IllegalArgumentException(
-                    "Lo username è obbligatorio."
-            );
+                    "Lo username è obbligatorio.");
         }
-
 
         if (username.trim().length() < 3) {
 
             throw new IllegalArgumentException(
-                    "Lo username deve avere almeno 3 caratteri."
-            );
+                    "Lo username deve avere almeno 3 caratteri.");
         }
-
 
         if (email == null || email.isBlank()) {
 
             throw new IllegalArgumentException(
-                    "L'email è obbligatoria."
-            );
+                    "L'email è obbligatoria.");
         }
-
 
         if (!email.contains("@")) {
 
             throw new IllegalArgumentException(
-                    "L'indirizzo email non è valido."
-            );
+                    "L'indirizzo email non è valido.");
         }
-
 
         if (password == null || password.length() < 8) {
 
             throw new IllegalArgumentException(
-                    "La password deve avere almeno 8 caratteri."
-            );
+                    "La password deve avere almeno 8 caratteri.");
         }
     }
 }

@@ -465,10 +465,9 @@ function ScreeningTimeline({ screenings }) {
                                     key={screening.id}
 
                                     className={
-                                        `react-screening-card ${
-                                            screening.status === "CANCELLED"
-                                                ? "is-cancelled"
-                                                : ""
+                                        `react-screening-card ${screening.status === "CANCELLED"
+                                            ? "is-cancelled"
+                                            : ""
                                         }`
                                     }
                                 >
@@ -524,8 +523,7 @@ function ScreeningTimeline({ screenings }) {
                                             <span
 
                                                 className={
-                                                    `react-status ${
-                                                        screening.status.toLowerCase()
+                                                    `react-status ${screening.status.toLowerCase()
                                                     }`
                                                 }
                                             >
@@ -1442,110 +1440,110 @@ export default function App() {
                     {/* NESSUN FESTIVAL */}
 
                     {!festivalLoading &&
-                     festivals.length === 0 &&
-                     !error && (
+                        festivals.length === 0 &&
+                        !error && (
 
-                        <div className="react-empty">
+                            <div className="react-empty">
 
-                            <h3>
+                                <h3>
 
-                                Nessun festival disponibile.
+                                    Nessun festival disponibile.
 
-                            </h3>
+                                </h3>
 
-                        </div>
+                            </div>
 
-                    )}
+                        )}
 
 
 
                     {/* PROGRAMMA */}
 
                     {!loading &&
-                     !festivalLoading &&
-                     !error &&
-                     festivals.length > 0 && (
+                        !festivalLoading &&
+                        !error &&
+                        festivals.length > 0 && (
 
-                        <>
-
-
-                            {/* FILTRI */}
-
-                            <ProgramFilters
-
-                                screenings={screenings}
-
-                                search={search}
-                                setSearch={setSearch}
-
-                                date={date}
-                                setDate={setDate}
-
-                                roomId={roomId}
-                                setRoomId={setRoomId}
-
-                                showCancelled={showCancelled}
-                                setShowCancelled={setShowCancelled}
-
-                                onReset={resetFilters}
-
-                            />
+                            <>
 
 
+                                {/* FILTRI */}
 
-                            {/* INTESTAZIONE */}
+                                <ProgramFilters
 
-                            <div className="react-section-heading">
+                                    screenings={screenings}
 
-                                <span className="react-eyebrow">
+                                    search={search}
+                                    setSearch={setSearch}
 
-                                    ✦ THE FILM PROGRAM
+                                    date={date}
+                                    setDate={setDate}
 
-                                </span>
+                                    roomId={roomId}
+                                    setRoomId={setRoomId}
 
+                                    showCancelled={showCancelled}
+                                    setShowCancelled={setShowCancelled}
 
-                                <h2>
+                                    onReset={resetFilters}
 
-                                    Il programma ufficiale.
-
-                                </h2>
-
-
-                                <p>
-
-                                    {filteredScreenings.length}
-
-                                    {" "}
-
-                                    proiezioni visualizzate
-
-                                </p>
-
-                            </div>
+                                />
 
 
 
-                            {/* TIMELINE */}
+                                {/* INTESTAZIONE */}
 
-                            <ScreeningTimeline
+                                <div className="react-section-heading">
 
-                                screenings={filteredScreenings}
+                                    <span className="react-eyebrow">
 
-                            />
+                                        ✦ THE FILM PROGRAM
+
+                                    </span>
+
+
+                                    <h2>
+
+                                        Il programma ufficiale.
+
+                                    </h2>
+
+
+                                    <p>
+
+                                        {filteredScreenings.length}
+
+                                        {" "}
+
+                                        proiezioni visualizzate
+
+                                    </p>
+
+                                </div>
 
 
 
-                            {/* STATISTICHE */}
+                                {/* TIMELINE */}
 
-                            <ProgramStatistics
+                                <ScreeningTimeline
 
-                                screenings={filteredScreenings}
+                                    screenings={filteredScreenings}
 
-                            />
+                                />
 
-                        </>
 
-                    )}
+
+                                {/* STATISTICHE */}
+
+                                <ProgramStatistics
+
+                                    screenings={filteredScreenings}
+
+                                />
+
+                            </>
+
+                        )}
 
                 </div>
 

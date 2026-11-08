@@ -19,23 +19,16 @@ import jakarta.validation.Valid;
 import it.uniroma3.siw.siwcinefestival.dto.RegistrationForm;
 import it.uniroma3.siw.siwcinefestival.service.UserService;
 
-
 @Controller
 public class AuthController {
 
     private final UserService userService;
 
-
     public AuthController(UserService userService) {
         this.userService = userService;
     }
 
-
-    /*
-     * =====================================================
-     * PAGINA LOGIN
-     * =====================================================
-     *
+    /*PAGINA LOGIN
      * URL:
      * GET /login
      *
@@ -57,12 +50,7 @@ public class AuthController {
         return "login";
     }
 
-
-    /*
-     * =====================================================
-     * PAGINA REGISTRAZIONE
-     * =====================================================
-     *
+    /*PAGINA REGISTRAZIONE
      * URL:
      * GET /register
      */
@@ -82,18 +70,12 @@ public class AuthController {
 
         model.addAttribute(
                 "registrationForm",
-                new RegistrationForm()
-        );
+                new RegistrationForm());
 
         return "register";
     }
 
-
-    /*
-     * =====================================================
-     * REGISTRAZIONE UTENTE
-     * =====================================================
-     *
+    /* REGISTRAZIONE UTENTE
      * URL:
      * POST /register
      *
@@ -105,14 +87,9 @@ public class AuthController {
     @PostMapping("/register")
     public String register(
 
-            @Valid
-            @ModelAttribute("registrationForm")
-            RegistrationForm form,
-
+            @Valid @ModelAttribute("registrationForm") RegistrationForm form,
             BindingResult bindingResult,
-
             Principal principal,
-
             RedirectAttributes redirectAttributes) {
 
         /*
@@ -125,7 +102,6 @@ public class AuthController {
             return "redirect:/";
         }
 
-
         /*
          * Controlliamo gli errori rilevati
          * dalle annotazioni del DTO.
@@ -133,14 +109,15 @@ public class AuthController {
          * Esempi:
          *
          * @NotBlank
+         * 
          * @Email
+         * 
          * @Size
          */
 
         if (bindingResult.hasErrors()) {
             return "register";
         }
-
 
         try {
 
@@ -155,9 +132,7 @@ public class AuthController {
             userService.register(
                     form.getUsername(),
                     form.getEmail(),
-                    form.getPassword()
-            );
-
+                    form.getPassword());
 
             /*
              * Registrazione completata.
@@ -168,13 +143,12 @@ public class AuthController {
 
             redirectAttributes.addFlashAttribute(
                     "successMessage",
-                    "Registrazione completata! Ora puoi accedere."
-            );
+                    "Registrazione completata! Ora puoi accedere.");
 
             return "redirect:/login";
 
         } catch (IllegalArgumentException
-                 | IllegalStateException ex) {
+                | IllegalStateException ex) {
 
             /*
              * Il Service ha rilevato
@@ -183,8 +157,7 @@ public class AuthController {
 
             bindingResult.reject(
                     "registrationError",
-                    ex.getMessage()
-            );
+                    ex.getMessage());
 
             return "register";
 
@@ -198,8 +171,7 @@ public class AuthController {
 
             bindingResult.reject(
                     "registrationError",
-                    "Username o email già utilizzati."
-            );
+                    "Username o email già utilizzati.");
 
             return "register";
         }

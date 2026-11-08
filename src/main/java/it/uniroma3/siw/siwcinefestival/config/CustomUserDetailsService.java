@@ -13,101 +13,70 @@ import it.uniroma3.siw.siwcinefestival.model.User;
 
 import it.uniroma3.siw.siwcinefestival.repository.UserRepository;
 
-
 @Service
 public class CustomUserDetailsService
-        implements UserDetailsService {
+                implements UserDetailsService {
 
+        private final UserRepository userRepository;
 
-    private final UserRepository userRepository;
+        public CustomUserDetailsService(
+                        UserRepository userRepository) {
 
-
-    public CustomUserDetailsService(
-            UserRepository userRepository) {
-
-        this.userRepository = userRepository;
-    }
-
-
-    /*
-     * =====================================================
-     * CARICAMENTO UTENTE
-     * =====================================================
-     *
-     * Spring Security richiama
-     * automaticamente questo metodo
-     * durante l'autenticazione.
-     */
-
-    @Override
-    @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(
-            String username)
-            throws UsernameNotFoundException {
-
-
-        /*
-         * Controlliamo che lo username
-         * sia stato inserito.
-         */
-
-        if (username == null || username.isBlank()) {
-
-            throw new UsernameNotFoundException(
-                    "Username non valido."
-            );
+                this.userRepository = userRepository;
         }
 
-
-        /*
-         * Normalizziamo lo username.
-         *
-         * Esempio:
-         *
-         * Mario -> mario
-         * MARIO -> mario
+        /* CARICAMENTO UTENTE
+         * Spring Security richiama
+         * automaticamente questo metodo
+         * durante l'autenticazione.
          */
 
-        String normalizedUsername =
-                username.trim()
-                        .toLowerCase(Locale.ROOT);
+        @Override
+        @Transactional(readOnly = true)
+        public UserDetails loadUserByUsername(
+                        String username)
+                        throws UsernameNotFoundException {
 
+                /*
+                 * Controllo che lo username sia stato inserito.
+                 */
 
-        /*
-         * Recuperiamo l'utente
-         * dal database PostgreSQL.
-         */
+                if (username == null || username.isBlank()) {
 
-        User user = userRepository
-                .findByUsername(normalizedUsername)
+                        throw new UsernameNotFoundException(
+                                        "Username non valido.");
+                }
 
-                .orElseThrow(() ->
-                        new UsernameNotFoundException(
-                                "Utente non trovato."
-                        )
-                );
+                /*
+                 * Normalizziamo lo username.
+                 */
 
+                String normalizedUsername = username.trim()
+                                .toLowerCase(Locale.ROOT);
 
-        /*
-         * Convertiamo la nostra entità User
-         * in un oggetto UserDetails.
-         *
-         * Spring Security utilizzerà:
-         *
-         * - username
-         * - password cifrata
-         * - ruolo
-         */
+                /*
+                 * Recupero l'utente dal database PostgreSQL.
+                 */
 
-        return org.springframework.security.core.userdetails.User
+                User user = userRepository
+                                .findByUsername(normalizedUsername)
 
-                .withUsername(user.getUsername())
+                                .orElseThrow(() -> new UsernameNotFoundException(
+                                                "Utente non trovato."));
 
-                .password(user.getPassword())
+                /*
+                 * Convertiamo l'entità User
+                 * in un oggetto UserDetails.
+                 *
+                 * Spring Security utilizzerà: username, password cifrata, ruolo
+                 */
 
-                .roles(user.getRole().name())
+                return org.springframework.security.core.userdetails.User
 
-                .build();
-    }
+                                .withUsername(user.getUsername())
+                                .password(user.getPassword())
+                                .roles(user.getRole().name())
+                                .build();
+        }
 
 }

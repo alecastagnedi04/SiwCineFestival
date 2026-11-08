@@ -14,23 +14,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import org.springframework.security.web.SecurityFilterChain;
 
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
 
-
-    /*
-     * =====================================================
-     * PASSWORD ENCODER
-     * =====================================================
+    /* PASSWORD ENCODER
+     * Le password non vengono salvate in chiaro nel database.
      *
-     * Le password non vengono salvate
-     * in chiaro nel database.
-     *
-     * Usiamo BCrypt per calcolare
-     * un hash sicuro della password.
+     * Uso BCrypt per calcolare un hash sicuro della password.
      */
 
     @Bean
@@ -39,14 +31,8 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-
-    /*
-     * =====================================================
-     * SECURITY FILTER CHAIN
-     * =====================================================
-     *
+    /* SECURITY FILTER CHAIN
      * Definisce:
-     *
      * - Pagine pubbliche
      * - Pagine riservate agli utenti
      * - Pagine riservate agli ADMIN
@@ -60,162 +46,124 @@ public class SecurityConfig {
 
         http
 
-            /*
-             * =================================================
-             * AUTORIZZAZIONI
-             * =================================================
-             */
+                /* AUTORIZZAZIONI */
 
-            .authorizeHttpRequests(auth -> auth
+                .authorizeHttpRequests(auth -> auth
 
-                /*
-                 * Risorse statiche pubbliche.
-                 */
+                        /*
+                         * Risorse statiche pubbliche.
+                         */
 
-                .requestMatchers(
-                    "/css/**",
-                    "/js/**",
-                    "/images/**",
-                    "/react-program/**",
-                    "/favicon.ico",
-                    "/error"
-                ).permitAll()
+                        .requestMatchers(
+                                "/css/**",
+                                "/js/**",
+                                "/images/**",
+                                "/react-program/**",
+                                "/favicon.ico",
+                                "/error")
+                        .permitAll()
 
+                        /*
+                         * Le immagini caricate possono
+                         * essere visualizzate da tutti.
+                         */
 
-                /*
- * Le immagini caricate possono
- * essere visualizzate da tutti.
- */
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/media/**")
+                        .permitAll()
 
-.requestMatchers(
-    HttpMethod.GET,
-    "/media/**"
-).permitAll()
+                        /*
+                         * Pagine pubbliche.
+                         */
 
+                        .requestMatchers(
+                                HttpMethod.GET,
 
-                /*
-                 * Pagine pubbliche.
+                                "/",
+                                "/login",
+                                "/register",
+
+                                "/festivals",
+                                "/festivals/**",
+
+                                "/films/*",
+
+                                "/films/*/reviews",
+
+                                "/api/festivals",
+                                "/api/festivals/*/screenings"
+
+                        ).permitAll()
+
+                        /*
+                         * Registrazione pubblica.
+                         */
+
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/register")
+                        .permitAll()
+
+                        /*
+                         * Tutte le funzionalità ADMIN.
+                         */
+
+                        .requestMatchers(
+                                "/admin",
+                                "/admin/**")
+                        .hasRole("ADMIN")
+
+                        /*
+                         * Creazione delle recensioni.
+                         */
+
+                        .requestMatchers(
+                                "/films/*/reviews")
+                        .authenticated()
+
+                        /*
+                         * Modifica, eliminazione e
+                         * form delle recensioni.
+                         */
+
+                        .requestMatchers(
+                                "/films/*/reviews/**")
+                        .authenticated()
+
+                        /*
+                         * Tutte le altre richieste
+                         * richiedono autenticazione.
+                         */
+
+                        .anyRequest().authenticated())
+
+                /* LOGIN
+                 * GET /login:
+                 * mostra la pagina Thymeleaf.
                  *
-                 * Limitiamo questi permessi
-                 * alle richieste GET.
+                 * POST /login:
+                 * elaborato da Spring Security.
                  */
 
-                .requestMatchers(
-    HttpMethod.GET,
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .defaultSuccessUrl("/", true)
+                        .failureUrl("/login?error")
+                        .permitAll())
 
-    "/",
-    "/login",
-    "/register",
-
-    "/festivals",
-    "/festivals/**",
-
-    "/films/*",
-
-    "/films/*/reviews",
-
-    "/api/festivals",
-    "/api/festivals/*/screenings"
-
-).permitAll()
-
-
-                /*
-                 * Registrazione pubblica.
+                /* LOGOUT
+                 * Il logout viene effettuato
+                 * attraverso una richiesta POST.
                  */
 
-                .requestMatchers(
-                    HttpMethod.POST,
-                    "/register"
-                ).permitAll()
-
-
-                /*
-                 * Tutte le funzionalità ADMIN.
-                 */
-
-                .requestMatchers(
-                    "/admin",
-                    "/admin/**"
-                ).hasRole("ADMIN")
-
-
-                /*
-                 * Creazione delle recensioni.
-                 */
-
-                .requestMatchers(
-                    "/films/*/reviews"
-                ).authenticated()
-
-
-                /*
-                 * Modifica, eliminazione e
-                 * form delle recensioni.
-                 */
-
-                .requestMatchers(
-                    "/films/*/reviews/**"
-                ).authenticated()
-
-
-                /*
-                 * Tutte le altre richieste
-                 * richiedono autenticazione.
-                 */
-
-                .anyRequest().authenticated()
-            )
-
-
-            /*
-             * =================================================
-             * LOGIN
-             * =================================================
-             *
-             * GET /login:
-             * mostra la pagina Thymeleaf.
-             *
-             * POST /login:
-             * elaborato da Spring Security.
-             */
-
-            .formLogin(form -> form
-
-                .loginPage("/login")
-
-                .loginProcessingUrl("/login")
-
-                .defaultSuccessUrl("/", true)
-
-                .failureUrl("/login?error")
-
-                .permitAll()
-            )
-
-
-            /*
-             * =================================================
-             * LOGOUT
-             * =================================================
-             *
-             * Il logout viene effettuato
-             * attraverso una richiesta POST.
-             */
-
-            .logout(logout -> logout
-
-                .logoutUrl("/logout")
-
-                .logoutSuccessUrl("/login?logout")
-
-                .invalidateHttpSession(true)
-
-                .deleteCookies("JSESSIONID")
-
-                .permitAll()
-            );
-
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                        .permitAll());
 
         /*
          * La protezione CSRF rimane

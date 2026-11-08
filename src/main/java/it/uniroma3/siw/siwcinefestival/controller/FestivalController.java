@@ -16,119 +16,95 @@ import it.uniroma3.siw.siwcinefestival.model.Festival;
 import it.uniroma3.siw.siwcinefestival.service.FestivalService;
 import it.uniroma3.siw.siwcinefestival.service.ScreeningService;
 
-
 @Controller
 @RequestMapping("/festivals")
 public class FestivalController {
 
-    private final FestivalService festivalService;
-    private final ScreeningService screeningService;
+        private final FestivalService festivalService;
+        private final ScreeningService screeningService;
 
+        public FestivalController(
+                        FestivalService festivalService,
+                        ScreeningService screeningService) {
 
-    public FestivalController(
-            FestivalService festivalService,
-            ScreeningService screeningService) {
+                this.festivalService = festivalService;
+                this.screeningService = screeningService;
+        }
 
-        this.festivalService = festivalService;
-        this.screeningService = screeningService;
-    }
-
-
-    /*
-     * =====================================================
-     * ELENCO FESTIVAL
-     * =====================================================
-     *
-     * URL:
-     * GET /festivals
-     *
-     * Pagina pubblica.
-     */
-    @GetMapping
-    public String listFestivals(Model model) {
-
-        model.addAttribute(
-                "festivals",
-                festivalService.findAll()
-        );
-
-        return "festivals/list";
-    }
-
-
-    /*
-     * =====================================================
-     * DETTAGLIO FESTIVAL
-     * =====================================================
-     *
-     * URL:
-     * GET /festivals/{id}
-     *
-     * Esempio:
-     * GET /festivals/1
-     */
-    @GetMapping("/{id}")
-    public String showFestival(
-
-            @PathVariable("id") Long id,
-
-            Model model) {
-
-        /*
-         * Recuperiamo il festival
-         * caricando anche i film
-         * tramite EntityGraph.
-         */
-
-        Festival festival = festivalService
-                .findByIdWithFilms(id)
-                .orElseThrow(() ->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                "Festival non trovato."
-                        )
-                );
-
-
-        /*
-         * Recuperiamo il programma
-         * delle proiezioni.
+        /*ELENCO FESTIVAL
+         * URL:
+         * GET /festivals
          *
-         * Il Repository utilizza
-         * EntityGraph per caricare
-         * Film e CinemaRoom.
+         * Pagina pubblica.
          */
+        @GetMapping
+        public String listFestivals(Model model) {
 
-        model.addAttribute(
-                "screenings",
-                screeningService.findProgramByFestivalId(id)
-        );
+                model.addAttribute(
+                                "festivals",
+                                festivalService.findAll());
 
+                return "festivals/list";
+        }
 
-        /*
-         * Dati del festival.
-         */
-
-        model.addAttribute(
-                "festival",
-                festival
-        );
-
-
-        /*
-         * Film partecipanti.
+        /*DETTAGLIO FESTIVAL
+         * URL:
+         * GET /festivals/{id}
          *
-         * La collezione è già stata
-         * caricata tramite EntityGraph.
+         * Esempio:
+         * GET /festivals/1
          */
+        @GetMapping("/{id}")
+        public String showFestival(
 
-        model.addAttribute(
-                "films",
-                festival.getFilms()
-        );
+                        @PathVariable("id") Long id,
+                        Model model) {
 
+                /*
+                 * Recuperiamo il festival
+                 * caricando anche i film
+                 * tramite EntityGraph.
+                 */
 
-        return "festivals/show";
-    }
+                Festival festival = festivalService
+                                .findByIdWithFilms(id)
+                                .orElseThrow(() -> new ResponseStatusException(
+                                                HttpStatus.NOT_FOUND,
+                                                "Festival non trovato."));
+
+                /*
+                 * Recuperiamo il programma
+                 * delle proiezioni.
+                 *
+                 * Il Repository utilizza
+                 * EntityGraph per caricare
+                 * Film e CinemaRoom.
+                 */
+
+                model.addAttribute(
+                                "screenings",
+                                screeningService.findProgramByFestivalId(id));
+
+                /*
+                 * Dati del festival.
+                 */
+
+                model.addAttribute(
+                                "festival",
+                                festival);
+
+                /*
+                 * Film partecipanti.
+                 *
+                 * La collezione è già stata
+                 * caricata tramite EntityGraph.
+                 */
+
+                model.addAttribute(
+                                "films",
+                                festival.getFilms());
+
+                return "festivals/show";
+        }
 
 }

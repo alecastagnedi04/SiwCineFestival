@@ -12,51 +12,28 @@ import org.springframework.data.repository.query.Param;
 
 import it.uniroma3.siw.siwcinefestival.model.CinemaRoom;
 
-
 public interface CinemaRoomRepository
         extends JpaRepository<CinemaRoom, Long> {
 
-
-    /*
-     * =====================================================
-     * ELENCO SALE
-     * =====================================================
-     *
-     * Restituisce tutte le sale
-     * ordinate per nome.
+    /* ELENCO SALE
+     * Restituisce tutte le sale ordinate per nome.
      */
     List<CinemaRoom> findAllByOrderByNameAsc();
 
-
-
-    /*
-     * =====================================================
-     * RECUPERO SALA CON LOCK
-     * =====================================================
-     *
-     * PESSIMISTIC_WRITE permette
-     * di ottenere un lock sulla sala
-     * durante una transazione.
-     *
+    /* RECUPERO SALA CON LOCK
+     * PESSIMISTIC_WRITE permette di ottenere un lock sulla sala durante una transazione.
+     * Il lock interviene quando c'è la possibilità che due proiezioni si sovrappongano nella stessa sala.
+     * In questo caso, una transazione dovrà attendere che l'altra termini prima di poter procedere.
      * Sarà utilizzato dal ScreeningService
-     * quando programmiamo o modifichiamo
-     * una proiezione.
-     *
-     * Due transazioni che tentano di
-     * programmare contemporaneamente
-     * nella stessa sala dovranno
-     * coordinarsi attraverso il lock.
      */
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""
-        SELECT r
-        FROM CinemaRoom r
-        WHERE r.id = :roomId
-        """)
+            SELECT r
+            FROM CinemaRoom r
+            WHERE r.id = :roomId
+            """)
     Optional<CinemaRoom> findByIdForUpdate(
 
-            @Param("roomId")
-            Long roomId
-    );
+            @Param("roomId") Long roomId);
 
 }

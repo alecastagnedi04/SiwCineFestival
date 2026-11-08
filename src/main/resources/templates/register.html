@@ -5,278 +5,230 @@
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Registrati | SiwCineFestival</title>
 
-    <link
-        rel="stylesheet"
-        th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 
 </head>
 
 <body>
 
 
-<!-- NAVBAR -->
+    <!-- NAVBAR -->
 
-<div th:replace="~{fragments/navbar :: navbar}"></div>
-
-
-
-<!-- REGISTRATION SECTION -->
-
-<section class="auth-section">
-
-
-    <div class="auth-card animate-up">
-
-        <div class="auth-content">
-
-
-            <div class="auth-symbol">
-
-                ✦
-
-            </div>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
 
 
 
-            <div class="center">
+    <!-- REGISTRATION SECTION -->
 
-                <span class="eyebrow">
-
-                    Join the Experience
-
-                </span>
-
-            </div>
+    <section class="auth-section">
 
 
+        <div class="auth-card animate-up">
 
-            <h1 class="auth-title">
+            <div class="auth-content">
 
-                Entra nella
 
-                <em class="gold-text">
-                    leggenda.
-                </em>
+                <div class="auth-symbol">
 
-            </h1>
+                    ✦
+
+                </div>
 
 
 
-            <p class="auth-subtitle">
+                <div class="center">
 
-                Crea il tuo account,
-                scopri i festival cinematografici
-                e condividi la tua passione
-                attraverso le recensioni.
+                    <span class="eyebrow">
 
-            </p>
+                        Join the Experience
 
+                    </span>
 
-
-            <!-- REGISTRATION FORM -->
-
-            <form
-                th:action="@{/register}"
-                th:object="${registrationForm}"
-                method="post">
+                </div>
 
 
 
-                <!-- ERRORI GENERALI -->
+                <h1 class="auth-title">
 
-                <div
-                    class="alert alert-error"
-                    th:if="${#fields.hasGlobalErrors()}">
+                    Entra nella
 
-                    <div
-                        th:each="err : ${#fields.globalErrors()}"
-                        th:text="${err}">
+                    <em class="gold-text">
+                        leggenda.
+                    </em>
 
-                        Errore di registrazione.
+                </h1>
+
+
+
+                <p class="auth-subtitle">
+
+                    Crea il tuo account,
+                    scopri i festival cinematografici
+                    e condividi la tua passione
+                    attraverso le recensioni.
+
+                </p>
+
+
+
+                <!-- REGISTRATION FORM -->
+
+                <form th:action="@{/register}" th:object="${registrationForm}" method="post">
+
+
+
+                    <!-- ERRORI GENERALI -->
+
+                    <div class="alert alert-error" th:if="${#fields.hasGlobalErrors()}">
+
+                        <div th:each="err : ${#fields.globalErrors()}" th:text="${err}">
+
+                            Errore di registrazione.
+
+                        </div>
 
                     </div>
 
-                </div>
+
+
+                    <!-- USERNAME -->
+
+                    <div class="form-group">
+
+                        <label for="username" class="form-label">
+
+                            Username
+
+                        </label>
+
+
+                        <input id="username" type="text" th:field="*{username}" class="form-control"
+                            placeholder="Scegli uno username" autocomplete="username" minlength="3" maxlength="50"
+                            required>
+
+
+                        <span class="form-error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">
+
+                            Errore username
+
+                        </span>
+
+                    </div>
 
 
 
-                <!-- USERNAME -->
+                    <!-- EMAIL -->
 
-                <div class="form-group">
+                    <div class="form-group">
 
-                    <label
-                        for="username"
-                        class="form-label">
+                        <label for="email" class="form-label">
 
-                        Username
+                            Email
 
-                    </label>
+                        </label>
 
 
-                    <input
-                        id="username"
-                        type="text"
-                        th:field="*{username}"
-                        class="form-control"
-                        placeholder="Scegli uno username"
-                        autocomplete="username"
-                        minlength="3"
-                        maxlength="50"
-                        required>
+                        <input id="email" type="email" th:field="*{email}" class="form-control"
+                            placeholder="nome@email.com" autocomplete="email" required>
 
 
-                    <span
-                        class="form-error"
-                        th:if="${#fields.hasErrors('username')}"
-                        th:errors="*{username}">
+                        <span class="form-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">
 
-                        Errore username
+                            Errore email
 
-                    </span>
+                        </span>
 
-                </div>
+                    </div>
 
 
 
-                <!-- EMAIL -->
+                    <!-- PASSWORD -->
 
-                <div class="form-group">
+                    <div class="form-group">
 
-                    <label
-                        for="email"
-                        class="form-label">
+                        <label for="password" class="form-label">
 
-                        Email
+                            Password
 
-                    </label>
+                        </label>
 
 
-                    <input
-                        id="email"
-                        type="email"
-                        th:field="*{email}"
-                        class="form-control"
-                        placeholder="nome@email.com"
-                        autocomplete="email"
-                        required>
+                        <input id="password" name="password" type="password" class="form-control"
+                            placeholder="Almeno 8 caratteri" autocomplete="new-password" minlength="8" required>
 
 
-                    <span
-                        class="form-error"
-                        th:if="${#fields.hasErrors('email')}"
-                        th:errors="*{email}">
+                        <span class="form-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">
 
-                        Errore email
+                            Errore password
 
-                    </span>
+                        </span>
 
-                </div>
+                    </div>
 
 
 
-                <!-- PASSWORD -->
+                    <!-- SUBMIT -->
 
-                <div class="form-group">
+                    <button type="submit" class="btn btn-gold btn-full" style="margin-top: 15px;">
 
-                    <label
-                        for="password"
-                        class="form-label">
+                        Crea il tuo account ↗
 
-                        Password
+                    </button>
 
-                    </label>
-
-
-                    <input
-                        id="password"
-                        name="password"
-                        type="password"
-                        class="form-control"
-                        placeholder="Almeno 8 caratteri"
-                        autocomplete="new-password"
-                        minlength="8"
-                        required>
-
-
-                    <span
-                        class="form-error"
-                        th:if="${#fields.hasErrors('password')}"
-                        th:errors="*{password}">
-
-                        Errore password
-
-                    </span>
-
-                </div>
+                </form>
 
 
 
-                <!-- SUBMIT -->
-
-                <button
-                    type="submit"
-                    class="btn btn-gold btn-full"
-                    style="margin-top: 15px;">
-
-                    Crea il tuo account ↗
-
-                </button>
-
-            </form>
+                <div class="gold-divider"></div>
 
 
 
-            <div class="gold-divider"></div>
+                <p class="form-footer">
+
+                    Hai già un account?
+
+                    <a th:href="@{/login}">
+
+                        Accedi
+
+                    </a>
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
 
 
 
-            <p class="form-footer">
+    <!-- FOOTER -->
 
-                Hai già un account?
+    <footer class="site-footer">
 
-                <a th:href="@{/login}">
+        <div class="container footer-inner">
 
-                    Accedi
+            <div class="footer-brand">
+                ✦ SiwCineFestival
+            </div>
 
-                </a>
-
+            <p class="footer-copy">
+                THE MAGIC STARTS HERE
             </p>
 
+            <div class="footer-decoration">
+                ✦ ✦ ✦
+            </div>
+
         </div>
 
-    </div>
+    </footer>
 
-</section>
+    <body class="auth-page">
 
-
-
-<!-- FOOTER -->
-
-<footer class="site-footer">
-
-    <div class="container footer-inner">
-
-        <div class="footer-brand">
-            ✦ SiwCineFestival
-        </div>
-
-        <p class="footer-copy">
-            THE MAGIC STARTS HERE
-        </p>
-
-        <div class="footer-decoration">
-            ✦ ✦ ✦
-        </div>
-
-    </div>
-
-</footer>
-
-<body class="auth-page">
 </html>

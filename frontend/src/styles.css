@@ -23,7 +23,7 @@
 
     --muted: #baadb0;
 
-    --border: rgba(213,178,112,.2);
+    --border: rgba(213, 178, 112, .2);
 
     --heading: 'Cormorant Garamond', Georgia, serif;
 
@@ -78,11 +78,9 @@ a {
     min-height: 100vh;
 
     background:
-        radial-gradient(
-            ellipse at 85% 5%,
-            rgba(100,29,50,.24),
-            transparent 35%
-        ),
+        radial-gradient(ellipse at 85% 5%,
+            rgba(100, 29, 50, .24),
+            transparent 35%),
         var(--background);
 }
 
@@ -117,7 +115,7 @@ a {
 
     border-bottom: 1px solid var(--border);
 
-    background: rgba(16,11,16,.95);
+    background: rgba(16, 11, 16, .95);
 }
 
 
@@ -189,11 +187,9 @@ a {
     border-bottom: 1px solid var(--border);
 
     background:
-        radial-gradient(
-            ellipse at center,
-            rgba(100,29,50,.3),
-            transparent 65%
-        );
+        radial-gradient(ellipse at center,
+            rgba(100, 29, 50, .3),
+            transparent 65%);
 }
 
 
@@ -278,11 +274,9 @@ a {
     border: 1px solid var(--border);
 
     background:
-        linear-gradient(
-            120deg,
-            rgba(100,29,50,.22),
-            transparent
-        ),
+        linear-gradient(120deg,
+            rgba(100, 29, 50, .22),
+            transparent),
         var(--surface);
 }
 
@@ -552,11 +546,9 @@ a {
     border-left: 3px solid var(--gold);
 
     background:
-        linear-gradient(
-            110deg,
-            rgba(100,29,50,.2),
-            transparent
-        ),
+        linear-gradient(110deg,
+            rgba(100, 29, 50, .2),
+            transparent),
         var(--surface);
 
     transition: .25s;
@@ -591,7 +583,7 @@ a {
 
     padding: 15px;
 
-    background: rgba(16,11,16,.5);
+    background: rgba(16, 11, 16, .5);
 
     border: 1px solid var(--border);
 }

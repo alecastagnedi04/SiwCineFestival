@@ -10,19 +10,16 @@ import org.springframework.transaction.annotation.Transactional;
 import it.uniroma3.siw.siwcinefestival.model.CinemaRoom;
 import it.uniroma3.siw.siwcinefestival.repository.CinemaRoomRepository;
 
-
 @Service
 public class CinemaRoomService {
 
     private final CinemaRoomRepository cinemaRoomRepository;
-
 
     public CinemaRoomService(
             CinemaRoomRepository cinemaRoomRepository) {
 
         this.cinemaRoomRepository = cinemaRoomRepository;
     }
-
 
     @Transactional(readOnly = true)
     public List<CinemaRoom> findAll() {
@@ -31,13 +28,11 @@ public class CinemaRoomService {
                 .findAllByOrderByNameAsc();
     }
 
-
     @Transactional(readOnly = true)
     public Optional<CinemaRoom> findById(Long id) {
 
         return cinemaRoomRepository.findById(id);
     }
-
 
     /*
      * CREAZIONE SALA
@@ -60,7 +55,6 @@ public class CinemaRoomService {
         return cinemaRoomRepository.save(room);
     }
 
-
     /*
      * MODIFICA SALA
      */
@@ -74,11 +68,8 @@ public class CinemaRoomService {
 
         CinemaRoom room = cinemaRoomRepository
                 .findById(roomId)
-                .orElseThrow(() ->
-                        new NoSuchElementException(
-                                "Sala non trovata."
-                        )
-                );
+                .orElseThrow(() -> new NoSuchElementException(
+                        "Sala non trovata."));
 
         validateRoom(name, address, capacity);
 
@@ -88,7 +79,6 @@ public class CinemaRoomService {
 
         return cinemaRoomRepository.save(room);
     }
-
 
     /*
      * VALIDAZIONE
@@ -102,22 +92,19 @@ public class CinemaRoomService {
         if (name == null || name.isBlank()) {
 
             throw new IllegalArgumentException(
-                    "Il nome della sala è obbligatorio."
-            );
+                    "Il nome della sala è obbligatorio.");
         }
 
         if (address == null || address.isBlank()) {
 
             throw new IllegalArgumentException(
-                    "L'indirizzo è obbligatorio."
-            );
+                    "L'indirizzo è obbligatorio.");
         }
 
         if (capacity == null || capacity <= 0) {
 
             throw new IllegalArgumentException(
-                    "La capienza deve essere maggiore di zero."
-            );
+                    "La capienza deve essere maggiore di zero.");
         }
     }
 }

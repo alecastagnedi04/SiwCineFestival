@@ -30,166 +30,129 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import it.uniroma3.siw.siwcinefestival.service.ImageService;
 
-
 @Controller
 public class ImageController {
 
-    private final ImageService imageService;
+        private final ImageService imageService;
 
+        public ImageController(
+                        ImageService imageService) {
 
-    public ImageController(
-            ImageService imageService) {
+                this.imageService = imageService;
+        }
 
-        this.imageService = imageService;
-    }
-
-
-    /*
-     * =====================================================
-     * UPLOAD IMMAGINI
-     * =====================================================
-     *
-     * Soltanto ADMIN.
-     */
-
-    @PostMapping("/admin/media/{type}/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public String uploadImage(
-
-            @PathVariable String type,
-
-            @PathVariable Long id,
-
-            @RequestParam("image")
-            MultipartFile image,
-
-            RedirectAttributes redirectAttributes) {
-
-
-        /*
-         * Determiniamo la pagina
-         * a cui tornare.
+        /*UPLOAD IMMAGINI
+         * Soltanto ADMIN.
          */
 
-        String redirectUrl = switch (type) {
+        @PostMapping("/admin/media/{type}/{id}")
+        @PreAuthorize("hasRole('ADMIN')")
+        public String uploadImage(
 
-            case "film" ->
-                    "/admin/films/" + id + "/edit";
+                        @PathVariable String type,
+                        @PathVariable Long id,
+                        @RequestParam("image") MultipartFile image,
+                        RedirectAttributes redirectAttributes) {
 
-            case "actor" ->
-                    "/admin/actors/" + id + "/edit";
+                /*
+                 * Determiniamo la pagina
+                 * a cui tornare.
+                 */
 
-            case "festival" ->
-                    "/admin/festivals/" + id + "/edit";
+                String redirectUrl = switch (type) {
 
-            default -> throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "Tipo di immagine non valido."
-            );
-        };
+                        case "film" ->
+                                "/admin/films/" + id + "/edit";
 
+                        case "actor" ->
+                                "/admin/actors/" + id + "/edit";
 
-        try {
+                        case "festival" ->
+                                "/admin/festivals/" + id + "/edit";
 
-            /*
-             * Deleghiamo al Service.
-             */
+                        default -> throw new ResponseStatusException(
+                                        HttpStatus.NOT_FOUND,
+                                        "Tipo di immagine non valido.");
+                };
 
-            switch (type) {
+                try {
 
-                case "film" ->
-                        imageService.uploadFilmImage(
-                                id,
-                                image
-                        );
+                        /*
+                         * Deleghiamo al Service.
+                         */
 
-                case "actor" ->
-                        imageService.uploadActorImage(
-                                id,
-                                image
-                        );
+                        switch (type) {
 
-                case "festival" ->
-                        imageService.uploadFestivalImage(
-                                id,
-                                image
-                        );
+                                case "film" ->
+                                        imageService.uploadFilmImage(
+                                                        id,
+                                                        image);
 
-                default -> throw new IllegalArgumentException(
-                        "Tipo non valido."
-                );
-            }
+                                case "actor" ->
+                                        imageService.uploadActorImage(
+                                                        id,
+                                                        image);
 
+                                case "festival" ->
+                                        imageService.uploadFestivalImage(
+                                                        id,
+                                                        image);
 
-            redirectAttributes.addFlashAttribute(
-                    "successMessage",
-                    "Immagine caricata con successo!"
-            );
+                                default -> throw new IllegalArgumentException(
+                                                "Tipo non valido.");
+                        }
 
-        } catch (
-                IllegalArgumentException
-                | NoSuchElementException
-                | UncheckedIOException ex
-        ) {
+                        redirectAttributes.addFlashAttribute(
+                                        "successMessage",
+                                        "Immagine caricata con successo!");
 
-            redirectAttributes.addFlashAttribute(
-                    "errorMessage",
-                    ex.getMessage()
-            );
+                } catch (
+                                IllegalArgumentException
+                                | NoSuchElementException
+                                | UncheckedIOException ex) {
+
+                        redirectAttributes.addFlashAttribute(
+                                        "errorMessage",
+                                        ex.getMessage());
+                }
+
+                return "redirect:" + redirectUrl;
         }
 
+        /* VISUALIZZAZIONE PUBBLICA */
 
-        return "redirect:" + redirectUrl;
-    }
+        @GetMapping("/media/{fileName:.+}")
+        public ResponseEntity<Resource> getImage(
 
+                        @PathVariable String fileName) {
 
-    /*
-     * =====================================================
-     * VISUALIZZAZIONE PUBBLICA
-     * =====================================================
-     */
+                try {
 
-    @GetMapping("/media/{fileName:.+}")
-    public ResponseEntity<Resource> getImage(
+                        Path path = imageService.getImagePath(fileName);
 
-            @PathVariable String fileName) {
+                        Resource resource = new FileSystemResource(path);
 
+                        if (!resource.exists()
+                                        || !resource.isReadable()) {
 
-        try {
+                                return ResponseEntity.notFound().build();
+                        }
 
-            Path path =
-                    imageService.getImagePath(fileName);
+                        MediaType mediaType = fileName.endsWith(".png")
 
+                                        ? MediaType.IMAGE_PNG
 
-            Resource resource =
-                    new FileSystemResource(path);
+                                        : MediaType.IMAGE_JPEG;
 
+                        return ResponseEntity.ok()
 
-            if (!resource.exists()
-                    || !resource.isReadable()) {
+                                        .contentType(mediaType)
 
-                return ResponseEntity.notFound().build();
-            }
+                                        .body(resource);
 
+                } catch (IllegalArgumentException ex) {
 
-            MediaType mediaType =
-                    fileName.endsWith(".png")
-
-                            ? MediaType.IMAGE_PNG
-
-                            : MediaType.IMAGE_JPEG;
-
-
-            return ResponseEntity.ok()
-
-                    .contentType(mediaType)
-
-                    .body(resource);
-
-
-        } catch (IllegalArgumentException ex) {
-
-            return ResponseEntity.notFound().build();
+                        return ResponseEntity.notFound().build();
+                }
         }
-    }
 }

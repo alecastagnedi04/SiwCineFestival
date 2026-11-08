@@ -5,382 +5,329 @@
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>
         Festival | SiwCineFestival
     </title>
 
-    <link
-        rel="stylesheet"
-        th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 
 </head>
 
 <body>
 
 
-<!-- =====================================================
+    <!-- =====================================================
      NAVBAR
      ===================================================== -->
 
-<div th:replace="~{fragments/navbar :: navbar}"></div>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
 
 
 
 
-<!-- =====================================================
+    <!-- =====================================================
      CATALOGO FESTIVAL
      ===================================================== -->
 
-<main class="section">
+    <main class="section">
 
-    <div class="container">
+        <div class="container">
 
 
-        <!-- INTESTAZIONE -->
+            <!-- INTESTAZIONE -->
 
-        <div class="section-header">
+            <div class="section-header">
 
-            <div>
+                <div>
 
-                <div class="section-label">
+                    <div class="section-label">
 
-                    ✦ Official Festival Selection
+                        ✦ Official Festival Selection
+
+                    </div>
+
+
+                    <h2 class="section-heading">
+
+                        Tutti i
+
+                        <span class="gold-text italic-text">
+
+                            festival.
+
+                        </span>
+
+                    </h2>
+
+
+                    <p class="section-description">
+
+                        Esplora le edizioni disponibili
+                        e trova il tuo prossimo evento
+                        cinematografico.
+
+                    </p>
 
                 </div>
 
 
-                <h2 class="section-heading">
+                <!-- CONTATORE -->
 
-                    Tutti i
+                <div class="meta-pill">
 
-                    <span class="gold-text italic-text">
+                    ✦ festival disponibili
 
-                        festival.
-
-                    </span>
-
-                </h2>
-
-
-                <p class="section-description">
-
-                    Esplora le edizioni disponibili
-                    e trova il tuo prossimo evento
-                    cinematografico.
-
-                </p>
+                </div>
 
             </div>
 
 
-            <!-- CONTATORE -->
 
-            <div class="meta-pill">
-
-                ✦
-
-                <span th:text="${#lists.size(festivals)}">
-                    0
-                </span>
-
-                festival disponibili
-
-            </div>
-
-        </div>
-
-
-
-        <!-- =================================================
+            <!-- =================================================
              RICERCA FESTIVAL
              ================================================= -->
 
-        <div
-            class="catalog-search"
-            th:if="${!festivals.isEmpty()}">
+            <div class="catalog-search" th:if="${!festivals.isEmpty()}">
 
-            <span class="catalog-search-icon">
-                ⌕
-            </span>
+                <span class="catalog-search-icon">
+                    ⌕
+                </span>
 
 
-            <input
-                type="search"
-                class="catalog-search-input"
-                placeholder="Cerca un festival per nome, città o anno..."
-                aria-label="Cerca festival"
-                data-search-input="all-festivals">
+                <input type="search" class="catalog-search-input"
+                    placeholder="Cerca un festival per nome, città o anno..." aria-label="Cerca festival"
+                    data-search-input="all-festivals">
 
 
-            <span
-                class="catalog-search-count"
-                data-search-count="all-festivals">
-            </span>
-
-        </div>
-
-
-
-        <!-- NESSUN RISULTATO DELLA RICERCA -->
-
-        <p
-            class="catalog-search-empty"
-            data-search-empty="all-festivals"
-            hidden>
-
-            Nessun festival corrisponde alla ricerca.
-
-        </p>
-
-
-
-        <!-- =================================================
-             GRIGLIA FESTIVAL
-             ================================================= -->
-
-        <div
-            class="festival-grid"
-            th:if="${!festivals.isEmpty()}">
-
-
-            <!-- SINGOLO FESTIVAL -->
-
-            <a
-                th:each="festival : ${festivals}"
-
-                th:href="@{/festivals/{id}(id=${festival.id})}"
-
-                class="festival-card"
-
-                th:classappend="${festival.imageFileName != null} ? 'has-cover' : ''"
-
-                data-search-item="all-festivals"
-
-                th:attr="data-search-text=${festival.name + ' ' + festival.city + ' ' + festival.year}">
-
-
-
-                <!-- ==========================================
-                     IMMAGINE DI COPERTINA
-                     ========================================== -->
-
-                <img
-                    th:if="${festival.imageFileName != null}"
-
-                    th:src="@{/media/{file}(file=${festival.imageFileName})}"
-
-                    th:alt="|Copertina di ${festival.name}|"
-
-                    class="uploaded-festival-cover"
-
-                    loading="lazy">
-
-
-
-                <!-- ==========================================
-                     PARTE SUPERIORE
-                     ========================================== -->
-
-                <div class="festival-card-top">
-
-
-                    <span
-                        class="festival-year"
-                        th:text="${festival.year}">
-
-                        2026
-
-                    </span>
-
-
-                    <span class="festival-tag">
-
-                        Official Selection
-
-                    </span>
-
-                </div>
-
-
-
-                <!-- ==========================================
-                     INFORMAZIONI
-                     ========================================== -->
-
-                <div class="festival-card-body">
-
-
-                    <!-- CITTÀ -->
-
-                    <div
-                        class="festival-city"
-                        th:text="${festival.city}">
-
-                        Venezia
-
-                    </div>
-
-
-
-                    <!-- NOME FESTIVAL -->
-
-                    <h3 th:text="${festival.name}">
-
-                        Festival del Cinema
-
-                    </h3>
-
-
-
-                    <!-- DATE -->
-
-                    <div class="festival-date">
-
-
-                        <span
-                            th:text="${#temporals.format(festival.startDate, 'dd MMM yyyy')}">
-                        </span>
-
-
-                        <span> — </span>
-
-
-                        <span
-                            th:text="${#temporals.format(festival.endDate, 'dd MMM yyyy')}">
-                        </span>
-
-                    </div>
-
-
-
-                    <div class="card-line"></div>
-
-
-
-                    <!-- LINK DETTAGLIO -->
-
-                    <div class="card-link">
-
-                        Scopri il festival
-
-                        <span>→</span>
-
-                    </div>
-
-                </div>
-
-            </a>
-
-        </div>
-
-
-
-        <!-- =================================================
-             NESSUN FESTIVAL PRESENTE
-             ================================================= -->
-
-        <div
-            class="empty-state"
-            th:if="${festivals.isEmpty()}">
-
-
-            <div class="empty-icon">
-                ✦
             </div>
 
 
-            <h3>
 
-                Il sipario sta per
+            <!-- NESSUN RISULTATO DELLA RICERCA -->
 
-                <span class="gold-text">
-                    alzarsi.
-                </span>
+            <p class="catalog-search-empty" data-search-empty="all-festivals" hidden>
 
-            </h3>
-
-
-            <p>
-
-                Non ci sono ancora festival disponibili.
-
-                Torna presto per scoprire
-                le prossime edizioni cinematografiche.
+                Nessun festival corrisponde alla ricerca.
 
             </p>
 
 
-            <a
-                th:href="@{/}"
-                class="btn btn-outline">
 
-                Torna alla Home
+            <!-- =================================================
+             GRIGLIA FESTIVAL
+             ================================================= -->
 
-            </a>
+            <div class="festival-grid" th:if="${!festivals.isEmpty()}">
+
+
+                <!-- SINGOLO FESTIVAL -->
+
+                <a th:each="festival : ${festivals}" th:href="@{/festivals/{id}(id=${festival.id})}"
+                    class="festival-card" th:classappend="${festival.imageFileName != null} ? 'has-cover' : ''"
+                    data-search-item="all-festivals"
+                    th:attr="data-search-text=${festival.name + ' ' + festival.city + ' ' + festival.year}">
+
+
+
+                    <!-- ==========================================
+                     IMMAGINE DI COPERTINA
+                     ========================================== -->
+
+                    <img th:if="${festival.imageFileName != null}"
+                        th:src="@{/media/{file}(file=${festival.imageFileName})}"
+                        th:alt="|Copertina di ${festival.name}|" class="uploaded-festival-cover" loading="lazy">
+
+
+
+                    <!-- ==========================================
+                     PARTE SUPERIORE
+                     ========================================== -->
+
+                    <div class="festival-card-top">
+
+
+                        <span class="festival-year" th:text="${festival.year}">
+
+                            2026
+
+                        </span>
+
+
+                        <span class="festival-tag">
+
+                            Official Selection
+
+                        </span>
+
+                    </div>
+
+
+
+                    <!-- ==========================================
+                     INFORMAZIONI
+                     ========================================== -->
+
+                    <div class="festival-card-body">
+
+
+                        <!-- CITTÀ -->
+
+                        <div class="festival-city" th:text="${festival.city}">
+
+                            Venezia
+
+                        </div>
+
+
+
+                        <!-- NOME FESTIVAL -->
+
+                        <h3 th:text="${festival.name}">
+
+                            Festival del Cinema
+
+                        </h3>
+
+                        <!--per fare il count basta che scrivo vicino al festival name th:text="${lists.size(festival.films)}"> -->
+
+                        <!-- DATE -->
+
+                        <div class="festival-date">
+
+
+                            <span th:text="${#temporals.format(festival.startDate, 'dd MMM yyyy')}">
+                            </span>
+
+
+                            <span> — </span>
+
+
+                            <span th:text="${#temporals.format(festival.endDate, 'dd MMM yyyy')}">
+                            </span>
+
+                        </div>
+
+
+
+                        <div class="card-line"></div>
+
+
+
+                        <!-- LINK DETTAGLIO -->
+
+                        <div class="card-link">
+
+                            Scopri il festival
+
+                            <span>→</span>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+
+
+            <!-- =================================================
+             NESSUN FESTIVAL PRESENTE
+             ================================================= -->
+
+            <div class="empty-state" th:if="${festivals.isEmpty()}">
+
+
+                <div class="empty-icon">
+                    ✦
+                </div>
+
+
+                <h3>
+
+                    Il sipario sta per
+
+                    <span class="gold-text">
+                        alzarsi.
+                    </span>
+
+                </h3>
+
+
+                <p>
+
+                    Non ci sono ancora festival disponibili.
+
+                    Torna presto per scoprire
+                    le prossime edizioni cinematografiche.
+
+                </p>
+
+
+                <a th:href="@{/}" class="btn btn-outline">
+
+                    Torna alla Home
+
+                </a>
+
+            </div>
+
+
+
+            <!-- LINK ADMIN -->
+
+            <div th:if="${isAdmin}" style="margin-top: 30px; text-align: right;">
+
+                <a th:href="@{/admin/festivals}" class="btn btn-outline btn-small">
+
+                    ✦ Gestisci festival
+
+                </a>
+
+            </div>
 
         </div>
 
-
-
-        <!-- LINK ADMIN -->
-
-        <div
-            th:if="${isAdmin}"
-            style="margin-top: 30px; text-align: right;">
-
-            <a
-                th:href="@{/admin/festivals}"
-                class="btn btn-outline btn-small">
-
-                ✦ Gestisci festival
-
-            </a>
-
-        </div>
-
-    </div>
-
-</main>
+    </main>
 
 
 
-<!-- =====================================================
+    <!-- =====================================================
      FOOTER
      ===================================================== -->
 
-<footer class="site-footer">
+    <footer class="site-footer">
 
-    <div class="container footer-inner">
+        <div class="container footer-inner">
 
 
-        <div class="footer-brand">
+            <div class="footer-brand">
 
-            ✦ SiwCineFestival
+                ✦ SiwCineFestival
+
+            </div>
+
+
+            <p class="footer-copy">
+
+                THE ART OF CINEMA · FESTIVAL COLLECTION
+
+            </p>
+
+
+            <div class="footer-decoration">
+
+                ✦ ✦ ✦
+
+            </div>
 
         </div>
 
-
-        <p class="footer-copy">
-
-            THE ART OF CINEMA · FESTIVAL COLLECTION
-
-        </p>
-
-
-        <div class="footer-decoration">
-
-            ✦ ✦ ✦
-
-        </div>
-
-    </div>
-
-</footer>
+    </footer>
 
 
 </body>
+
 </html>

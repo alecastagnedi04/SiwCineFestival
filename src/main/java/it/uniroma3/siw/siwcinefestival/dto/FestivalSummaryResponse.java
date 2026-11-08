@@ -6,31 +6,30 @@ import it.uniroma3.siw.siwcinefestival.model.Festival;
 
 public record FestivalSummaryResponse(
 
-        Long id,
-        String name,
-        Integer year,
-        String city,
-        LocalDate startDate,
-        LocalDate endDate
+                Long id,
+                String name,
+                Integer year,
+                String city,
+                LocalDate startDate,
+                LocalDate endDate
 
 ) {
 
-    /*
-     * Converte un'entità Festival
-     * in un DTO utilizzabile da React.
-     */
+        /*
+         * Converte un'entità Festival
+         * in un DTO utilizzabile da React.
+         */
 
-    public static FestivalSummaryResponse fromEntity(
-            Festival festival) {
+        public static FestivalSummaryResponse fromEntity(
+                        Festival festival) {
 
-        return new FestivalSummaryResponse(
+                return new FestivalSummaryResponse(
 
-                festival.getId(),
-                festival.getName(),
-                festival.getYear(),
-                festival.getCity(),
-                festival.getStartDate(),
-                festival.getEndDate()
-        );
-    }
+                                festival.getId(),
+                                festival.getName(),
+                                festival.getYear(),
+                                festival.getCity(),
+                                festival.getStartDate(),
+                                festival.getEndDate());
+        }
 }

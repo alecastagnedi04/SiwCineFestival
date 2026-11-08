@@ -25,190 +25,149 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import it.uniroma3.siw.siwcinefestival.model.Review;
 
-
 @Controller
 @RequestMapping("/films")
 public class FilmController {
 
-    private final FilmService filmService;
-    private final ReviewService reviewService;
-    private final ScreeningService screeningService;
+        private final FilmService filmService;
+        private final ReviewService reviewService;
+        private final ScreeningService screeningService;
 
+        public FilmController(
+                        FilmService filmService,
+                        ReviewService reviewService,
+                        ScreeningService screeningService) {
 
-    public FilmController(
-            FilmService filmService,
-            ReviewService reviewService,
-            ScreeningService screeningService) {
+                this.filmService = filmService;
+                this.reviewService = reviewService;
+                this.screeningService = screeningService;
+        }
 
-        this.filmService = filmService;
-        this.reviewService = reviewService;
-        this.screeningService = screeningService;
-    }
+        /* DETTAGLIO FILM
+         * URL:
+         * GET /films/{id}
+         *
+         * Esempio:
+         * GET /films/5
+         */
+        /*DETTAGLIO FILM CON RECENSIONI PAGINATE
+         * GET /films/{id}
+         *
+         * GET /films/{id}?reviewPage=0
+         *
+         * GET /films/{id}?reviewPage=1
+         *
+         * Mostriamo al massimo 3 recensioni
+         * per pagina.
+         */
 
+        @GetMapping("/{id}")
+        public String showFilm(
 
-    /*
-     * =====================================================
-     * DETTAGLIO FILM
-     * =====================================================
-     *
-     * URL:
-     * GET /films/{id}
-     *
-     * Esempio:
-     * GET /films/5
-     */
-    /*
- * =====================================================
- * DETTAGLIO FILM CON RECENSIONI PAGINATE
- * =====================================================
- *
- * GET /films/{id}
- *
- * GET /films/{id}?reviewPage=0
- *
- * GET /films/{id}?reviewPage=1
- *
- * Mostriamo al massimo 3 recensioni
- * per pagina.
- */
+                        @PathVariable("id") Long id,
 
-@GetMapping("/{id}")
-public String showFilm(
+                        @RequestParam(name = "reviewPage", defaultValue = "0") int reviewPage,
 
-        @PathVariable("id") Long id,
+                        Model model,
 
-        @RequestParam(
-                name = "reviewPage",
-                defaultValue = "0"
-        )
-        int reviewPage,
+                        Principal principal) {
 
-        Model model,
+                /*
+                 * Recuperiamo il film
+                 * con regista e cast.
+                 */
 
-        Principal principal) {
+                Film film = filmService
+                                .findByIdWithDirectorAndCast(id)
+                                .orElseThrow(() -> new ResponseStatusException(
+                                                HttpStatus.NOT_FOUND,
+                                                "Film non trovato."));
 
+                /*
+                 * Informazioni principali.
+                 */
 
-    /*
-     * Recuperiamo il film
-     * con regista e cast.
-     */
+                model.addAttribute(
+                                "film",
+                                film);
 
-    Film film = filmService
-            .findByIdWithDirectorAndCast(id)
-            .orElseThrow(() ->
-                    new ResponseStatusException(
-                            HttpStatus.NOT_FOUND,
-                            "Film non trovato."
-                    )
-            );
+                /*
+                 * Cast del film.
+                 */
 
+                model.addAttribute(
+                                "castings",
+                                film.getCastings());
 
-    /*
-     * Informazioni principali.
-     */
+                /*
+                 * Regista.
+                 */
 
-    model.addAttribute(
-            "film",
-            film
-    );
+                model.addAttribute(
+                                "director",
+                                film.getDirector());
 
+                /*
+                 * Festival ai quali partecipa.
+                 */
 
-    /*
-     * Cast del film.
-     */
+                model.addAttribute(
+                                "festivals",
+                                film.getFestivals());
 
-    model.addAttribute(
-            "castings",
-            film.getCastings()
-    );
+                /*
+                 * Proiezioni del film.
+                 */
 
+                model.addAttribute(
+                                "screenings",
+                                screeningService.findByFilmId(id));
 
-    /*
-     * Regista.
-     */
+                /*
+                 * Recuperiamo soltanto
+                 * 3 recensioni per pagina.
+                 */
 
-    model.addAttribute(
-            "director",
-            film.getDirector()
-    );
+                Page<Review> result = reviewService.findPageByFilmId(
+                                id,
+                                reviewPage);
 
+                /*
+                 * Elenco delle recensioni
+                 * presenti nella pagina corrente.
+                 */
 
-    /*
-     * Festival ai quali partecipa.
-     */
+                model.addAttribute(
+                                "reviews",
+                                result.getContent());
 
-    model.addAttribute(
-            "festivals",
-            film.getFestivals()
-    );
+                /*
+                 * Informazioni sulla paginazione.
+                 */
 
+                model.addAttribute(
+                                "reviewPage",
+                                result);
 
-    /*
-     * Proiezioni del film.
-     */
+                /*
+                 * Recensione dell'utente autenticato.
+                 */
 
-    model.addAttribute(
-            "screenings",
-            screeningService.findByFilmId(id)
-    );
+                if (principal != null) {
 
+                        model.addAttribute(
+                                        "myReview",
+                                        reviewService.findByFilmIdAndUsername(
+                                                        id,
+                                                        principal.getName()).orElse(null));
 
-    /*
-     * Recuperiamo soltanto
-     * 3 recensioni per pagina.
-     */
+                } else {
 
-    Page<Review> result =
-            reviewService.findPageByFilmId(
-                    id,
-                    reviewPage
-            );
+                        model.addAttribute(
+                                        "myReview",
+                                        null);
+                }
 
-
-    /*
-     * Elenco delle recensioni
-     * presenti nella pagina corrente.
-     */
-
-    model.addAttribute(
-            "reviews",
-            result.getContent()
-    );
-
-
-    /*
-     * Informazioni sulla paginazione.
-     */
-
-    model.addAttribute(
-            "reviewPage",
-            result
-    );
-
-
-    /*
-     * Recensione dell'utente autenticato.
-     */
-
-    if (principal != null) {
-
-        model.addAttribute(
-                "myReview",
-                reviewService.findByFilmIdAndUsername(
-                        id,
-                        principal.getName()
-                ).orElse(null)
-        );
-
-    } else {
-
-        model.addAttribute(
-                "myReview",
-                null
-        );
-    }
-
-
-    return "films/show";
-}
+                return "films/show";
+        }
 }

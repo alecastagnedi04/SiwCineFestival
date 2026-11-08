@@ -16,14 +16,11 @@ import it.uniroma3.siw.siwcinefestival.dto.ScreeningResponse;
 
 import it.uniroma3.siw.siwcinefestival.service.ScreeningService;
 
-
 @RestController
 @RequestMapping("/api/festivals")
 public class ScreeningApiController {
 
-
     private final ScreeningService screeningService;
-
 
     public ScreeningApiController(
             ScreeningService screeningService) {
@@ -31,12 +28,7 @@ public class ScreeningApiController {
         this.screeningService = screeningService;
     }
 
-
-    /*
-     * =====================================================
-     * API PROGRAMMA FESTIVAL
-     * =====================================================
-     *
+    /*API PROGRAMMA FESTIVAL
      * GET /api/festivals/{festivalId}/screenings
      *
      * Restituisce le proiezioni
@@ -48,9 +40,7 @@ public class ScreeningApiController {
     @GetMapping("/{festivalId}/screenings")
     public List<ScreeningResponse> getFestivalScreenings(
 
-            @PathVariable("festivalId")
-            Long festivalId) {
-
+            @PathVariable("festivalId") Long festivalId) {
 
         try {
 
@@ -75,8 +65,7 @@ public class ScreeningApiController {
 
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND,
-                    ex.getMessage()
-            );
+                    ex.getMessage());
         }
     }
 

@@ -21,222 +21,169 @@ import it.uniroma3.siw.siwcinefestival.dto.DirectorForm;
 import it.uniroma3.siw.siwcinefestival.model.Director;
 import it.uniroma3.siw.siwcinefestival.service.DirectorService;
 
-
 @Controller
 @RequestMapping("/admin/directors")
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminDirectorController {
 
-    private final DirectorService directorService;
+        private final DirectorService directorService;
 
+        public AdminDirectorController(
+                        DirectorService directorService) {
 
-    public AdminDirectorController(
-            DirectorService directorService) {
-
-        this.directorService = directorService;
-    }
-
-
-    /*
-     * =====================================================
-     * ELENCO REGISTI
-     * =====================================================
-     */
-
-    @GetMapping({"", "/new"})
-    public String listDirectors(Model model) {
-
-        model.addAttribute(
-                "directorForm",
-                new DirectorForm()
-        );
-
-        prepareForm(model, false, null);
-
-        return "admin/directors/form";
-    }
-
-
-    /*
-     * =====================================================
-     * CREAZIONE REGISTA
-     * =====================================================
-     */
-
-    @PostMapping("/new")
-    public String createDirector(
-
-            @Valid
-            @ModelAttribute("directorForm")
-            DirectorForm form,
-
-            BindingResult bindingResult,
-
-            Model model,
-
-            RedirectAttributes redirectAttributes) {
-
-        if (bindingResult.hasErrors()) {
-
-            prepareForm(model, false, null);
-
-            return "admin/directors/form";
+                this.directorService = directorService;
         }
 
-        try {
+        /* ELENCO REGISTI */
 
-            directorService.createDirector(
-                    form.getName(),
-                    form.getSurname()
-            );
+        @GetMapping({ "", "/new" })
+        public String listDirectors(Model model) {
 
-            redirectAttributes.addFlashAttribute(
-                    "successMessage",
-                    "Regista creato con successo!"
-            );
+                model.addAttribute(
+                                "directorForm",
+                                new DirectorForm());
 
-            return "redirect:/admin/directors";
+                prepareForm(model, false, null);
 
-        } catch (IllegalArgumentException ex) {
-
-            bindingResult.reject(
-                    "directorError",
-                    ex.getMessage()
-            );
-
-            prepareForm(model, false, null);
-
-            return "admin/directors/form";
-        }
-    }
-
-
-    /*
-     * =====================================================
-     * FORM MODIFICA REGISTA
-     * =====================================================
-     */
-
-    @GetMapping("/{id}/edit")
-    public String editDirectorForm(
-
-            @PathVariable("id") Long id,
-
-            Model model) {
-
-        Director director = requireDirector(id);
-
-        DirectorForm form = new DirectorForm();
-
-        form.setName(director.getName());
-        form.setSurname(director.getSurname());
-
-        model.addAttribute(
-                "directorForm",
-                form
-        );
-
-        prepareForm(model, true, id);
-
-        return "admin/directors/form";
-    }
-
-
-    /*
-     * =====================================================
-     * MODIFICA REGISTA
-     * =====================================================
-     */
-
-    @PostMapping("/{id}/edit")
-    public String updateDirector(
-
-            @PathVariable("id") Long id,
-
-            @Valid
-            @ModelAttribute("directorForm")
-            DirectorForm form,
-
-            BindingResult bindingResult,
-
-            Model model,
-
-            RedirectAttributes redirectAttributes) {
-
-        requireDirector(id);
-
-        if (bindingResult.hasErrors()) {
-
-            prepareForm(model, true, id);
-
-            return "admin/directors/form";
+                return "admin/directors/form";
         }
 
-        try {
+        /* CREAZIONE REGISTA */
 
-            directorService.updateDirector(
-                    id,
-                    form.getName(),
-                    form.getSurname()
-            );
+        @PostMapping("/new")
+        public String createDirector(
 
-            redirectAttributes.addFlashAttribute(
-                    "successMessage",
-                    "Regista modificato con successo!"
-            );
+                        @Valid @ModelAttribute("directorForm") DirectorForm form,
+                        BindingResult bindingResult,
+                        Model model,
+                        RedirectAttributes redirectAttributes) {
 
-            return "redirect:/admin/directors";
+                if (bindingResult.hasErrors()) {
 
-        } catch (IllegalArgumentException ex) {
+                        prepareForm(model, false, null);
 
-            bindingResult.reject(
-                    "directorError",
-                    ex.getMessage()
-            );
+                        return "admin/directors/form";
+                }
 
-            prepareForm(model, true, id);
+                try {
 
-            return "admin/directors/form";
+                        directorService.createDirector(
+                                        form.getName(),
+                                        form.getSurname());
+
+                        redirectAttributes.addFlashAttribute(
+                                        "successMessage",
+                                        "Regista creato con successo!");
+
+                        return "redirect:/admin/directors";
+
+                } catch (IllegalArgumentException ex) {
+
+                        bindingResult.reject(
+                                        "directorError",
+                                        ex.getMessage());
+
+                        prepareForm(model, false, null);
+
+                        return "admin/directors/form";
+                }
         }
-    }
 
+        /* FORM MODIFICA REGISTA */
 
-    /*
-     * =====================================================
-     * METODI PRIVATI
-     * =====================================================
-     */
+        @GetMapping("/{id}/edit")
+        public String editDirectorForm(
 
-    private Director requireDirector(Long id) {
+                        @PathVariable("id") Long id,
 
-        return directorService.findById(id)
-                .orElseThrow(() ->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                "Regista non trovato."
-                        )
-                );
-    }
+                        Model model) {
 
+                Director director = requireDirector(id);
 
-    private void prepareForm(
-            Model model,
-            boolean isEdit,
-            Long directorId) {
+                DirectorForm form = new DirectorForm();
 
-        model.addAttribute(
-                "directors",
-                directorService.findAll()
-        );
+                form.setName(director.getName());
+                form.setSurname(director.getSurname());
 
-        model.addAttribute(
-                "isEdit",
-                isEdit
-        );
+                model.addAttribute(
+                                "directorForm",
+                                form);
 
-        model.addAttribute(
-                "directorId",
-                directorId
-        );
-    }
+                prepareForm(model, true, id);
+
+                return "admin/directors/form";
+        }
+
+        /* MODIFICA REGISTA */
+
+        @PostMapping("/{id}/edit")
+        public String updateDirector(
+
+                        @PathVariable("id") Long id,
+                        @Valid @ModelAttribute("directorForm") DirectorForm form,
+                        BindingResult bindingResult,
+                        Model model,
+                        RedirectAttributes redirectAttributes) {
+
+                requireDirector(id);
+
+                if (bindingResult.hasErrors()) {
+
+                        prepareForm(model, true, id);
+
+                        return "admin/directors/form";
+                }
+
+                try {
+
+                        directorService.updateDirector(
+                                        id,
+                                        form.getName(),
+                                        form.getSurname());
+
+                        redirectAttributes.addFlashAttribute(
+                                        "successMessage",
+                                        "Regista modificato con successo!");
+
+                        return "redirect:/admin/directors";
+
+                } catch (IllegalArgumentException ex) {
+
+                        bindingResult.reject(
+                                        "directorError",
+                                        ex.getMessage());
+
+                        prepareForm(model, true, id);
+
+                        return "admin/directors/form";
+                }
+        }
+
+        /* METODI PRIVATI */
+
+        private Director requireDirector(Long id) {
+
+                return directorService.findById(id)
+                                .orElseThrow(() -> new ResponseStatusException(
+                                                HttpStatus.NOT_FOUND,
+                                                "Regista non trovato."));
+        }
+
+        private void prepareForm(
+                        Model model,
+                        boolean isEdit,
+                        Long directorId) {
+
+                model.addAttribute(
+                                "directors",
+                                directorService.findAll());
+
+                model.addAttribute(
+                                "isEdit",
+                                isEdit);
+
+                model.addAttribute(
+                                "directorId",
+                                directorId);
+        }
 }

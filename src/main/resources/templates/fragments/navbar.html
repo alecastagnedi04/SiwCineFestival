@@ -3,135 +3,107 @@
 
 <body>
 
-<header
-    class="site-header"
-    th:fragment="navbar">
+    <header class="site-header" th:fragment="navbar">
 
-    <div class="container navbar">
+        <div class="container navbar">
 
-        <!-- LOGO -->
+            <!-- LOGO -->
 
-        <a th:href="@{/}" class="brand">
+            <a th:href="@{/}" class="brand">
 
-            <div class="brand-symbol">
-                <span>✦</span>
-            </div>
-
-            <div>
-
-                <div class="brand-name">
-                    SIW<strong>CINE</strong>FESTIVAL
+                <div class="brand-symbol">
+                    <span>✦</span>
                 </div>
 
-                <span class="brand-subtitle">
-                    THE ART OF CINEMA
-                </span>
+                <div>
 
-            </div>
+                    <div class="brand-name">
+                        SIW<strong>CINE</strong>FESTIVAL
+                    </div>
 
-        </a>
+                    <span class="brand-subtitle">
+                        THE ART OF CINEMA
+                    </span>
 
+                </div>
 
-        <!-- NAVIGAZIONE -->
-
-        <nav class="nav-links" aria-label="Navigazione principale">
-
-            <a
-                th:href="@{/}"
-                class="nav-link">
-                Home
-            </a>
-
-            <a
-                th:href="@{/festivals}"
-                class="nav-link">
-                Festival
-            </a>
-
-            <a
-    th:href="@{/react-program/index.html}"
-    class="nav-link">
-
-    ✦ Programma interattivo
-
-</a>
-
-
-            <!-- SOLO ADMIN -->
-
-            <a
-                th:if="${isAdmin}"
-                th:href="@{/admin}"
-                class="nav-link nav-admin">
-                ✦ Dashboard
             </a>
 
 
-            <!-- ===================================================
+            <!-- NAVIGAZIONE -->
+
+            <nav class="nav-links" aria-label="Navigazione principale">
+
+                <a th:href="@{/}" class="nav-link">
+                    Home
+                </a>
+
+                <a th:href="@{/festivals}" class="nav-link">
+                    Festival
+                </a>
+
+                <a th:href="@{/react-program/index.html}" class="nav-link">
+
+                    ✦ Programma interattivo
+
+                </a>
+
+
+                <!-- SOLO ADMIN -->
+
+                <a th:if="${isAdmin}" th:href="@{/admin}" class="nav-link nav-admin">
+                    ✦ Dashboard
+                </a>
+
+
+                <!-- ===================================================
      PROFILO UTENTE
      =================================================== -->
 
-<a
-    th:if="${isAuthenticated}"
-    th:href="@{/profile}"
-    class="nav-user cine-profile-nav-link"
+                <a th:if="${isAuthenticated}" th:href="@{/profile}" class="nav-user cine-profile-nav-link"
+                    title="Apri il mio profilo">
 
-    title="Apri il mio profilo">
+                    ✦
 
-    ✦
+                    <span th:text="${currentUsername}">
 
-    <span th:text="${currentUsername}">
+                        Username
 
-        Username
+                    </span>
 
-    </span>
-
-</a>
+                </a>
 
 
-            <!-- VISITATORE -->
+                <!-- VISITATORE -->
 
-            <a
-                th:if="${!isAuthenticated}"
-                th:href="@{/login}"
-                class="nav-link">
-                Accedi
-            </a>
+                <a th:if="${!isAuthenticated}" th:href="@{/login}" class="nav-link">
+                    Accedi
+                </a>
 
-            <a
-                th:if="${!isAuthenticated}"
-                th:href="@{/register}"
-                class="btn btn-gold btn-small">
-                Registrati
-            </a>
+                <a th:if="${!isAuthenticated}" th:href="@{/register}" class="btn btn-gold btn-small">
+                    Registrati
+                </a>
 
 
-            <!-- LOGOUT -->
+                <!-- LOGOUT -->
 
-            <form
-                th:if="${isAuthenticated}"
-                th:action="@{/logout}"
-                method="post"
-                class="nav-logout-form">
+                <form th:if="${isAuthenticated}" th:action="@{/logout}" method="post" class="nav-logout-form">
 
-                <button
-                    type="submit"
-                    class="nav-logout">
-                    Esci ↗
-                </button>
+                    <button type="submit" class="nav-logout">
+                        Esci ↗
+                    </button>
 
-            </form>
+                </form>
 
-        </nav>
+            </nav>
 
-    </div>
+        </div>
 
-    <script
-    th:src="@{/js/site-search.js}"
-    defer>
-</script>
+        <script th:src="@{/js/site-search.js}" defer>
+        </script>
 
-</header>
+    </header>
 
 </body>
+
 </html>

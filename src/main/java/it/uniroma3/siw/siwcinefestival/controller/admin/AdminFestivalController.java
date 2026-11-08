@@ -27,378 +27,295 @@ import it.uniroma3.siw.siwcinefestival.model.Festival;
 import it.uniroma3.siw.siwcinefestival.service.FestivalService;
 import it.uniroma3.siw.siwcinefestival.service.FilmService;
 
-
 @Controller
 @RequestMapping("/admin/festivals")
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminFestivalController {
 
-    private final FestivalService festivalService;
-    private final FilmService filmService;
+        private final FestivalService festivalService;
+        private final FilmService filmService;
 
+        public AdminFestivalController(
+                        FestivalService festivalService,
+                        FilmService filmService) {
 
-    public AdminFestivalController(
-            FestivalService festivalService,
-            FilmService filmService) {
-
-        this.festivalService = festivalService;
-        this.filmService = filmService;
-    }
-
-
-    /*
-     * =====================================================
-     * ELENCO FESTIVAL
-     * =====================================================
-     *
-     * GET /admin/festivals
-     */
-
-    @GetMapping
-    public String listFestivals(Model model) {
-
-        model.addAttribute(
-                "festivals",
-                festivalService.findAll()
-        );
-
-        return "admin/festivals/list";
-    }
-
-
-    /*
-     * =====================================================
-     * FORM CREAZIONE
-     * =====================================================
-     *
-     * GET /admin/festivals/new
-     */
-
-    @GetMapping("/new")
-    public String newFestivalForm(Model model) {
-
-        model.addAttribute(
-                "festivalForm",
-                new FestivalForm()
-        );
-
-        prepareForm(model, false, null);
-
-        return "admin/festivals/form";
-    }
-
-
-    /*
-     * =====================================================
-     * CREAZIONE FESTIVAL
-     * =====================================================
-     *
-     * POST /admin/festivals/new
-     */
-
-    @PostMapping("/new")
-    public String createFestival(
-
-            @Valid
-            @ModelAttribute("festivalForm")
-            FestivalForm form,
-
-            BindingResult bindingResult,
-
-            Model model,
-
-            RedirectAttributes redirectAttributes) {
-
-        if (bindingResult.hasErrors()) {
-
-            prepareForm(model, false, null);
-
-            return "admin/festivals/form";
+                this.festivalService = festivalService;
+                this.filmService = filmService;
         }
 
-        try {
+        /* ELENCO FESTIVAL
+         * GET /admin/festivals
+         */
 
-            Festival festival =
-                    festivalService.createFestival(
-                            form.getName(),
-                            form.getYear(),
-                            form.getCity(),
-                            form.getStartDate(),
-                            form.getEndDate(),
-                            form.getDescription()
-                    );
+        @GetMapping
+        public String listFestivals(Model model) {
 
-            redirectAttributes.addFlashAttribute(
-                    "successMessage",
-                    "Festival creato con successo!"
-            );
+                model.addAttribute(
+                                "festivals",
+                                festivalService.findAll());
 
-            return "redirect:/admin/festivals/"
-                    + festival.getId()
-                    + "/edit";
-
-        } catch (IllegalArgumentException
-                 | IllegalStateException ex) {
-
-            bindingResult.reject(
-                    "festivalError",
-                    ex.getMessage()
-            );
-
-            prepareForm(model, false, null);
-
-            return "admin/festivals/form";
-        }
-    }
-
-
-    /*
-     * =====================================================
-     * FORM MODIFICA
-     * =====================================================
-     *
-     * GET /admin/festivals/{id}/edit
-     */
-
-    @GetMapping("/{id}/edit")
-    public String editFestivalForm(
-
-            @PathVariable("id") Long id,
-
-            Model model) {
-
-        Festival festival = requireFestival(id);
-
-        FestivalForm form = new FestivalForm();
-
-        form.setName(festival.getName());
-        form.setYear(festival.getYear());
-        form.setCity(festival.getCity());
-        form.setStartDate(festival.getStartDate());
-        form.setEndDate(festival.getEndDate());
-        form.setDescription(festival.getDescription());
-
-        model.addAttribute(
-                "festivalForm",
-                form
-        );
-
-        prepareForm(model, true, id);
-
-        return "admin/festivals/form";
-    }
-
-
-    /*
-     * =====================================================
-     * SALVATAGGIO MODIFICA
-     * =====================================================
-     *
-     * POST /admin/festivals/{id}/edit
-     */
-
-    @PostMapping("/{id}/edit")
-    public String updateFestival(
-
-            @PathVariable("id") Long id,
-
-            @Valid
-            @ModelAttribute("festivalForm")
-            FestivalForm form,
-
-            BindingResult bindingResult,
-
-            Model model,
-
-            RedirectAttributes redirectAttributes) {
-
-        requireFestival(id);
-
-        if (bindingResult.hasErrors()) {
-
-            prepareForm(model, true, id);
-
-            return "admin/festivals/form";
+                return "admin/festivals/list";
         }
 
-        try {
+        /* FORM CREAZIONE
+         * GET /admin/festivals/new
+         */
 
-            festivalService.updateFestival(
-                    id,
-                    form.getName(),
-                    form.getYear(),
-                    form.getCity(),
-                    form.getStartDate(),
-                    form.getEndDate(),
-                    form.getDescription()
-            );
+        @GetMapping("/new")
+        public String newFestivalForm(Model model) {
 
-            redirectAttributes.addFlashAttribute(
-                    "successMessage",
-                    "Festival modificato con successo!"
-            );
+                model.addAttribute(
+                                "festivalForm",
+                                new FestivalForm());
 
-            return "redirect:/admin/festivals/"
-                    + id
-                    + "/edit";
+                prepareForm(model, false, null);
 
-        } catch (IllegalArgumentException
-                 | IllegalStateException ex) {
-
-            bindingResult.reject(
-                    "festivalError",
-                    ex.getMessage()
-            );
-
-            prepareForm(model, true, id);
-
-            return "admin/festivals/form";
-        }
-    }
-
-
-    /*
-     * =====================================================
-     * AGGIUNGI FILM AL FESTIVAL
-     * =====================================================
-     *
-     * POST /admin/festivals/{id}/films/add
-     */
-
-    @PostMapping("/{id}/films/add")
-    public String addFilmToFestival(
-
-            @PathVariable("id") Long festivalId,
-
-            @RequestParam("filmId") Long filmId,
-
-            RedirectAttributes redirectAttributes) {
-
-        try {
-
-            festivalService.addFilmToFestival(
-                    festivalId,
-                    filmId
-            );
-
-            redirectAttributes.addFlashAttribute(
-                    "successMessage",
-                    "Film aggiunto al festival!"
-            );
-
-        } catch (IllegalArgumentException
-                 | IllegalStateException
-                 | NoSuchElementException ex) {
-
-            redirectAttributes.addFlashAttribute(
-                    "errorMessage",
-                    ex.getMessage()
-            );
+                return "admin/festivals/form";
         }
 
-        return "redirect:/admin/festivals/"
-                + festivalId
-                + "/edit";
-    }
+        /* CREAZIONE FESTIVAL
+         * POST /admin/festivals/new
+         */
 
+        @PostMapping("/new")
+        public String createFestival(
 
-    /*
-     * =====================================================
-     * RIMUOVI FILM DAL FESTIVAL
-     * =====================================================
-     *
-     * POST /admin/festivals/{id}/films/{filmId}/remove
-     */
+                        @Valid @ModelAttribute("festivalForm") FestivalForm form,
+                        BindingResult bindingResult,
+                        Model model,
+                        RedirectAttributes redirectAttributes) {
 
-    @PostMapping("/{id}/films/{filmId}/remove")
-    public String removeFilmFromFestival(
+                if (bindingResult.hasErrors()) {
 
-            @PathVariable("id") Long festivalId,
+                        prepareForm(model, false, null);
 
-            @PathVariable("filmId") Long filmId,
+                        return "admin/festivals/form";
+                }
 
-            RedirectAttributes redirectAttributes) {
+                try {
 
-        try {
+                        Festival festival = festivalService.createFestival(
+                                        form.getName(),
+                                        form.getYear(),
+                                        form.getCity(),
+                                        form.getStartDate(),
+                                        form.getEndDate(),
+                                        form.getDescription());
 
-            festivalService.removeFilmFromFestival(
-                    festivalId,
-                    filmId
-            );
+                        redirectAttributes.addFlashAttribute(
+                                        "successMessage",
+                                        "Festival creato con successo!");
 
-            redirectAttributes.addFlashAttribute(
-                    "successMessage",
-                    "Film rimosso dal festival."
-            );
+                        return "redirect:/admin/festivals/"
+                                        + festival.getId()
+                                        + "/edit";
 
-        } catch (IllegalArgumentException
-                 | IllegalStateException
-                 | NoSuchElementException ex) {
+                } catch (IllegalArgumentException
+                                | IllegalStateException ex) {
 
-            redirectAttributes.addFlashAttribute(
-                    "errorMessage",
-                    ex.getMessage()
-            );
+                        bindingResult.reject(
+                                        "festivalError",
+                                        ex.getMessage());
+
+                        prepareForm(model, false, null);
+
+                        return "admin/festivals/form";
+                }
         }
 
-        return "redirect:/admin/festivals/"
-                + festivalId
-                + "/edit";
-    }
+        /* FORM MODIFICA
+         * GET /admin/festivals/{id}/edit
+         */
 
+        @GetMapping("/{id}/edit")
+        public String editFestivalForm(
 
-    /*
-     * =====================================================
-     * METODI PRIVATI
-     * =====================================================
-     */
+                        @PathVariable("id") Long id,
 
-    private Festival requireFestival(Long id) {
+                        Model model) {
 
-        return festivalService.findByIdWithFilms(id)
-                .orElseThrow(() ->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                "Festival non trovato."
-                        )
-                );
-    }
+                Festival festival = requireFestival(id);
 
+                FestivalForm form = new FestivalForm();
 
-    private void prepareForm(
-            Model model,
-            boolean isEdit,
-            Long festivalId) {
+                form.setName(festival.getName());
+                form.setYear(festival.getYear());
+                form.setCity(festival.getCity());
+                form.setStartDate(festival.getStartDate());
+                form.setEndDate(festival.getEndDate());
+                form.setDescription(festival.getDescription());
 
-        model.addAttribute("isEdit", isEdit);
+                model.addAttribute(
+                                "festivalForm",
+                                form);
 
-        model.addAttribute("festivalId", festivalId);
+                prepareForm(model, true, id);
 
-        model.addAttribute(
-                "allFilms",
-                filmService.findAll()
-        );
-
-        if (isEdit && festivalId != null) {
-
-            Festival festival = requireFestival(festivalId);
-
-            model.addAttribute(
-                    "festival",
-                    festival
-            );
-
-            model.addAttribute(
-                    "festivalFilms",
-                    festival.getFilms()
-            );
-
-        } else {
-
-            model.addAttribute(
-                    "festivalFilms",
-                    List.of()
-            );
+                return "admin/festivals/form";
         }
-    }
+
+        /* SALVATAGGIO MODIFICA
+         * POST /admin/festivals/{id}/edit
+         */
+
+        @PostMapping("/{id}/edit")
+        public String updateFestival(
+
+                        @PathVariable("id") Long id,
+                        @Valid @ModelAttribute("festivalForm") FestivalForm form,
+                        BindingResult bindingResult,
+                        Model model,
+                        RedirectAttributes redirectAttributes) {
+
+                requireFestival(id);
+
+                if (bindingResult.hasErrors()) {
+
+                        prepareForm(model, true, id);
+
+                        return "admin/festivals/form";
+                }
+
+                try {
+
+                        festivalService.updateFestival(
+                                        id,
+                                        form.getName(),
+                                        form.getYear(),
+                                        form.getCity(),
+                                        form.getStartDate(),
+                                        form.getEndDate(),
+                                        form.getDescription());
+
+                        redirectAttributes.addFlashAttribute(
+                                        "successMessage",
+                                        "Festival modificato con successo!");
+
+                        return "redirect:/admin/festivals/"
+                                        + id
+                                        + "/edit";
+
+                } catch (IllegalArgumentException
+                                | IllegalStateException ex) {
+
+                        bindingResult.reject(
+                                        "festivalError",
+                                        ex.getMessage());
+
+                        prepareForm(model, true, id);
+
+                        return "admin/festivals/form";
+                }
+        }
+
+        /* AGGIUNGI FILM AL FESTIVAL
+         * POST /admin/festivals/{id}/films/add
+         */
+
+        @PostMapping("/{id}/films/add")
+        public String addFilmToFestival(
+
+                        @PathVariable("id") Long festivalId,
+                        @RequestParam("filmId") Long filmId,
+                        RedirectAttributes redirectAttributes) {
+
+                try {
+
+                        festivalService.addFilmToFestival(
+                                        festivalId,
+                                        filmId);
+
+                        redirectAttributes.addFlashAttribute(
+                                        "successMessage",
+                                        "Film aggiunto al festival!");
+
+                } catch (IllegalArgumentException
+                                | IllegalStateException
+                                | NoSuchElementException ex) {
+
+                        redirectAttributes.addFlashAttribute(
+                                        "errorMessage",
+                                        ex.getMessage());
+                }
+
+                return "redirect:/admin/festivals/"
+                                + festivalId
+                                + "/edit";
+        }
+
+        /* RIMUOVI FILM DAL FESTIVAL
+         * POST /admin/festivals/{id}/films/{filmId}/remove
+         */
+
+        @PostMapping("/{id}/films/{filmId}/remove")
+        public String removeFilmFromFestival(
+
+                        @PathVariable("id") Long festivalId,
+                        @PathVariable("filmId") Long filmId,
+                        RedirectAttributes redirectAttributes) {
+
+                try {
+
+                        festivalService.removeFilmFromFestival(
+                                        festivalId,
+                                        filmId);
+
+                        redirectAttributes.addFlashAttribute(
+                                        "successMessage",
+                                        "Film rimosso dal festival.");
+
+                } catch (IllegalArgumentException
+                                | IllegalStateException
+                                | NoSuchElementException ex) {
+
+                        redirectAttributes.addFlashAttribute(
+                                        "errorMessage",
+                                        ex.getMessage());
+                }
+
+                return "redirect:/admin/festivals/"
+                                + festivalId
+                                + "/edit";
+        }
+
+        /* METODI PRIVATI */
+
+        private Festival requireFestival(Long id) {
+
+                return festivalService.findByIdWithFilms(id)
+                                .orElseThrow(() -> new ResponseStatusException(
+                                                HttpStatus.NOT_FOUND,
+                                                "Festival non trovato."));
+        }
+
+        private void prepareForm(
+                        Model model,
+                        boolean isEdit,
+                        Long festivalId) {
+
+                model.addAttribute("isEdit", isEdit);
+                model.addAttribute("festivalId", festivalId);
+                model.addAttribute(
+                                "allFilms",
+                                filmService.findAll());
+
+                if (isEdit && festivalId != null) {
+
+                        Festival festival = requireFestival(festivalId);
+
+                        model.addAttribute(
+                                        "festival",
+                                        festival);
+
+                        model.addAttribute(
+                                        "festivalFilms",
+                                        festival.getFilms());
+
+                } else {
+
+                        model.addAttribute(
+                                        "festivalFilms",
+                                        List.of());
+                }
+        }
 }

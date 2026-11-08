@@ -13,109 +13,72 @@ import it.uniroma3.siw.siwcinefestival.model.Festival;
 
 import it.uniroma3.siw.siwcinefestival.service.FestivalService;
 
-
 @Controller
 public class HomeController {
 
-    private final FestivalService festivalService;
+        private final FestivalService festivalService;
 
+        public HomeController(
+                        FestivalService festivalService) {
 
-    public HomeController(
-            FestivalService festivalService) {
+                this.festivalService = festivalService;
+        }
 
-        this.festivalService = festivalService;
-    }
-
-
-    /*
-     * =====================================================
-     * HOMEPAGE CON PAGINAZIONE
-     * =====================================================
-     *
-     * GET /
-     *
-     * GET /?festivalPage=0
-     *
-     * GET /?festivalPage=1
-     *
-     * GET /?q=Venezia
-     *
-     * La paginazione riguarda soltanto
-     * l'anteprima dei festival nella Home.
-     */
-
-    @GetMapping("/")
-    public String home(
-
-            @RequestParam(
-                    name = "festivalPage",
-                    defaultValue = "0"
-            )
-            int festivalPage,
-
-            @RequestParam(
-                    name = "q",
-                    defaultValue = ""
-            )
-            String q,
-
-            Model model) {
-
-
-        /*
-         * Recuperiamo la pagina richiesta.
-         */
-
-        Page<Festival> result =
-                festivalService.findHomePage(
-                        q,
-                        festivalPage
-                );
-
-
-        /*
-         * I festival da mostrare.
+        /* HOMEPAGE CON PAGINAZIONE
+         * GET /
          *
-         * Al massimo 3.
+         * GET /?festivalPage=0
+         *
+         * GET /?festivalPage=1
+         *
+         * GET /?q=Venezia
+         *
+         * La paginazione riguarda soltanto
+         * l'anteprima dei festival nella Home.
          */
 
-        model.addAttribute(
-                "festivals",
-                result.getContent()
-        );
+        @GetMapping("/")
+        public String home(
 
+                        @RequestParam(name = "festivalPage", defaultValue = "0") int festivalPage,
+                        @RequestParam(name = "q", defaultValue = "") String q,
+                        Model model) {
 
-        /*
-         * Informazioni sulla paginazione.
-         */
+                /*
+                 * Recuperiamo la pagina richiesta.
+                 */
 
-        model.addAttribute(
-                "festivalPage",
-                result
-        );
+                Page<Festival> result = festivalService.findHomePage(
+                                q,
+                                festivalPage);
 
+                /*
+                 * I festival da mostrare.
+                 *
+                 * Al massimo 3.
+                 */
 
-        /*
-         * Numero totale di festival
-         * presenti nel database.
-         */
+                model.addAttribute(
+                                "festivals",
+                                result.getContent());
 
-        model.addAttribute(
-                "totalFestivalCount",
-                festivalService.countFestivals()
-        );
+                /*
+                 * Informazioni sulla paginazione.
+                 */
 
+                model.addAttribute(
+                                "festivalPage",
+                                result);
+                                
 
-        /*
-         * Testo della ricerca.
-         */
+                /*
+                 * Testo della ricerca.
+                 */
 
-        model.addAttribute(
-                "q",
-                q.trim()
-        );
+                model.addAttribute(
+                                "q",
+                                q.trim());
 
-
-        return "index";
-    }
+                return "index";
+        }
 }

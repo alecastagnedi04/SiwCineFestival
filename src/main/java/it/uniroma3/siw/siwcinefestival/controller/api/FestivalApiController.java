@@ -15,13 +15,11 @@ public class FestivalApiController {
 
     private final FestivalService festivalService;
 
-
     public FestivalApiController(
             FestivalService festivalService) {
 
         this.festivalService = festivalService;
     }
-
 
     /*
      * GET /api/festivals
@@ -36,9 +34,7 @@ public class FestivalApiController {
         return festivalService.findAll()
 
                 .stream()
-
                 .map(FestivalSummaryResponse::fromEntity)
-
                 .toList();
     }
 }

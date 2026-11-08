@@ -13,118 +13,68 @@ import it.uniroma3.siw.siwcinefestival.model.Festival;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-
 public interface FestivalRepository
         extends JpaRepository<Festival, Long> {
 
-
-    /*
-     * =====================================================
-     * ELENCO FESTIVAL
-     * =====================================================
-     *
-     * Recupera tutti i festival
-     * ordinati dalla data di inizio
-     * più recente alla più vecchia.
+    /* ELENCO FESTIVAL
+     * Recupera tutti i festival ordinati dalla data di inizio più recente alla più vecchia.
      */
     List<Festival> findAllByOrderByStartDateDesc();
 
-
-
-    /*
-     * =====================================================
-     * FESTIVAL CON FILM
-     * =====================================================
+    /* FESTIVAL CON FILM
+     * Recupera un festival e carica anche la collezione films.
      *
-     * Recupera un festival e carica
-     * anche la collezione films.
+     * EntityGraph permette di recuperare anche i film associati.
      *
-     * EntityGraph permette di richiedere
-     * esplicitamente questa associazione.
-     *
-     * Sarà utile nella pagina di dettaglio
-     * del festival.
+     * Sarà utile nella pagina di dettaglio del festival.
      */
-    @EntityGraph(attributePaths = {"films"})
+    @EntityGraph(attributePaths = { "films" })
     @Query("""
-        SELECT f
-        FROM Festival f
-        WHERE f.id = :festivalId
-        """)
+            SELECT f
+            FROM Festival f
+            WHERE f.id = :festivalId
+            """)
     Optional<Festival> findByIdWithFilms(
-            @Param("festivalId") Long festivalId
-    );
+            @Param("festivalId") Long festivalId);  //@Param collega il parametro java al parametro della query JPQL.
 
-
-
-    /*
-     * =====================================================
-     * VERIFICA APPARTENENZA FILM AL FESTIVAL
-     * =====================================================
-     *
-     * Restituisce true se il film
-     * partecipa al festival.
-     *
-     * Esempio:
-     *
-     * Festival 1
-     * Film 5
-     *
-     * true = il film 5 partecipa
-     *        al festival 1.
-     *
-     * Questa verifica sarà importante
-     * quando programmeremo una proiezione.
+    /* VERIFICA APPARTENENZA FILM AL FESTIVAL
+     * Restituisce true se il film partecipa al festival.
      */
     @Query("""
-        SELECT CASE WHEN COUNT(f) > 0
-                    THEN true
-                    ELSE false
-               END
-        FROM Festival f
-        JOIN f.films film
-        WHERE f.id = :festivalId
-          AND film.id = :filmId
-        """)
+            SELECT CASE WHEN COUNT(f) > 0
+                        THEN true
+                        ELSE false
+                   END
+            FROM Festival f
+            JOIN f.films film
+            WHERE f.id = :festivalId
+              AND film.id = :filmId
+            """)
     boolean isFilmInFestival(
 
-            @Param("festivalId")
-            Long festivalId,
+            @Param("festivalId") Long festivalId,
 
-            @Param("filmId")
-            Long filmId
-    );
+            @Param("filmId") Long filmId);
 
-    /*
- * =====================================================
- * RICERCA FESTIVAL CON PAGINAZIONE
- * =====================================================
- *
- * Utilizzata nella homepage.
- *
- * Cerca per:
- * - nome
- * - città
- * - anno
- *
- * Pageable stabilisce quanti risultati
- * devono essere recuperati dal database.
- */
+    /* RICERCA FESTIVAL CON PAGINAZIONE
+     * questa query permette di cercare festival in base a nome, città, anno.
+     * Pageable stabilisce quanti risultati devono essere recuperati dal database.
+     * lower converte in nome in minuscolo per effettuare ricerche senza distinguere tra maiuscole e minuscole.
+     * like concat permette di cercare il nome del festival o della città anche se non è scritto esattamente come nel database.
+     */
+    @Query("""
+            SELECT f
+            FROM Festival f
+            WHERE LOWER(f.name) LIKE CONCAT('%', :search, '%')   
+               OR LOWER(f.city) LIKE CONCAT('%', :search, '%')
+               OR f.year = :year
+            """)
+    Page<Festival> searchForHome(
 
-@Query("""
-    SELECT f
-    FROM Festival f
-    WHERE LOWER(f.name) LIKE CONCAT('%', :search, '%')
-       OR LOWER(f.city) LIKE CONCAT('%', :search, '%')
-       OR f.year = :year
-    """)
-Page<Festival> searchForHome(
+            @Param("search") String search,
 
-        @Param("search") String search,
+            @Param("year") Integer year,
 
-        @Param("year") Integer year,
-
-        Pageable pageable
-);
+            Pageable pageable);  //posso mostrare solamente 3 risultati alla volta per pagina.
 
 }

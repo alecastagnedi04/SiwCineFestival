@@ -10,19 +10,16 @@ import org.springframework.transaction.annotation.Transactional;
 import it.uniroma3.siw.siwcinefestival.model.Director;
 import it.uniroma3.siw.siwcinefestival.repository.DirectorRepository;
 
-
 @Service
 public class DirectorService {
 
     private final DirectorRepository directorRepository;
-
 
     public DirectorService(
             DirectorRepository directorRepository) {
 
         this.directorRepository = directorRepository;
     }
-
 
     @Transactional(readOnly = true)
     public List<Director> findAll() {
@@ -31,13 +28,11 @@ public class DirectorService {
                 .findAllByOrderBySurnameAscNameAsc();
     }
 
-
     @Transactional(readOnly = true)
     public Optional<Director> findById(Long id) {
 
         return directorRepository.findById(id);
     }
-
 
     /*
      * CREAZIONE REGISTA
@@ -58,7 +53,6 @@ public class DirectorService {
         return directorRepository.save(director);
     }
 
-
     /*
      * MODIFICA REGISTA
      */
@@ -71,11 +65,8 @@ public class DirectorService {
 
         Director director = directorRepository
                 .findById(directorId)
-                .orElseThrow(() ->
-                        new NoSuchElementException(
-                                "Regista non trovato."
-                        )
-                );
+                .orElseThrow(() -> new NoSuchElementException(
+                        "Regista non trovato."));
 
         validateDirector(name, surname);
 
@@ -84,7 +75,6 @@ public class DirectorService {
 
         return directorRepository.save(director);
     }
-
 
     /*
      * VALIDAZIONE
@@ -97,15 +87,13 @@ public class DirectorService {
         if (name == null || name.isBlank()) {
 
             throw new IllegalArgumentException(
-                    "Il nome del regista è obbligatorio."
-            );
+                    "Il nome del regista è obbligatorio.");
         }
 
         if (surname == null || surname.isBlank()) {
 
             throw new IllegalArgumentException(
-                    "Il cognome del regista è obbligatorio."
-            );
+                    "Il cognome del regista è obbligatorio.");
         }
     }
 }

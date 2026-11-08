@@ -21,238 +21,179 @@ import it.uniroma3.siw.siwcinefestival.dto.CinemaRoomForm;
 import it.uniroma3.siw.siwcinefestival.model.CinemaRoom;
 import it.uniroma3.siw.siwcinefestival.service.CinemaRoomService;
 
-
 @Controller
 @RequestMapping("/admin/rooms")
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminRoomController {
 
-    private final CinemaRoomService roomService;
+        private final CinemaRoomService roomService;
 
+        public AdminRoomController(
+                        CinemaRoomService roomService) {
 
-    public AdminRoomController(
-            CinemaRoomService roomService) {
-
-        this.roomService = roomService;
-    }
-
-
-    /*
-     * =====================================================
-     * ELENCO SALE
-     * =====================================================
-     */
-
-    @GetMapping
-    public String listRooms(Model model) {
-
-        model.addAttribute(
-                "rooms",
-                roomService.findAll()
-        );
-
-        return "admin/rooms/list";
-    }
-
-
-    /*
-     * =====================================================
-     * FORM NUOVA SALA
-     * =====================================================
-     */
-
-    @GetMapping("/new")
-    public String newRoomForm(Model model) {
-
-        model.addAttribute(
-                "roomForm",
-                new CinemaRoomForm()
-        );
-
-        prepareForm(model, false, null);
-
-        return "admin/rooms/form";
-    }
-
-
-    /*
-     * =====================================================
-     * CREAZIONE SALA
-     * =====================================================
-     */
-
-    @PostMapping("/new")
-    public String createRoom(
-
-            @Valid
-            @ModelAttribute("roomForm")
-            CinemaRoomForm form,
-
-            BindingResult bindingResult,
-
-            Model model,
-
-            RedirectAttributes redirectAttributes) {
-
-        if (bindingResult.hasErrors()) {
-
-            prepareForm(model, false, null);
-
-            return "admin/rooms/form";
+                this.roomService = roomService;
         }
 
-        try {
+        /*ELENCO SALE*/
 
-            roomService.createRoom(
-                    form.getName(),
-                    form.getAddress(),
-                    form.getCapacity()
-            );
+        @GetMapping
+        public String listRooms(Model model) {
 
-            redirectAttributes.addFlashAttribute(
-                    "successMessage",
-                    "Sala creata con successo!"
-            );
+                model.addAttribute(
+                                "rooms",
+                                roomService.findAll());
 
-            return "redirect:/admin/rooms";
-
-        } catch (IllegalArgumentException ex) {
-
-            bindingResult.reject(
-                    "roomError",
-                    ex.getMessage()
-            );
-
-            prepareForm(model, false, null);
-
-            return "admin/rooms/form";
-        }
-    }
-
-
-    /*
-     * =====================================================
-     * FORM MODIFICA SALA
-     * =====================================================
-     */
-
-    @GetMapping("/{id}/edit")
-    public String editRoomForm(
-
-            @PathVariable("id") Long id,
-
-            Model model) {
-
-        CinemaRoom room = requireRoom(id);
-
-        CinemaRoomForm form = new CinemaRoomForm();
-
-        form.setName(room.getName());
-        form.setAddress(room.getAddress());
-        form.setCapacity(room.getCapacity());
-
-        model.addAttribute(
-                "roomForm",
-                form
-        );
-
-        prepareForm(model, true, id);
-
-        return "admin/rooms/form";
-    }
-
-
-    /*
-     * =====================================================
-     * MODIFICA SALA
-     * =====================================================
-     */
-
-    @PostMapping("/{id}/edit")
-    public String updateRoom(
-
-            @PathVariable("id") Long id,
-
-            @Valid
-            @ModelAttribute("roomForm")
-            CinemaRoomForm form,
-
-            BindingResult bindingResult,
-
-            Model model,
-
-            RedirectAttributes redirectAttributes) {
-
-        requireRoom(id);
-
-        if (bindingResult.hasErrors()) {
-
-            prepareForm(model, true, id);
-
-            return "admin/rooms/form";
+                return "admin/rooms/list";
         }
 
-        try {
+        /* FORM NUOVA SALA */
 
-            roomService.updateRoom(
-                    id,
-                    form.getName(),
-                    form.getAddress(),
-                    form.getCapacity()
-            );
+        @GetMapping("/new")
+        public String newRoomForm(Model model) {
 
-            redirectAttributes.addFlashAttribute(
-                    "successMessage",
-                    "Sala modificata con successo!"
-            );
+                model.addAttribute(
+                                "roomForm",
+                                new CinemaRoomForm());
 
-            return "redirect:/admin/rooms";
+                prepareForm(model, false, null);
 
-        } catch (IllegalArgumentException ex) {
-
-            bindingResult.reject(
-                    "roomError",
-                    ex.getMessage()
-            );
-
-            prepareForm(model, true, id);
-
-            return "admin/rooms/form";
+                return "admin/rooms/form";
         }
-    }
 
+        /*CREAZIONE SALA */
 
-    /*
-     * =====================================================
-     * METODI PRIVATI
-     * =====================================================
-     */
+        @PostMapping("/new")
+        public String createRoom(
 
-    private CinemaRoom requireRoom(Long id) {
+                        @Valid @ModelAttribute("roomForm") CinemaRoomForm form,
+                        BindingResult bindingResult,
+                        Model model,
+                        RedirectAttributes redirectAttributes) {
 
-        return roomService.findById(id)
-                .orElseThrow(() ->
-                        new ResponseStatusException(
-                                HttpStatus.NOT_FOUND,
-                                "Sala non trovata."
-                        )
-                );
-    }
+                if (bindingResult.hasErrors()) {
 
+                        prepareForm(model, false, null);
 
-    private void prepareForm(
-            Model model,
-            boolean isEdit,
-            Long roomId) {
+                        return "admin/rooms/form";
+                }
 
-        model.addAttribute(
-                "isEdit",
-                isEdit
-        );
+                try {
 
-        model.addAttribute(
-                "roomId",
-                roomId
-        );
-    }
+                        roomService.createRoom(
+                                        form.getName(),
+                                        form.getAddress(),
+                                        form.getCapacity());
+
+                        redirectAttributes.addFlashAttribute(
+                                        "successMessage",
+                                        "Sala creata con successo!");
+
+                        return "redirect:/admin/rooms";
+
+                } catch (IllegalArgumentException ex) {
+
+                        bindingResult.reject(
+                                        "roomError",
+                                        ex.getMessage());
+
+                        prepareForm(model, false, null);
+
+                        return "admin/rooms/form";
+                }
+        }
+
+        /*FORM MODIFICA SALA*/
+
+        @GetMapping("/{id}/edit")
+        public String editRoomForm(
+
+                        @PathVariable("id") Long id,
+                        Model model) {
+
+                CinemaRoom room = requireRoom(id);
+
+                CinemaRoomForm form = new CinemaRoomForm();
+
+                form.setName(room.getName());
+                form.setAddress(room.getAddress());
+                form.setCapacity(room.getCapacity());
+
+                model.addAttribute(
+                                "roomForm",
+                                form);
+
+                prepareForm(model, true, id);
+
+                return "admin/rooms/form";
+        }
+
+        /*MODIFICA SALA*/
+
+        @PostMapping("/{id}/edit")
+        public String updateRoom(
+
+                        @PathVariable("id") Long id,
+                        @Valid @ModelAttribute("roomForm") CinemaRoomForm form,
+                        BindingResult bindingResult,
+                        Model model,
+                        RedirectAttributes redirectAttributes) {
+
+                requireRoom(id);
+
+                if (bindingResult.hasErrors()) {
+
+                        prepareForm(model, true, id);
+
+                        return "admin/rooms/form";
+                }
+
+                try {
+
+                        roomService.updateRoom(
+                                        id,
+                                        form.getName(),
+                                        form.getAddress(),
+                                        form.getCapacity());
+
+                        redirectAttributes.addFlashAttribute(
+                                        "successMessage",
+                                        "Sala modificata con successo!");
+
+                        return "redirect:/admin/rooms";
+
+                } catch (IllegalArgumentException ex) {
+
+                        bindingResult.reject(
+                                        "roomError",
+                                        ex.getMessage());
+
+                        prepareForm(model, true, id);
+
+                        return "admin/rooms/form";
+                }
+        }
+
+        /* METODI PRIVATI */
+
+        private CinemaRoom requireRoom(Long id) {
+
+                return roomService.findById(id)
+                                .orElseThrow(() -> new ResponseStatusException(
+                                                HttpStatus.NOT_FOUND,
+                                                "Sala non trovata."));
+        }
+
+        private void prepareForm(
+                        Model model,
+                        boolean isEdit,
+                        Long roomId) {
+
+                model.addAttribute(
+                                "isEdit",
+                                isEdit);
+
+                model.addAttribute(
+                                "roomId",
+                                roomId);
+        }
 }

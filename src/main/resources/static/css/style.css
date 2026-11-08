@@ -9553,3 +9553,281 @@ body.auth-page {
         grid-template-columns: 1fr;
     }
 }
+
+/* =====================================================
+   MOVIE PROGRAM - COMPACT DESIGN
+   ===================================================== */
+
+
+/* SEZIONE GENERALE */
+
+.movie-program-section {
+
+    padding: 45px 0;
+
+}
+
+
+/* INTESTAZIONE */
+
+.movie-program-header {
+
+    margin-bottom: 28px;
+
+}
+
+
+.movie-program-title {
+
+    font-size: clamp(30px, 3vw, 42px);
+
+    line-height: 1.15;
+
+    margin-bottom: 12px;
+
+}
+
+
+.movie-program-description {
+
+    font-size: 13px;
+
+    line-height: 1.7;
+
+    color: var(--muted);
+
+    max-width: 650px;
+
+}
+
+
+/* GRIGLIA DELLE PROIEZIONI */
+
+.movie-program-section .movie-screenings {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(min(100%, 280px), 350px)
+        );
+
+    gap: 16px;
+
+    align-items: start;
+
+}
+
+
+/* SINGOLA SCHEDA */
+
+.movie-program-section .movie-screening-item {
+
+    padding: 18px 20px;
+
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    min-height: 0;
+
+    height: auto;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+
+    transition:
+        border-color 0.2s ease,
+        transform 0.2s ease;
+
+}
+
+
+/* EFFETTO HOVER */
+
+.movie-program-section .movie-screening-item:hover {
+
+    border-color: var(--gold);
+
+    transform: translateY(-2px);
+
+}
+
+
+/* DATA E ORARIO */
+
+.movie-program-section .movie-screening-date {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 12px;
+
+    margin-bottom: 0;
+
+}
+
+
+.movie-program-section .movie-screening-date span {
+
+    font-size: 12px;
+
+    color: var(--muted);
+
+}
+
+
+.movie-program-section .movie-screening-date strong {
+
+    font-size: 24px;
+
+    color: var(--gold);
+
+    font-family: var(--font-heading);
+
+}
+
+
+/* INFORMAZIONI FESTIVAL */
+
+.movie-screening-details {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 4px;
+
+}
+
+
+.movie-program-section .movie-screening-festival {
+
+    font-size: 13px;
+
+    color: var(--text);
+
+    font-weight: 600;
+
+    line-height: 1.5;
+
+    margin: 0;
+
+}
+
+
+.movie-program-section .movie-screening-room {
+
+    font-size: 12px;
+
+    color: var(--muted);
+
+    line-height: 1.5;
+
+    margin: 0;
+
+}
+
+
+/* STATO DELLA PROIEZIONE */
+
+.movie-screening-footer {
+
+    display: flex;
+
+    align-items: center;
+
+    margin-top: 2px;
+
+}
+
+
+.movie-screening-footer .status-badge {
+
+    padding: 6px 10px;
+
+    font-size: 9px;
+
+    letter-spacing: 1px;
+
+}
+
+
+/* NESSUNA PROIEZIONE */
+
+.movie-program-empty {
+
+    padding: 25px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    background: var(--surface);
+
+}
+
+
+.movie-program-empty p {
+
+    margin: 0;
+
+    font-size: 13px;
+
+}
+
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
+
+@media (max-width: 768px) {
+
+    .movie-program-section {
+
+        padding: 35px 0;
+
+    }
+
+    .movie-program-header {
+
+        margin-bottom: 22px;
+
+    }
+
+    .movie-program-title {
+
+        font-size: 30px;
+
+    }
+
+    .movie-program-section .movie-screenings {
+
+        grid-template-columns: 1fr;
+
+        gap: 12px;
+
+    }
+
+    .movie-program-section .movie-screening-item {
+
+        padding: 16px;
+
+    }
+
+    .movie-program-section .movie-screening-date strong {
+
+        font-size: 22px;
+
+    }
+
+}

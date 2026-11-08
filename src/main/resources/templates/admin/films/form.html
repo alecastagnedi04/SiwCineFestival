@@ -4,803 +4,664 @@
 <head>
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title th:text="${isEdit} ? 'Modifica Film | SiwCineFestival' : 'Nuovo Film | SiwCineFestival'">
         Gestione Film
     </title>
 
-    <link rel="stylesheet"
-          th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 
 <body>
 
-<!-- NAVBAR -->
-<div th:replace="~{fragments/navbar :: navbar}"></div>
+    <!-- NAVBAR -->
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
 
 
-<!-- HEADER -->
-<section class="page-hero">
+    <!-- HEADER -->
+    <section class="page-hero">
 
-    <div class="container">
+        <div class="container">
 
-        <div class="breadcrumb">
+            <div class="breadcrumb">
 
-            <a th:href="@{/}">Home</a>
+                <a th:href="@{/}">Home</a>
 
-            <span class="breadcrumb-separator">✦</span>
+                <span class="breadcrumb-separator">✦</span>
 
-            <a th:href="@{/admin}">Dashboard</a>
+                <a th:href="@{/admin}">Dashboard</a>
 
-            <span class="breadcrumb-separator">✦</span>
+                <span class="breadcrumb-separator">✦</span>
 
-            <a th:href="@{/admin/films}">Film</a>
+                <a th:href="@{/admin/films}">Film</a>
 
-            <span class="breadcrumb-separator">✦</span>
+                <span class="breadcrumb-separator">✦</span>
 
-            <span th:text="${isEdit} ? 'Modifica' : 'Nuovo'">
-                Nuovo
-            </span>
+                <span th:text="${isEdit} ? 'Modifica' : 'Nuovo'">
+                    Nuovo
+                </span>
 
-        </div>
+            </div>
 
 
-        <div class="eyebrow" style="margin-top:35px;"
-             th:text="${isEdit} ? 'EDIT THE MOVIE' : 'A NEW STORY BEGINS'">
-            A NEW STORY BEGINS
-        </div>
+            <div class="eyebrow" style="margin-top:35px;" th:text="${isEdit} ? 'EDIT THE MOVIE' : 'A NEW STORY BEGINS'">
+                A NEW STORY BEGINS
+            </div>
 
 
-        <h1 th:if="${!isEdit}">
-            Una nuova
-            <em class="gold-text">storia.</em>
-        </h1>
+            <h1 th:if="${!isEdit}">
+                Una nuova
+                <em class="gold-text">storia.</em>
+            </h1>
 
-        <h1 th:if="${isEdit}">
-            Il tuo
-            <em class="gold-text">film.</em>
-        </h1>
+            <h1 th:if="${isEdit}">
+                Il tuo
+                <em class="gold-text">film.</em>
+            </h1>
 
 
-        <p th:if="${!isEdit}">
-            Ogni capolavoro inizia da un titolo.
+            <p th:if="${!isEdit}">
+                Ogni capolavoro inizia da un titolo.
 
-            Aggiungi una nuova opera al catalogo,
-            scegli il regista e prepara
-            il suo debutto nei festival.
-        </p>
+                Aggiungi una nuova opera al catalogo,
+                scegli il regista e prepara
+                il suo debutto nei festival.
+            </p>
 
-        <p th:if="${isEdit}">
-            Modifica le informazioni del film,
-            aggiorna la regia e completa
-            la sua scheda cinematografica.
-        </p>
+            <p th:if="${isEdit}">
+                Modifica le informazioni del film,
+                aggiorna la regia e completa
+                la sua scheda cinematografica.
+            </p>
 
 
-        <div class="admin-page-actions">
+            <div class="admin-page-actions">
 
-            <a th:href="@{/admin/films}"
-               class="btn btn-outline">
-                ← Catalogo film
-            </a>
+                <a th:href="@{/admin/films}" class="btn btn-outline">
+                    ← Catalogo film
+                </a>
 
-            <a th:if="${isEdit}"
-               th:href="@{/admin/films/{id}/cast(id=${filmId})}"
-               class="btn btn-gold">
-                ✦ Gestisci il cast
-            </a>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- FORM -->
-<main class="section">
-
-    <div class="container">
-
-        <div th:if="${successMessage != null}"
-             class="alert alert-success"
-             th:text="${successMessage}">
-        </div>
-
-
-        <div class="admin-form-layout">
-
-            <!-- FORM PRINCIPALE -->
-            <div class="admin-form-panel">
-
-                <div class="section-label">
-                    ✦ Film Information
-                </div>
-
-                <h2 class="admin-panel-title">
-                    Dettagli
-                    <span class="gold-text italic-text">
-                        cinematografici.
-                    </span>
-                </h2>
-
-                <p class="admin-panel-description">
-                    Inserisci i dati principali
-                    del film. Tutti i campi
-                    contrassegnati da * sono obbligatori.
-                </p>
-
-
-                <form
-                    th:object="${filmForm}"
-                    th:action="${isEdit} ? @{/admin/films/{id}/edit(id=${filmId})} : @{/admin/films/new}"
-                    method="post">
-
-
-                    <!-- ERRORI GLOBALI -->
-                    <div
-                        th:if="${#fields.hasGlobalErrors()}"
-                        class="alert alert-error">
-
-                        <div th:each="err : ${#fields.globalErrors()}"
-                             th:text="${err}">
-                        </div>
-
-                    </div>
-
-
-                    <!-- TITOLO -->
-                    <div class="form-group">
-
-                        <label for="title"
-                               class="form-label">
-                            Titolo del film *
-                        </label>
-
-                        <input
-                            id="title"
-                            type="text"
-                            th:field="*{title}"
-                            class="form-control"
-                            placeholder="Es. Interstellar"
-                            maxlength="255"
-                            required>
-
-                        <span
-                            th:if="${#fields.hasErrors('title')}"
-                            th:errors="*{title}"
-                            class="form-error">
-                        </span>
-
-                    </div>
-
-
-                    <!-- ANNO / DURATA -->
-                    <div class="admin-form-row">
-
-                        <div class="form-group">
-
-                            <label for="year"
-                                   class="form-label">
-                                Anno *
-                            </label>
-
-                            <input
-                                id="year"
-                                type="number"
-                                th:field="*{year}"
-                                class="form-control"
-                                placeholder="2014"
-                                min="1888"
-                                required>
-
-                            <span
-                                th:if="${#fields.hasErrors('year')}"
-                                th:errors="*{year}"
-                                class="form-error">
-                            </span>
-
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label for="duration"
-                                   class="form-label">
-                                Durata (minuti) *
-                            </label>
-
-                            <input
-                                id="duration"
-                                type="number"
-                                th:field="*{duration}"
-                                class="form-control"
-                                placeholder="169"
-                                min="1"
-                                required>
-
-                            <span
-                                th:if="${#fields.hasErrors('duration')}"
-                                th:errors="*{duration}"
-                                class="form-error">
-                            </span>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- GENERE -->
-                    <div class="form-group">
-
-                        <label for="genre"
-                               class="form-label">
-                            Genere *
-                        </label>
-
-                        <input
-                            id="genre"
-                            type="text"
-                            th:field="*{genre}"
-                            class="form-control"
-                            placeholder="Es. Fantascienza"
-                            required>
-
-                        <span
-                            th:if="${#fields.hasErrors('genre')}"
-                            th:errors="*{genre}"
-                            class="form-error">
-                        </span>
-
-                    </div>
-
-
-                    <!-- PAESE -->
-                    <div class="form-group">
-
-                        <label for="productionCountry"
-                               class="form-label">
-                            Paese di produzione *
-                        </label>
-
-                        <input
-                            id="productionCountry"
-                            type="text"
-                            th:field="*{productionCountry}"
-                            class="form-control"
-                            placeholder="Es. Stati Uniti"
-                            required>
-
-                        <span
-                            th:if="${#fields.hasErrors('productionCountry')}"
-                            th:errors="*{productionCountry}"
-                            class="form-error">
-                        </span>
-
-                    </div>
-
-<!-- ===================================================
-     REGIA — ESISTENTE O NUOVO REGISTA
-     =================================================== -->
-
-
-<!-- ==========================================
-     CREAZIONE FILM
-     ========================================== -->
-
-<div
-    class="film-director-section"
-    th:if="${!isEdit}">
-
-
-    <!-- INTESTAZIONE -->
-
-    <div class="section-label">
-
-        ✦ LA REGIA
-
-    </div>
-
-
-    <h3 class="film-director-title">
-
-        Chi ha diretto
-
-        <span class="gold-text">
-
-            questo film?
-
-        </span>
-
-    </h3>
-
-
-    <p class="film-director-description">
-
-        Seleziona un regista già presente
-        nel catalogo oppure inseriscine uno nuovo.
-
-    </p>
-
-
-
-    <!-- ==========================================
-         MODALITÀ DI SELEZIONE
-         ========================================== -->
-
-    <div class="director-mode-options">
-
-
-        <!-- REGISTA ESISTENTE -->
-
-        <label class="director-mode-option">
-
-            <input
-                type="radio"
-                id="directorModeExisting"
-                th:field="*{directorMode}"
-                value="existing"
-                th:disabled="${directors.isEmpty()}">
-
-            <span>
-
-                Seleziona un regista esistente
-
-            </span>
-
-        </label>
-
-
-
-        <!-- NUOVO REGISTA -->
-
-        <label class="director-mode-option">
-
-            <input
-                type="radio"
-                id="directorModeNew"
-                th:field="*{directorMode}"
-                value="new">
-
-            <span>
-
-                Inserisci un nuovo regista
-
-            </span>
-
-        </label>
-
-    </div>
-
-
-
-    <!-- ==========================================
-         ERRORI MODALITÀ
-         ========================================== -->
-
-    <span
-        th:if="${#fields.hasErrors('directorMode')}"
-        th:errors="*{directorMode}"
-        class="form-error">
-    </span>
-
-
-
-    <!-- ==========================================
-         REGISTA ESISTENTE
-         ========================================== -->
-
-    <div
-        id="existingDirectorPanel"
-        class="director-choice-panel">
-
-
-        <div class="form-group">
-
-
-            <label
-                for="directorId"
-                class="form-label">
-
-                Regista *
-
-            </label>
-
-
-            <select
-                id="directorId"
-                th:field="*{directorId}"
-                class="form-control">
-
-
-                <option value="">
-
-                    -- Seleziona un regista --
-
-                </option>
-
-
-                <option
-                    th:each="director : ${directors}"
-                    th:value="${director.id}"
-                    th:text="${director.name + ' ' + director.surname}">
-
-                    Nome Cognome
-
-                </option>
-
-            </select>
-
-
-
-            <span
-                th:if="${#fields.hasErrors('directorId')}"
-                th:errors="*{directorId}"
-                class="form-error">
-            </span>
-
-
-        </div>
-
-    </div>
-
-
-
-    <!-- ==========================================
-         NUOVO REGISTA
-         ========================================== -->
-
-    <div
-        id="newDirectorPanel"
-        class="director-choice-panel"
-        hidden>
-
-
-        <!-- NOME -->
-
-        <div class="form-group">
-
-
-            <label
-                for="newDirectorName"
-                class="form-label">
-
-                Nome del nuovo regista *
-
-            </label>
-
-
-            <input
-                id="newDirectorName"
-                type="text"
-                th:field="*{newDirectorName}"
-                class="form-control"
-                placeholder="Es. Denis"
-                maxlength="255">
-
-
-            <span
-                th:if="${#fields.hasErrors('newDirectorName')}"
-                th:errors="*{newDirectorName}"
-                class="form-error">
-            </span>
-
-
-        </div>
-
-
-
-        <!-- COGNOME -->
-
-        <div class="form-group">
-
-
-            <label
-                for="newDirectorSurname"
-                class="form-label">
-
-                Cognome del nuovo regista *
-
-            </label>
-
-
-            <input
-                id="newDirectorSurname"
-                type="text"
-                th:field="*{newDirectorSurname}"
-                class="form-control"
-                placeholder="Es. Villeneuve"
-                maxlength="255">
-
-
-            <span
-                th:if="${#fields.hasErrors('newDirectorSurname')}"
-                th:errors="*{newDirectorSurname}"
-                class="form-error">
-            </span>
-
-
-        </div>
-
-
-
-        <!-- INFORMAZIONE -->
-
-        <p class="director-new-hint">
-
-            ✦ Il regista verrà creato
-            automaticamente insieme al film
-            e sarà disponibile nel catalogo.
-
-        </p>
-
-    </div>
-
-
-
-    <!-- ==========================================
-         NESSUN REGISTA PRESENTE
-         ========================================== -->
-
-    <p
-        class="director-new-hint"
-        th:if="${directors.isEmpty()}">
-
-        Non ci sono ancora registi nel catalogo.
-
-        Puoi creare direttamente il primo regista
-        utilizzando i campi qui sopra.
-
-    </p>
-
-
-</div>
-
-
-
-<!-- ==========================================
-     MODIFICA FILM ESISTENTE
-     ========================================== -->
-
-<div
-    class="form-group"
-    th:if="${isEdit}">
-
-
-    <label
-        for="editDirectorId"
-        class="form-label">
-
-        Regista *
-
-    </label>
-
-
-    <select
-        id="editDirectorId"
-        th:field="*{directorId}"
-        class="form-control"
-        required>
-
-
-        <option value="">
-
-            -- Seleziona un regista --
-
-        </option>
-
-
-        <option
-            th:each="director : ${directors}"
-            th:value="${director.id}"
-            th:text="${director.name + ' ' + director.surname}">
-
-            Nome Cognome
-
-        </option>
-
-    </select>
-
-
-    <span
-        th:if="${#fields.hasErrors('directorId')}"
-        th:errors="*{directorId}"
-        class="form-error">
-    </span>
-
-</div>
-                    
-
-
-                    <!-- AZIONI -->
-                    <div class="admin-form-buttons">
-
-                        <button
-                            type="submit"
-                            class="btn btn-gold">
-
-                            <span th:if="${!isEdit}">
-                                ✦ Crea film
-                            </span>
-
-                            <span th:if="${isEdit}">
-                                ✦ Salva modifiche
-                            </span>
-
-                        </button>
-
-                        <a th:href="@{/admin/films}"
-                           class="btn btn-outline">
-                            Annulla
-                        </a>
-
-                    </div>
-
-                </form>
-
-    <!-- ===================================================
-     LOCANDINA FILM — UPLOAD E ANTEPRIMA
-     =================================================== -->
-
-<div
-    class="image-upload-panel"
-    th:if="${isEdit}">
-
-
-    <!-- INTESTAZIONE -->
-
-    <div class="section-label">
-        ✦ MOVIE POSTER
-    </div>
-
-
-    <h3>
-        La locandina del
-        <span class="gold-text">
-            film.
-        </span>
-    </h3>
-
-
-    <p>
-        Gestisci la locandina associata
-        al film. Puoi sostituirla senza
-        modificare gli altri dati.
-    </p>
-
-
-
-    <!-- ==========================================
-         LOCANDINA GIÀ SALVATA
-         ========================================== -->
-
-    <div
-        class="film-current-poster"
-        th:if="${currentFilm.imageFileName != null}">
-
-
-        <!-- ANTEPRIMA -->
-
-        <div class="film-poster-preview">
-
-            <img
-                th:src="@{/media/{file}(file=${currentFilm.imageFileName})}"
-
-                th:alt="|Locandina di ${currentFilm.title}|">
-
-        </div>
-
-
-
-        <!-- CONFERMA -->
-
-        <div class="film-poster-saved">
-
-            <span class="film-poster-check">
-                ✓
-            </span>
-
-            <div>
-
-                <strong>
-                    Locandina già salvata
-                </strong>
-
-                <p th:text="${currentFilm.imageFileName}">
-                    avatar-poster.jpg
-                </p>
+                <a th:if="${isEdit}" th:href="@{/admin/films/{id}/cast(id=${filmId})}" class="btn btn-gold">
+                    ✦ Gestisci il cast
+                </a>
 
             </div>
 
         </div>
 
+    </section>
 
 
-        <p class="film-poster-hint">
+    <!-- FORM -->
+    <main class="section">
 
-            Questa locandina rimarrà associata
-            al film anche quando modifichi
-            titolo, anno, regista o genere.
+        <div class="container">
 
-        </p>
-
-    </div>
+            <div th:if="${successMessage != null}" class="alert alert-success" th:text="${successMessage}">
+            </div>
 
 
+            <div class="admin-form-layout">
 
-    <!-- ==========================================
+                <!-- FORM PRINCIPALE -->
+                <div class="admin-form-panel">
+
+                    <div class="section-label">
+                        ✦ Film Information
+                    </div>
+
+                    <h2 class="admin-panel-title">
+                        Dettagli
+                        <span class="gold-text italic-text">
+                            cinematografici.
+                        </span>
+                    </h2>
+
+                    <p class="admin-panel-description">
+                        Inserisci i dati principali
+                        del film. Tutti i campi
+                        contrassegnati da * sono obbligatori.
+                    </p>
+
+
+                    <form th:object="${filmForm}"
+                        th:action="${isEdit} ? @{/admin/films/{id}/edit(id=${filmId})} : @{/admin/films/new}"
+                        method="post">
+
+
+                        <!-- ERRORI GLOBALI -->
+                        <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-error">
+
+                            <div th:each="err : ${#fields.globalErrors()}" th:text="${err}">
+                            </div>
+
+                        </div>
+
+
+                        <!-- TITOLO -->
+                        <div class="form-group">
+
+                            <label for="title" class="form-label">
+                                Titolo del film *
+                            </label>
+
+                            <input id="title" type="text" th:field="*{title}" class="form-control"
+                                placeholder="Es. Interstellar" maxlength="255" required>
+
+                            <span th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="form-error">
+                            </span>
+
+                        </div>
+
+
+                        <!-- ANNO / DURATA -->
+                        <div class="admin-form-row">
+
+                            <div class="form-group">
+
+                                <label for="year" class="form-label">
+                                    Anno *
+                                </label>
+
+                                <input id="year" type="number" th:field="*{year}" class="form-control"
+                                    placeholder="2014" min="1888" required>
+
+                                <span th:if="${#fields.hasErrors('year')}" th:errors="*{year}" class="form-error">
+                                </span>
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="duration" class="form-label">
+                                    Durata (minuti) *
+                                </label>
+
+                                <input id="duration" type="number" th:field="*{duration}" class="form-control"
+                                    placeholder="169" min="1" required>
+
+                                <span th:if="${#fields.hasErrors('duration')}" th:errors="*{duration}"
+                                    class="form-error">
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- GENERE -->
+                        <div class="form-group">
+
+                            <label for="genre" class="form-label">
+                                Genere *
+                            </label>
+
+                            <input id="genre" type="text" th:field="*{genre}" class="form-control"
+                                placeholder="Es. Fantascienza" required>
+
+                            <span th:if="${#fields.hasErrors('genre')}" th:errors="*{genre}" class="form-error">
+                            </span>
+
+                        </div>
+
+
+                        <!-- PAESE -->
+                        <div class="form-group">
+
+                            <label for="productionCountry" class="form-label">
+                                Paese di produzione *
+                            </label>
+
+                            <input id="productionCountry" type="text" th:field="*{productionCountry}"
+                                class="form-control" placeholder="Es. Stati Uniti" required>
+
+                            <span th:if="${#fields.hasErrors('productionCountry')}" th:errors="*{productionCountry}"
+                                class="form-error">
+                            </span>
+
+                        </div>
+
+                        <!-- ===================================================
+     REGIA — ESISTENTE O NUOVO REGISTA
+     =================================================== -->
+
+
+                        <!-- ==========================================
+     CREAZIONE FILM
+     ========================================== -->
+
+                        <div class="film-director-section" th:if="${!isEdit}">
+
+
+                            <!-- INTESTAZIONE -->
+
+                            <div class="section-label">
+
+                                ✦ LA REGIA
+
+                            </div>
+
+
+                            <h3 class="film-director-title">
+
+                                Chi ha diretto
+
+                                <span class="gold-text">
+
+                                    questo film?
+
+                                </span>
+
+                            </h3>
+
+
+                            <p class="film-director-description">
+
+                                Seleziona un regista già presente
+                                nel catalogo oppure inseriscine uno nuovo.
+
+                            </p>
+
+
+
+                            <!-- ==========================================
+         MODALITÀ DI SELEZIONE
+         ========================================== -->
+
+                            <div class="director-mode-options">
+
+
+                                <!-- REGISTA ESISTENTE -->
+
+                                <label class="director-mode-option">
+
+                                    <input type="radio" id="directorModeExisting" th:field="*{directorMode}"
+                                        value="existing" th:disabled="${directors.isEmpty()}">
+
+                                    <span>
+
+                                        Seleziona un regista esistente
+
+                                    </span>
+
+                                </label>
+
+
+
+                                <!-- NUOVO REGISTA -->
+
+                                <label class="director-mode-option">
+
+                                    <input type="radio" id="directorModeNew" th:field="*{directorMode}" value="new">
+
+                                    <span>
+
+                                        Inserisci un nuovo regista
+
+                                    </span>
+
+                                </label>
+
+                            </div>
+
+
+
+                            <!-- ==========================================
+         ERRORI MODALITÀ
+         ========================================== -->
+
+                            <span th:if="${#fields.hasErrors('directorMode')}" th:errors="*{directorMode}"
+                                class="form-error">
+                            </span>
+
+
+
+                            <!-- ==========================================
+         REGISTA ESISTENTE
+         ========================================== -->
+
+                            <div id="existingDirectorPanel" class="director-choice-panel">
+
+
+                                <div class="form-group">
+
+
+                                    <label for="directorId" class="form-label">
+
+                                        Regista *
+
+                                    </label>
+
+
+                                    <select id="directorId" th:field="*{directorId}" class="form-control">
+
+
+                                        <option value="">
+
+                                            -- Seleziona un regista --
+
+                                        </option>
+
+
+                                        <option th:each="director : ${directors}" th:value="${director.id}"
+                                            th:text="${director.name + ' ' + director.surname}">
+
+                                            Nome Cognome
+
+                                        </option>
+
+                                    </select>
+
+
+
+                                    <span th:if="${#fields.hasErrors('directorId')}" th:errors="*{directorId}"
+                                        class="form-error">
+                                    </span>
+
+
+                                </div>
+
+                            </div>
+
+
+
+                            <!-- ==========================================
+         NUOVO REGISTA
+         ========================================== -->
+
+                            <div id="newDirectorPanel" class="director-choice-panel" hidden>
+
+
+                                <!-- NOME -->
+
+                                <div class="form-group">
+
+
+                                    <label for="newDirectorName" class="form-label">
+
+                                        Nome del nuovo regista *
+
+                                    </label>
+
+
+                                    <input id="newDirectorName" type="text" th:field="*{newDirectorName}"
+                                        class="form-control" placeholder="Es. Denis" maxlength="255">
+
+
+                                    <span th:if="${#fields.hasErrors('newDirectorName')}" th:errors="*{newDirectorName}"
+                                        class="form-error">
+                                    </span>
+
+
+                                </div>
+
+
+
+                                <!-- COGNOME -->
+
+                                <div class="form-group">
+
+
+                                    <label for="newDirectorSurname" class="form-label">
+
+                                        Cognome del nuovo regista *
+
+                                    </label>
+
+
+                                    <input id="newDirectorSurname" type="text" th:field="*{newDirectorSurname}"
+                                        class="form-control" placeholder="Es. Villeneuve" maxlength="255">
+
+
+                                    <span th:if="${#fields.hasErrors('newDirectorSurname')}"
+                                        th:errors="*{newDirectorSurname}" class="form-error">
+                                    </span>
+
+
+                                </div>
+
+
+
+                                <!-- INFORMAZIONE -->
+
+                                <p class="director-new-hint">
+
+                                    ✦ Il regista verrà creato
+                                    automaticamente insieme al film
+                                    e sarà disponibile nel catalogo.
+
+                                </p>
+
+                            </div>
+
+
+
+                            <!-- ==========================================
+         NESSUN REGISTA PRESENTE
+         ========================================== -->
+
+                            <p class="director-new-hint" th:if="${directors.isEmpty()}">
+
+                                Non ci sono ancora registi nel catalogo.
+
+                                Puoi creare direttamente il primo regista
+                                utilizzando i campi qui sopra.
+
+                            </p>
+
+
+                        </div>
+
+
+
+                        <!-- ==========================================
+     MODIFICA FILM ESISTENTE
+     ========================================== -->
+
+                        <div class="form-group" th:if="${isEdit}">
+
+
+                            <label for="editDirectorId" class="form-label">
+
+                                Regista *
+
+                            </label>
+
+
+                            <select id="editDirectorId" th:field="*{directorId}" class="form-control" required>
+
+
+                                <option value="">
+
+                                    -- Seleziona un regista --
+
+                                </option>
+
+
+                                <option th:each="director : ${directors}" th:value="${director.id}"
+                                    th:text="${director.name + ' ' + director.surname}">
+
+                                    Nome Cognome
+
+                                </option>
+
+                            </select>
+
+
+                            <span th:if="${#fields.hasErrors('directorId')}" th:errors="*{directorId}"
+                                class="form-error">
+                            </span>
+
+                        </div>
+
+
+
+                        <!-- AZIONI -->
+                        <div class="admin-form-buttons">
+
+                            <button type="submit" class="btn btn-gold">
+
+                                <span th:if="${!isEdit}">
+                                    ✦ Crea film
+                                </span>
+
+                                <span th:if="${isEdit}">
+                                    ✦ Salva modifiche
+                                </span>
+
+                            </button>
+
+                            <a th:href="@{/admin/films}" class="btn btn-outline">
+                                Annulla
+                            </a>
+
+                        </div>
+
+                    </form>
+
+                    <!-- ===================================================
+     LOCANDINA FILM — UPLOAD E ANTEPRIMA
+     =================================================== -->
+
+                    <div class="image-upload-panel" th:if="${isEdit}">
+
+
+                        <!-- INTESTAZIONE -->
+
+                        <div class="section-label">
+                            ✦ MOVIE POSTER
+                        </div>
+
+
+                        <h3>
+                            La locandina del
+                            <span class="gold-text">
+                                film.
+                            </span>
+                        </h3>
+
+
+                        <p>
+                            Gestisci la locandina associata
+                            al film. Puoi sostituirla senza
+                            modificare gli altri dati.
+                        </p>
+
+
+
+                        <!-- ==========================================
+         LOCANDINA GIÀ SALVATA
+         ========================================== -->
+
+                        <div class="film-current-poster" th:if="${currentFilm.imageFileName != null}">
+
+
+                            <!-- ANTEPRIMA -->
+
+                            <div class="film-poster-preview">
+
+                                <img th:src="@{/media/{file}(file=${currentFilm.imageFileName})}"
+                                    th:alt="|Locandina di ${currentFilm.title}|">
+
+                            </div>
+
+
+
+                            <!-- CONFERMA -->
+
+                            <div class="film-poster-saved">
+
+                                <span class="film-poster-check">
+                                    ✓
+                                </span>
+
+                                <div>
+
+                                    <strong>
+                                        Locandina già salvata
+                                    </strong>
+
+                                    <p th:text="${currentFilm.imageFileName}">
+                                        avatar-poster.jpg
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <p class="film-poster-hint">
+
+                                Questa locandina rimarrà associata
+                                al film anche quando modifichi
+                                titolo, anno, regista o genere.
+
+                            </p>
+
+                        </div>
+
+
+
+                        <!-- ==========================================
          NESSUNA LOCANDINA
          ========================================== -->
 
-    <div
-        class="film-no-poster"
-        th:if="${currentFilm.imageFileName == null}">
+                        <div class="film-no-poster" th:if="${currentFilm.imageFileName == null}">
 
-        <span>✦</span>
+                            <span>✦</span>
 
-        <p>
-            Non hai ancora caricato
-            una locandina per questo film.
-        </p>
+                            <p>
+                                Non hai ancora caricato
+                                una locandina per questo film.
+                            </p>
 
-    </div>
+                        </div>
 
 
 
-    <!-- ==========================================
+                        <!-- ==========================================
          EVENTUALI ERRORI
          ========================================== -->
 
-    <div
-        th:if="${errorMessage != null}"
-        th:text="${errorMessage}"
-        class="alert alert-error">
-    </div>
+                        <div th:if="${errorMessage != null}" th:text="${errorMessage}" class="alert alert-error">
+                        </div>
 
 
 
-    <!-- ==========================================
+                        <!-- ==========================================
          FORM UPLOAD
          ========================================== -->
 
-    <form
-        th:action="@{/admin/media/film/{id}(id=${filmId})}"
-        method="post"
-        enctype="multipart/form-data">
+                        <form th:action="@{/admin/media/film/{id}(id=${filmId})}" method="post"
+                            enctype="multipart/form-data">
 
 
-        <div class="form-group">
+                            <div class="form-group">
 
 
-            <!-- INPUT FILE REALE -->
+                                <!-- INPUT FILE REALE -->
 
-            <input
-                id="filmImage"
-                name="image"
-                type="file"
-                class="film-file-input"
-                accept=".jpg,.jpeg,.png,image/jpeg,image/png"
-                required>
+                                <input id="filmImage" name="image" type="file" class="film-file-input"
+                                    accept=".jpg,.jpeg,.png,image/jpeg,image/png" required>
 
 
 
-            <!-- SELETTORE PERSONALIZZATO -->
+                                <!-- SELETTORE PERSONALIZZATO -->
 
-            <div class="film-file-picker">
+                                <div class="film-file-picker">
 
-                <label
-                    for="filmImage"
-                    class="btn btn-outline btn-small">
+                                    <label for="filmImage" class="btn btn-outline btn-small">
 
-                    ✦ Scegli una locandina
+                                        ✦ Scegli una locandina
 
-                </label>
+                                    </label>
 
 
 
-                <!--
+                                    <!--
                     QUI MOSTRIAMO IL NOME
                     DEL FILE GIÀ SALVATO.
 
@@ -809,453 +670,444 @@
                     alla locandina nel database.
                 -->
 
-                <span
-                    id="filmImageStatus"
-                    class="film-file-status"
+                                    <span id="filmImageStatus" class="film-file-status"
+                                        th:text="${currentFilm.imageFileName != null ? '✓ File già salvato: ' + currentFilm.imageFileName : 'Nessuna locandina salvata'}">
 
-                    th:text="${currentFilm.imageFileName != null ? '✓ File già salvato: ' + currentFilm.imageFileName : 'Nessuna locandina salvata'}">
+                                        Nessuna locandina salvata
 
-                    Nessuna locandina salvata
+                                    </span>
 
-                </span>
+                                </div>
+
+                            </div>
+
+
+
+                            <!-- PULSANTE CARICAMENTO -->
+
+                            <button type="submit" class="btn btn-gold">
+
+
+                                <span th:if="${currentFilm.imageFileName == null}">
+
+                                    ✦ Carica locandina
+
+                                </span>
+
+
+                                <span th:if="${currentFilm.imageFileName != null}">
+
+                                    ✦ Sostituisci locandina
+
+                                </span>
+
+                            </button>
+
+                        </form>
+
+
+
+                        <!-- INDICAZIONI -->
+
+                        <p class="image-upload-hint">
+
+                            JPG o PNG · Massimo 3 MB
+
+                        </p>
+
+
+                    </div>
+
+                </div>
+
+
+                <!-- SIDEBAR -->
+                <aside class="admin-form-sidebar">
+
+                    <div class="admin-side-card admin-side-highlight">
+
+                        <div class="admin-side-symbol">
+                            ✦
+                        </div>
+
+                        <div class="section-label">
+                            THE ART OF STORYTELLING
+                        </div>
+
+                        <h3>
+                            Il cinema è
+                            <span class="gold-text italic-text">
+                                magia.
+                            </span>
+                        </h3>
+
+                        <p>
+                            Da un'idea nasce una storia.
+
+                            Da una storia nasce un film.
+
+                            E da un film può nascere
+                            qualcosa di indimenticabile.
+                        </p>
+
+                    </div>
+
+
+                    <div class="admin-side-card">
+
+                        <div class="section-label">
+                            ✦ The Production Process
+                        </div>
+
+                        <h3>
+                            Dall'idea allo
+                            <span class="gold-text">
+                                schermo.
+                            </span>
+                        </h3>
+
+                        <div class="admin-steps">
+
+                            <div class="admin-step">
+
+                                <span class="admin-step-number">01</span>
+
+                                <div>
+                                    <strong>Definisci il film</strong>
+
+                                    <p>
+                                        Inserisci titolo, anno,
+                                        genere e durata.
+                                    </p>
+                                </div>
+
+                            </div>
+
+
+                            <div class="admin-step">
+
+                                <span class="admin-step-number">02</span>
+
+                                <div>
+                                    <strong>Scegli il regista</strong>
+
+                                    <p>
+                                        Associa il film
+                                        a un regista.
+                                    </p>
+                                </div>
+
+                            </div>
+
+
+                            <div class="admin-step">
+
+                                <span class="admin-step-number">03</span>
+
+                                <div>
+                                    <strong>Completa il cast</strong>
+
+                                    <p>
+                                        Aggiungi gli interpreti
+                                        e i personaggi.
+                                    </p>
+                                </div>
+
+                            </div>
+
+
+                            <div class="admin-step">
+
+                                <span class="admin-step-number">04</span>
+
+                                <div>
+                                    <strong>Entra nei festival</strong>
+
+                                    <p>
+                                        Associa il film a una
+                                        o più edizioni.
+                                    </p>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="admin-side-card" th:if="${isEdit}">
+
+                        <div class="section-label">
+                            ✦ Next Step
+                        </div>
+
+                        <h3>
+                            Il tuo
+                            <span class="gold-text">
+                                cast.
+                            </span>
+                        </h3>
+
+                        <p style="margin-bottom:20px;">
+                            Il film è pronto per accogliere
+                            i suoi protagonisti.
+                        </p>
+
+                        <a th:href="@{/admin/films/{id}/cast(id=${filmId})}" class="btn btn-gold btn-full">
+                            Gestisci cast ↗
+                        </a>
+
+                    </div>
+
+                </aside>
 
             </div>
 
         </div>
 
+    </main>
 
 
-        <!-- PULSANTE CARICAMENTO -->
+    <!-- FOOTER -->
+    <footer class="site-footer">
 
-        <button
-            type="submit"
-            class="btn btn-gold">
+        <div class="container footer-inner">
 
-
-            <span
-                th:if="${currentFilm.imageFileName == null}">
-
-                ✦ Carica locandina
-
-            </span>
-
-
-            <span
-                th:if="${currentFilm.imageFileName != null}">
-
-                ✦ Sostituisci locandina
-
-            </span>
-
-        </button>
-
-    </form>
-
-
-
-    <!-- INDICAZIONI -->
-
-    <p class="image-upload-hint">
-
-        JPG o PNG · Massimo 3 MB
-
-    </p>
-
-
-</div>
-
+            <div class="footer-brand">
+                ✦ SiwCineFestival
             </div>
 
+            <p class="footer-copy">
+                THE ART OF CINEMA · FILM EDITOR
+            </p>
 
-            <!-- SIDEBAR -->
-            <aside class="admin-form-sidebar">
-
-                <div class="admin-side-card admin-side-highlight">
-
-                    <div class="admin-side-symbol">
-                        ✦
-                    </div>
-
-                    <div class="section-label">
-                        THE ART OF STORYTELLING
-                    </div>
-
-                    <h3>
-                        Il cinema è
-                        <span class="gold-text italic-text">
-                            magia.
-                        </span>
-                    </h3>
-
-                    <p>
-                        Da un'idea nasce una storia.
-
-                        Da una storia nasce un film.
-
-                        E da un film può nascere
-                        qualcosa di indimenticabile.
-                    </p>
-
-                </div>
-
-
-                <div class="admin-side-card">
-
-                    <div class="section-label">
-                        ✦ The Production Process
-                    </div>
-
-                    <h3>
-                        Dall'idea allo
-                        <span class="gold-text">
-                            schermo.
-                        </span>
-                    </h3>
-
-                    <div class="admin-steps">
-
-                        <div class="admin-step">
-
-                            <span class="admin-step-number">01</span>
-
-                            <div>
-                                <strong>Definisci il film</strong>
-
-                                <p>
-                                    Inserisci titolo, anno,
-                                    genere e durata.
-                                </p>
-                            </div>
-
-                        </div>
-
-
-                        <div class="admin-step">
-
-                            <span class="admin-step-number">02</span>
-
-                            <div>
-                                <strong>Scegli il regista</strong>
-
-                                <p>
-                                    Associa il film
-                                    a un regista.
-                                </p>
-                            </div>
-
-                        </div>
-
-
-                        <div class="admin-step">
-
-                            <span class="admin-step-number">03</span>
-
-                            <div>
-                                <strong>Completa il cast</strong>
-
-                                <p>
-                                    Aggiungi gli interpreti
-                                    e i personaggi.
-                                </p>
-                            </div>
-
-                        </div>
-
-
-                        <div class="admin-step">
-
-                            <span class="admin-step-number">04</span>
-
-                            <div>
-                                <strong>Entra nei festival</strong>
-
-                                <p>
-                                    Associa il film a una
-                                    o più edizioni.
-                                </p>
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <div class="admin-side-card"
-                     th:if="${isEdit}">
-
-                    <div class="section-label">
-                        ✦ Next Step
-                    </div>
-
-                    <h3>
-                        Il tuo
-                        <span class="gold-text">
-                            cast.
-                        </span>
-                    </h3>
-
-                    <p style="margin-bottom:20px;">
-                        Il film è pronto per accogliere
-                        i suoi protagonisti.
-                    </p>
-
-                    <a
-                        th:href="@{/admin/films/{id}/cast(id=${filmId})}"
-                        class="btn btn-gold btn-full">
-                        Gestisci cast ↗
-                    </a>
-
-                </div>
-
-            </aside>
+            <div class="footer-decoration">
+                ✦ ✦ ✦
+            </div>
 
         </div>
 
-    </div>
+    </footer>
 
-</main>
-
-
-<!-- FOOTER -->
-<footer class="site-footer">
-
-    <div class="container footer-inner">
-
-        <div class="footer-brand">
-            ✦ SiwCineFestival
-        </div>
-
-        <p class="footer-copy">
-            THE ART OF CINEMA · FILM EDITOR
-        </p>
-
-        <div class="footer-decoration">
-            ✦ ✦ ✦
-        </div>
-
-    </div>
-
-</footer>
-
-<!-- ===================================================
+    <!-- ===================================================
      REGISTA — SELEZIONE DINAMICA
      =================================================== -->
 
-<script th:if="${!isEdit}">
+    <script th:if="${!isEdit}">
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
-
-        /*
-         * =========================================
-         * RECUPERIAMO I CAMPI
-         * =========================================
-         */
-
-        const existingRadio =
-            document.getElementById(
-                "directorModeExisting"
-            );
-
-        const newRadio =
-            document.getElementById(
-                "directorModeNew"
-            );
-
-
-        const existingPanel =
-            document.getElementById(
-                "existingDirectorPanel"
-            );
-
-        const newPanel =
-            document.getElementById(
-                "newDirectorPanel"
-            );
-
-
-        const directorSelect =
-            document.getElementById(
-                "directorId"
-            );
-
-
-        const newDirectorName =
-            document.getElementById(
-                "newDirectorName"
-            );
-
-
-        const newDirectorSurname =
-            document.getElementById(
-                "newDirectorSurname"
-            );
-
-
-        /*
-         * =========================================
-         * AGGIORNIAMO IL FORM
-         * =========================================
-         */
-
-        function updateDirectorMode() {
-
-            /*
-             * Controlliamo se è stata
-             * scelta la modalità nuovo.
-             */
-
-            const useNewDirector =
-                newRadio.checked;
-
-
-            /*
-             * Mostriamo soltanto
-             * il pannello necessario.
-             */
-
-            existingPanel.hidden =
-                useNewDirector;
-
-            newPanel.hidden =
-                !useNewDirector;
-
-
-            /*
-             * Se scegliamo un nuovo regista,
-             * il vecchio menu non è richiesto.
-             */
-
-            directorSelect.disabled =
-                useNewDirector;
-
-            directorSelect.required =
-                !useNewDirector;
-
-
-            /*
-             * Se scegliamo un regista
-             * esistente, i campi del nuovo
-             * regista non sono richiesti.
-             */
-
-            newDirectorName.disabled =
-                !useNewDirector;
-
-            newDirectorSurname.disabled =
-                !useNewDirector;
-
-
-            newDirectorName.required =
-                useNewDirector;
-
-            newDirectorSurname.required =
-                useNewDirector;
-        }
-
-
-
-        /*
-         * =========================================
-         * EVENTI
-         * =========================================
-         */
-
-        existingRadio.addEventListener(
-            "change",
-            updateDirectorMode
-        );
-
-
-        newRadio.addEventListener(
-            "change",
-            updateDirectorMode
-        );
-
-
-
-        /*
-         * =========================================
-         * STATO INIZIALE
-         * =========================================
-         *
-         * Serve anche quando torniamo
-         * al form dopo un errore.
-         */
-
-        updateDirectorMode();
-
-    }
-);
-
-</script>
-
-<!-- ===================================================
-     NOME FILE LOCANDINA — AGGIORNAMENTO DINAMICO
-     =================================================== -->
-
-<script th:if="${isEdit}">
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
-
-        const fileInput =
-            document.getElementById("filmImage");
-
-        const fileStatus =
-            document.getElementById("filmImageStatus");
-
-
-        if (!fileInput || !fileStatus) {
-            return;
-        }
-
-
-        /*
-         * Memorizziamo il messaggio
-         * della locandina attuale.
-         */
-
-        const savedStatus =
-            fileStatus.textContent.trim();
-
-
-        /*
-         * Quando viene scelto un nuovo file,
-         * aggiorniamo la scritta.
-         */
-
-        fileInput.addEventListener(
-            "change",
+        document.addEventListener(
+            "DOMContentLoaded",
             function () {
 
-                if (fileInput.files.length > 0) {
+                /*
+                 * =========================================
+                 * RECUPERIAMO I CAMPI
+                 * =========================================
+                 */
 
-                    const file =
-                        fileInput.files[0];
+                const existingRadio =
+                    document.getElementById(
+                        "directorModeExisting"
+                    );
 
-                    fileStatus.textContent =
-                        "Nuova locandina selezionata: "
-                        + file.name;
+                const newRadio =
+                    document.getElementById(
+                        "directorModeNew"
+                    );
 
-                } else {
 
-                    fileStatus.textContent =
-                        savedStatus;
+                const existingPanel =
+                    document.getElementById(
+                        "existingDirectorPanel"
+                    );
 
+                const newPanel =
+                    document.getElementById(
+                        "newDirectorPanel"
+                    );
+
+
+                const directorSelect =
+                    document.getElementById(
+                        "directorId"
+                    );
+
+
+                const newDirectorName =
+                    document.getElementById(
+                        "newDirectorName"
+                    );
+
+
+                const newDirectorSurname =
+                    document.getElementById(
+                        "newDirectorSurname"
+                    );
+
+
+                /*
+                 * =========================================
+                 * AGGIORNIAMO IL FORM
+                 * =========================================
+                 */
+
+                function updateDirectorMode() {
+
+                    /*
+                     * Controlliamo se è stata
+                     * scelta la modalità nuovo.
+                     */
+
+                    const useNewDirector =
+                        newRadio.checked;
+
+
+                    /*
+                     * Mostriamo soltanto
+                     * il pannello necessario.
+                     */
+
+                    existingPanel.hidden =
+                        useNewDirector;
+
+                    newPanel.hidden =
+                        !useNewDirector;
+
+
+                    /*
+                     * Se scegliamo un nuovo regista,
+                     * il vecchio menu non è richiesto.
+                     */
+
+                    directorSelect.disabled =
+                        useNewDirector;
+
+                    directorSelect.required =
+                        !useNewDirector;
+
+
+                    /*
+                     * Se scegliamo un regista
+                     * esistente, i campi del nuovo
+                     * regista non sono richiesti.
+                     */
+
+                    newDirectorName.disabled =
+                        !useNewDirector;
+
+                    newDirectorSurname.disabled =
+                        !useNewDirector;
+
+
+                    newDirectorName.required =
+                        useNewDirector;
+
+                    newDirectorSurname.required =
+                        useNewDirector;
                 }
+
+
+
+                /*
+                 * =========================================
+                 * EVENTI
+                 * =========================================
+                 */
+
+                existingRadio.addEventListener(
+                    "change",
+                    updateDirectorMode
+                );
+
+
+                newRadio.addEventListener(
+                    "change",
+                    updateDirectorMode
+                );
+
+
+
+                /*
+                 * =========================================
+                 * STATO INIZIALE
+                 * =========================================
+                 *
+                 * Serve anche quando torniamo
+                 * al form dopo un errore.
+                 */
+
+                updateDirectorMode();
 
             }
         );
 
-    }
-);
+    </script>
 
-</script>
+    <!-- ===================================================
+     NOME FILE LOCANDINA — AGGIORNAMENTO DINAMICO
+     =================================================== -->
+
+    <script th:if="${isEdit}">
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                const fileInput =
+                    document.getElementById("filmImage");
+
+                const fileStatus =
+                    document.getElementById("filmImageStatus");
+
+
+                if (!fileInput || !fileStatus) {
+                    return;
+                }
+
+
+                /*
+                 * Memorizziamo il messaggio
+                 * della locandina attuale.
+                 */
+
+                const savedStatus =
+                    fileStatus.textContent.trim();
+
+
+                /*
+                 * Quando viene scelto un nuovo file,
+                 * aggiorniamo la scritta.
+                 */
+
+                fileInput.addEventListener(
+                    "change",
+                    function () {
+
+                        if (fileInput.files.length > 0) {
+
+                            const file =
+                                fileInput.files[0];
+
+                            fileStatus.textContent =
+                                "Nuova locandina selezionata: "
+                                + file.name;
+
+                        } else {
+
+                            fileStatus.textContent =
+                                savedStatus;
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+    </script>
 
 </body>
+
 </html>

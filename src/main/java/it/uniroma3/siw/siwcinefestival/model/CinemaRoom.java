@@ -12,96 +12,66 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
-
-@Entity
-@Table(name = "cinema_rooms")
+@Entity   
+@Table(name = "cinema_rooms")  
 public class CinemaRoom {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     @Column(nullable = false)
     private String name;
-
 
     @Column(nullable = false)
     private String address;
 
-
     @Column(nullable = false)
     private Integer capacity;
 
-
-
-    /*
-     * =====================================================
-     * CINEMA ROOM - SCREENING
-     * =====================================================
+    /* CINEMA ROOM - SCREENING  Relazione 1:N
+     * Una sala può ospitare molte proiezioni.
      *
-     * Una sala può ospitare
-     * molte proiezioni.
-     *
-     * Ogni proiezione si svolge
-     * in una sola sala.
-     *
-     * Relazione 1:N.
+     * Ogni proiezione si svolge in una sola sala.
      */
-    @OneToMany(
-        mappedBy = "room",
-        fetch = FetchType.LAZY
-    )
-    private List<Screening> screenings =
-            new ArrayList<>();
+    @OneToMany(mappedBy = "room", fetch = FetchType.LAZY)
+    private List<Screening> screenings = new ArrayList<>();
 
-
-
+    
     public CinemaRoom() {
     }
-
-
 
     public Long getId() {
         return id;
     }
 
-
     public void setId(Long id) {
         this.id = id;
     }
-
 
     public String getName() {
         return name;
     }
 
-
     public void setName(String name) {
         this.name = name;
     }
-
 
     public String getAddress() {
         return address;
     }
 
-
     public void setAddress(String address) {
         this.address = address;
     }
-
 
     public Integer getCapacity() {
         return capacity;
     }
 
-
     public void setCapacity(Integer capacity) {
         this.capacity = capacity;
     }
-
 
     public List<Screening> getScreenings() {
         return screenings;

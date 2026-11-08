@@ -13,94 +13,73 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
-
 @ControllerAdvice
 public class GlobalModelAttributes {
 
-
-    /*
-     * =====================================================
-     * ATTRIBUTI GLOBALI
-     * =====================================================
-     *
-     * Questi attributi saranno disponibili
-     * nei template Thymeleaf.
-     *
-     * Evitiamo di ripetere la stessa logica
-     * in tutti i Controller.
-     */
-
-    @ModelAttribute
-    public void addGlobalAttributes(Model model) {
-
-
-        /*
-         * Recuperiamo l'autenticazione
-         * dal contesto di Spring Security.
+        /* ATTRIBUTI GLOBALI
+         * Questi attributi saranno disponibili
+         * nei template Thymeleaf.
+         *
+         * Evito di ripetere la stessa logica
+         * in tutti i Controller.
          */
 
-        Authentication authentication =
-                SecurityContextHolder
-                        .getContext()
-                        .getAuthentication();
+        @ModelAttribute
+        public void addGlobalAttributes(Model model) {
 
+                /*
+                 * Recupero l'autenticazione
+                 * dal contesto di Spring Security.
+                 */
 
-        /*
-         * Verifichiamo che non si tratti
-         * di un utente anonimo.
-         */
+                Authentication authentication = SecurityContextHolder
+                                .getContext()
+                                .getAuthentication();
 
-        boolean isAuthenticated =
-                authentication != null
-                && authentication.isAuthenticated()
-                && !(authentication
-                        instanceof AnonymousAuthenticationToken);
+                /*
+                 * Verifico che non si tratti
+                 * di un utente anonimo.
+                 */
 
+                boolean isAuthenticated = authentication != null
+                                && authentication.isAuthenticated()
+                                && !(authentication instanceof AnonymousAuthenticationToken);
 
-        /*
-         * Username da mostrare
-         * nella navbar.
-         */
+                /*
+                 * Username da mostrare
+                 * nella navbar.
+                 */
 
-        String currentUsername =
-                isAuthenticated
-                        ? authentication.getName()
-                        : null;
+                String currentUsername = isAuthenticated
+                                ? authentication.getName()
+                                : null;
 
+                /*
+                 * Verifico il ruolo ADMIN.
+                 */
 
-        /*
-         * Verifichiamo il ruolo ADMIN.
-         */
+                boolean isAdmin = isAuthenticated
+                                &&
+                                authentication.getAuthorities()
+                                                .stream()
+                                                .anyMatch(authority -> authority.getAuthority()
+                                                                .equals("ROLE_ADMIN"));
 
-        boolean isAdmin =
-                isAuthenticated
-                &&
-                authentication.getAuthorities()
-                        .stream()
-                        .anyMatch(authority ->
-                                authority.getAuthority()
-                                        .equals("ROLE_ADMIN")
-                        );
+                /*
+                 * Attributi per Thymeleaf.
+                 */
 
+                model.addAttribute(
+                                "isAuthenticated",
+                                isAuthenticated);
 
-        /*
-         * Attributi per Thymeleaf.
-         */
+                model.addAttribute(
+                                "currentUsername",
+                                currentUsername);
 
-        model.addAttribute(
-                "isAuthenticated",
-                isAuthenticated
-        );
-
-        model.addAttribute(
-                "currentUsername",
-                currentUsername
-        );
-
-        model.addAttribute(
-                "isAdmin",
-                isAdmin
-        );
-    }
+                model.addAttribute(
+                                "isAdmin",
+                                isAdmin);
+        }
 
 }

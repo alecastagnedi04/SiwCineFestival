@@ -5,554 +5,500 @@
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title
-        th:text="${festival.name} + ' | SiwCineFestival'">
+    <title th:text="${festival.name} + ' | SiwCineFestival'">
         Dettaglio Festival
     </title>
 
-    <link
-        rel="stylesheet"
-        th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 
 </head>
 
 <body>
 
 
-<!-- NAVBAR -->
+    <!-- NAVBAR -->
 
-<div th:replace="~{fragments/navbar :: navbar}"></div>
-
-
-
-<!-- FESTIVAL HEADER -->
-
-<section class="page-hero">
-
-    <div class="container">
-
-
-        <div class="breadcrumb">
-
-            <a th:href="@{/}">
-                Home
-            </a>
-
-            <span class="breadcrumb-separator">✦</span>
-
-            <a th:href="@{/festivals}">
-                Festival
-            </a>
-
-            <span class="breadcrumb-separator">✦</span>
-
-            <span th:text="${festival.name}">
-                Dettaglio
-            </span>
-
-        </div>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
 
 
 
-        <div class="eyebrow" style="margin-top: 35px;">
+    <!-- FESTIVAL HEADER -->
 
-            Official Festival Selection
+    <section class="page-hero">
 
-        </div>
-
-
-
-        <h1 th:text="${festival.name}">
-
-            Nome del festival
-
-        </h1>
+        <div class="container">
 
 
+            <div class="breadcrumb">
 
-        <p th:if="${festival.description != null and !festival.description.isBlank()}"
-           th:text="${festival.description}">
+                <a th:href="@{/}">
+                    Home
+                </a>
 
-            Descrizione del festival.
+                <span class="breadcrumb-separator">✦</span>
 
-        </p>
+                <a th:href="@{/festivals}">
+                    Festival
+                </a>
 
+                <span class="breadcrumb-separator">✦</span>
 
-
-        <div class="detail-meta">
-
-
-            <span class="meta-pill">
-
-                ✦
-
-                <span
-                    th:text="${festival.city}"
-                    style="margin-left: 7px;">
-                    Città
+                <span th:text="${festival.name}">
+                    Dettaglio
                 </span>
 
-            </span>
-
-
-            <span
-                class="meta-pill"
-                th:text="${festival.year}">
-
-                2026
-
-            </span>
-
-
-            <span class="meta-pill">
-
-                <span
-                    th:text="${#temporals.format(festival.startDate, 'dd MMM yyyy')}">
-                </span>
-
-                &nbsp; — &nbsp;
-
-                <span
-                    th:text="${#temporals.format(festival.endDate, 'dd MMM yyyy')}">
-                </span>
-
-            </span>
-
-        </div>
-
-
-        <!-- LINK ADMIN -->
-
-        <div
-            th:if="${isAdmin}"
-            style="margin-top: 30px;">
-
-            <a
-                th:href="@{/admin/festivals/{id}/edit(id=${festival.id})}"
-                class="btn btn-outline btn-small">
-
-                ✦ Modifica festival
-
-            </a>
-
-        </div>
-
-    </div>
-
-</section>
-
-<!-- COPERTINA DEL FESTIVAL -->
-
-<div
-    class="container"
-    th:if="${festival.imageFileName != null}">
-
-    <div class="festival-detail-cover">
-
-        <img
-            th:src="@{/media/{file}(file=${festival.imageFileName})}"
-            th:alt="|Copertina del festival ${festival.name}|">
-
-    </div>
-
-</div>
-
-<!-- FESTIVAL CONTENT -->
-
-<section class="section">
-
-    <div class="container detail-grid">
+            </div>
 
 
 
-        <!-- COLONNA PRINCIPALE -->
+            <div class="eyebrow" style="margin-top: 35px;">
 
-        <div class="detail-stack">
+                Official Festival Selection
 
-
-            <!-- PROGRAMMA CINEMATOGRAFICO -->
-
-            <div>
-
-                <div class="section-label">
-
-                    ✦ The Screening Program
-
-                </div>
+            </div>
 
 
-                <h2 class="section-heading">
 
-                    Sul
+            <h1 th:text="${festival.name}">
 
-                    <span class="gold-text italic-text">
-                        grande schermo.
+                Nome del festival
+
+            </h1>
+
+
+
+            <p th:if="${festival.description != null and !festival.description.isBlank()}"
+                th:text="${festival.description}">
+
+                Descrizione del festival.
+
+            </p>
+
+
+
+            <div class="detail-meta">
+
+
+                <span class="meta-pill">
+
+                    ✦
+
+                    <span th:text="${festival.city}" style="margin-left: 7px;">
+                        Città
                     </span>
 
-                </h2>
+                </span>
 
 
-                <p class="section-description"
-                   style="margin-bottom: 30px;">
+                <span class="meta-pill" th:text="${festival.year}">
 
-                    Scopri le proiezioni del festival,
-                    gli orari e le sale cinematografiche.
+                    2026
 
-                </p>
-
-                <a
-    th:href="@{/react-program/index.html(festivalId=${festival.id})}"
-    class="btn btn-gold"
-    style="margin-bottom: 30px;">
-
-    ✦ Esplora il programma interattivo
-
-</a>
+                </span>
 
 
+                <span class="meta-pill">
 
-                <!-- PROIEZIONI PRESENTI -->
+                    <span th:text="${#temporals.format(festival.startDate, 'dd MMM yyyy')}">
+                    </span>
 
-                <div
-                    class="program-list"
-                    th:if="${!screenings.isEmpty()}">
+                    &nbsp; — &nbsp;
+
+                    <span th:text="${#temporals.format(festival.endDate, 'dd MMM yyyy')}">
+                    </span>
+
+                </span>
+
+            </div>
 
 
-                    <div
-                        class="program-item"
-                        th:each="screening : ${screenings}"
-                        th:classappend="${screening.status.name() == 'CANCELLED'} ? 'is-cancelled' : ''">
+            <!-- LINK ADMIN -->
+
+            <div th:if="${isAdmin}" style="margin-top: 30px;">
+
+                <a th:href="@{/admin/festivals/{id}/edit(id=${festival.id})}" class="btn btn-outline btn-small">
+
+                    ✦ Modifica festival
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- COPERTINA DEL FESTIVAL -->
+
+    <div class="container" th:if="${festival.imageFileName != null}">
+
+        <div class="festival-detail-cover">
+
+            <img th:src="@{/media/{file}(file=${festival.imageFileName})}"
+                th:alt="|Copertina del festival ${festival.name}|">
+
+        </div>
+
+    </div>
+
+    <!-- FESTIVAL CONTENT -->
+
+    <section class="section">
+
+        <div class="container detail-grid">
 
 
-                        <!-- ORARIO -->
 
-                        <div>
+            <!-- COLONNA PRINCIPALE -->
 
-                            <div
-                                class="program-time"
-                                th:text="${#temporals.format(screening.time, 'HH:mm')}">
+            <div class="detail-stack">
 
-                                18:00
+
+                <!-- PROGRAMMA CINEMATOGRAFICO -->
+
+                <div>
+
+                    <div class="section-label">
+
+                        ✦ The Screening Program
+
+                    </div>
+
+
+                    <h2 class="section-heading">
+
+                        Sul
+
+                        <span class="gold-text italic-text">
+                            grande schermo.
+                        </span>
+
+                    </h2>
+
+
+                    <p class="section-description" style="margin-bottom: 30px;">
+
+                        Scopri le proiezioni del festival,
+                        gli orari e le sale cinematografiche.
+
+                    </p>
+
+                    <a th:href="@{/react-program/index.html(festivalId=${festival.id})}" class="btn btn-gold"
+                        style="margin-bottom: 30px;">
+
+                        ✦ Esplora il programma interattivo
+
+                    </a>
+
+
+
+                    <!-- PROIEZIONI PRESENTI -->
+
+                    <div class="program-list" th:if="${!screenings.isEmpty()}">
+
+
+                        <div class="program-item" th:each="screening : ${screenings}"
+                            th:classappend="${screening.status.name() == 'CANCELLED'} ? 'is-cancelled' : ''">
+
+
+                            <!-- ORARIO -->
+
+                            <div>
+
+                                <div class="program-time" th:text="${#temporals.format(screening.time, 'HH:mm')}">
+
+                                    18:00
+
+                                </div>
+
+                            </div>
+
+
+
+                            <!-- FILM -->
+
+                            <div>
+
+
+                                <a class="program-film" th:href="@{/films/{id}(id=${screening.film.id})}"
+                                    th:text="${screening.film.title}">
+
+                                    Titolo film
+
+                                </a>
+
+
+                                <div class="program-info">
+
+                                    <span th:text="${#temporals.format(screening.date, 'dd MMM yyyy')}">
+                                    </span>
+
+                                    &nbsp; • &nbsp;
+
+                                    <span th:text="${screening.room.name}">
+                                        Sala
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <!-- STATO -->
+
+                            <div>
+
+                                <span class="status-badge"
+                                    th:text="${screening.status.name() == 'SCHEDULED' ? 'In programma' : (screening.status.name() == 'COMPLETED' ? 'Conclusa' : 'Annullata')}">
+
+                                    In programma
+
+                                </span>
 
                             </div>
 
                         </div>
 
+                    </div>
 
 
-                        <!-- FILM -->
 
-                        <div>
+                    <!-- NESSUNA PROIEZIONE -->
+
+                    <div class="empty-state" th:if="${screenings.isEmpty()}">
+
+                        <div class="empty-icon">
+                            ✦
+                        </div>
 
 
-                            <a
-                                class="program-film"
-                                th:href="@{/films/{id}(id=${screening.film.id})}"
-                                th:text="${screening.film.title}">
+                        <h3>
+
+                            Il programma è
+
+                            <span class="gold-text">
+                                in preparazione.
+                            </span>
+
+                        </h3>
+
+
+                        <p>
+
+                            Non sono ancora state programmate
+                            proiezioni per questo festival.
+
+                        </p>
+
+
+                        <a th:if="${isAdmin}" th:href="@{/admin/screenings/new(festivalId=${festival.id})}"
+                            class="btn btn-gold">
+
+                            Programma una proiezione
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- COLONNA LATERALE -->
+
+            <aside class="detail-stack">
+
+
+                <!-- FILM SELEZIONATI -->
+
+                <div class="content-panel">
+
+                    <div class="section-label">
+
+                        Official Selection
+
+                    </div>
+
+
+                    <h3>
+
+                        Film
+
+                        <span class="gold-text">
+                            selezionati.
+                        </span>
+
+                    </h3>
+
+
+                    <!-- RICERCA FILM DEL FESTIVAL -->
+
+                    <div class="catalog-search" th:if="${!films.isEmpty()}">
+
+                        <span class="catalog-search-icon">
+                            ⌕
+                        </span>
+
+                        <input type="search" class="catalog-search-input" placeholder="Cerca un film del festival..."
+                            aria-label="Cerca film del festival" data-search-input="festival-films">
+
+                        <span class="catalog-search-count" data-search-count="festival-films">
+                        </span>
+
+                    </div>
+
+                    <p class="catalog-search-empty" data-search-empty="festival-films" hidden>
+
+                        Nessun film trovato in questo festival.
+
+                    </p>
+
+
+
+                    <ul class="elegant-list" th:if="${!films.isEmpty()}">
+
+
+                        <li th:each="film : ${films}" data-search-item="festival-films"
+                            th:attr="data-search-text=${film.title + ' ' + film.year}">
+
+
+                            <a th:href="@{/films/{id}(id=${film.id})}" th:text="${film.title}">
 
                                 Titolo film
 
                             </a>
 
 
-                            <div class="program-info">
-
-                                <span
-                                    th:text="${#temporals.format(screening.date, 'dd MMM yyyy')}">
-                                </span>
-
-                                &nbsp; • &nbsp;
-
-                                <span
-                                    th:text="${screening.room.name}">
-                                    Sala
-                                </span>
-
-                            </div>
-
-                        </div>
-
-
-
-                        <!-- STATO -->
-
-                        <div>
-
-                            <span
-                                class="status-badge"
-                                th:text="${screening.status.name() == 'SCHEDULED' ? 'In programma' : (screening.status.name() == 'COMPLETED' ? 'Conclusa' : 'Annullata')}">
-
-                                In programma
-
+                            <span class="list-arrow">
+                                ↗
                             </span>
 
-                        </div>
+                        </li>
 
-                    </div>
+                    </ul>
+
+
+
+                    <p th:if="${films.isEmpty()}">
+
+                        Nessun film è stato ancora
+                        associato al festival.
+
+                    </p>
 
                 </div>
 
 
 
-                <!-- NESSUNA PROIEZIONE -->
+                <!-- FESTIVAL INFO -->
 
-                <div
-                    class="empty-state"
-                    th:if="${screenings.isEmpty()}">
+                <div class="content-panel">
 
-                    <div class="empty-icon">
-                        ✦
+                    <div class="section-label">
+
+                        Festival Information
+
                     </div>
 
 
                     <h3>
 
-                        Il programma è
-
-                        <span class="gold-text">
-                            in preparazione.
-                        </span>
+                        L'evento.
 
                     </h3>
 
 
                     <p>
 
-                        Non sono ancora state programmate
-                        proiezioni per questo festival.
+                        <strong style="color: var(--gold);">
+                            Città
+                        </strong>
+
+                        <br>
+
+                        <span th:text="${festival.city}">
+                            Città
+                        </span>
 
                     </p>
 
 
-                    <a
-                        th:if="${isAdmin}"
-                        th:href="@{/admin/screenings/new(festivalId=${festival.id})}"
-                        class="btn btn-gold">
-
-                        Programma una proiezione
-
-                    </a>
-
-                </div>
-
-            </div>
-
-        </div>
+                    <div class="card-line"></div>
 
 
+                    <p>
 
-        <!-- COLONNA LATERALE -->
+                        <strong style="color: var(--gold);">
+                            Edizione
+                        </strong>
 
-        <aside class="detail-stack">
+                        <br>
 
-
-            <!-- FILM SELEZIONATI -->
-
-            <div class="content-panel">
-
-                <div class="section-label">
-
-                    Official Selection
-
-                </div>
-
-
-                <h3>
-
-                    Film
-
-                    <span class="gold-text">
-                        selezionati.
-                    </span>
-
-                </h3>
-
-
-                <!-- RICERCA FILM DEL FESTIVAL -->
-
-<div
-    class="catalog-search"
-    th:if="${!films.isEmpty()}">
-
-    <span class="catalog-search-icon">
-        ⌕
-    </span>
-
-    <input
-        type="search"
-        class="catalog-search-input"
-        placeholder="Cerca un film del festival..."
-        aria-label="Cerca film del festival"
-        data-search-input="festival-films">
-
-    <span
-        class="catalog-search-count"
-        data-search-count="festival-films">
-    </span>
-
-</div>
-
-<p
-    class="catalog-search-empty"
-    data-search-empty="festival-films"
-    hidden>
-
-    Nessun film trovato in questo festival.
-
-</p>
-
-
-
-                <ul
-                    class="elegant-list"
-                    th:if="${!films.isEmpty()}">
-
-
-                    <li
-    th:each="film : ${films}"
-    data-search-item="festival-films"
-    th:attr="data-search-text=${film.title + ' ' + film.year}">
-
-
-                        <a
-                            th:href="@{/films/{id}(id=${film.id})}"
-                            th:text="${film.title}">
-
-                            Titolo film
-
-                        </a>
-
-
-                        <span class="list-arrow">
-                            ↗
+                        <span th:text="${festival.year}">
+                            2026
                         </span>
 
-                    </li>
-
-                </ul>
+                    </p>
 
 
-
-                <p th:if="${films.isEmpty()}">
-
-                    Nessun film è stato ancora
-                    associato al festival.
-
-                </p>
-
-            </div>
+                    <div class="card-line"></div>
 
 
+                    <p>
 
-            <!-- FESTIVAL INFO -->
+                        <strong style="color: var(--gold);">
+                            Date
+                        </strong>
 
-            <div class="content-panel">
+                        <br>
 
-                <div class="section-label">
+                        <span th:text="${#temporals.format(festival.startDate, 'dd/MM/yyyy')}">
+                        </span>
 
-                    Festival Information
+                        —
+
+                        <span th:text="${#temporals.format(festival.endDate, 'dd/MM/yyyy')}">
+                        </span>
+
+                    </p>
 
                 </div>
 
+            </aside>
 
-                <h3>
+        </div>
 
-                    L'evento.
-
-                </h3>
-
-
-                <p>
-
-                    <strong style="color: var(--gold);">
-                        Città
-                    </strong>
-
-                    <br>
-
-                    <span th:text="${festival.city}">
-                        Città
-                    </span>
-
-                </p>
+    </section>
 
 
-                <div class="card-line"></div>
 
+    <!-- FOOTER -->
 
-                <p>
+    <footer class="site-footer">
 
-                    <strong style="color: var(--gold);">
-                        Edizione
-                    </strong>
+        <div class="container footer-inner">
 
-                    <br>
-
-                    <span th:text="${festival.year}">
-                        2026
-                    </span>
-
-                </p>
-
-
-                <div class="card-line"></div>
-
-
-                <p>
-
-                    <strong style="color: var(--gold);">
-                        Date
-                    </strong>
-
-                    <br>
-
-                    <span
-                        th:text="${#temporals.format(festival.startDate, 'dd/MM/yyyy')}">
-                    </span>
-
-                    —
-
-                    <span
-                        th:text="${#temporals.format(festival.endDate, 'dd/MM/yyyy')}">
-                    </span>
-
-                </p>
-
+            <div class="footer-brand">
+                ✦ SiwCineFestival
             </div>
 
-        </aside>
+            <p class="footer-copy">
+                A CELEBRATION OF THE SEVENTH ART
+            </p>
 
-    </div>
+            <div class="footer-decoration">
+                ✦ ✦ ✦
+            </div>
 
-</section>
-
-
-
-<!-- FOOTER -->
-
-<footer class="site-footer">
-
-    <div class="container footer-inner">
-
-        <div class="footer-brand">
-            ✦ SiwCineFestival
         </div>
 
-        <p class="footer-copy">
-            A CELEBRATION OF THE SEVENTH ART
-        </p>
-
-        <div class="footer-decoration">
-            ✦ ✦ ✦
-        </div>
-
-    </div>
-
-</footer>
+    </footer>
 
 </body>
+
 </html>
