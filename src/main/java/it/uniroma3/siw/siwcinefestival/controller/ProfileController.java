@@ -27,7 +27,6 @@ public class ProfileController {
         private final ReviewService reviewService;
 
         /*COSTRUTTORE */
-
         public ProfileController(
                         UserService userService,
                         ReviewService reviewService) {
@@ -42,7 +41,6 @@ public class ProfileController {
          * Pagina accessibile soltanto
          * agli utenti autenticati.
          */
-
         @GetMapping("/profile")
         public String profile(
                         Principal principal,
@@ -51,7 +49,6 @@ public class ProfileController {
                 /*
                  * Verifichiamo l'autenticazione.
                  */
-
                 if (principal == null) {
 
                         return "redirect:/login";
@@ -60,16 +57,12 @@ public class ProfileController {
                 /*
                  * Recuperiamo lo username
                  * dell'utente autenticato.
-                 *
-                 * Non lo prendiamo dall'URL.
                  */
-
                 String username = principal.getName();
 
                 /*
                  * Recuperiamo l'utente dal Service.
                  */
-
                 User user = userService
                                 .findByUsername(username)
                                 .orElseThrow(() -> new ResponseStatusException(
@@ -80,7 +73,6 @@ public class ProfileController {
                  * Recuperiamo le recensioni
                  * scritte dall'utente.
                  */
-
                 List<Review> reviews = reviewService.findByAuthorUsername(
                                 username);
 
@@ -88,7 +80,6 @@ public class ProfileController {
                  * Prepariamo i dati
                  * destinati a Thymeleaf.
                  */
-
                 model.addAttribute(
                                 "profileUser",
                                 user);
@@ -104,7 +95,6 @@ public class ProfileController {
                 /*
                  * Mostriamo la pagina profilo.
                  */
-
                 return "profile";
         }
 }

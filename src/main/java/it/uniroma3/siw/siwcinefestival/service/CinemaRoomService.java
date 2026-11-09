@@ -34,10 +34,7 @@ public class CinemaRoomService {
         return cinemaRoomRepository.findById(id);
     }
 
-    /*
-     * CREAZIONE SALA
-     */
-
+    /* CREAZIONE SALA */
     @Transactional
     public CinemaRoom createRoom(
             String name,
@@ -55,10 +52,7 @@ public class CinemaRoomService {
         return cinemaRoomRepository.save(room);
     }
 
-    /*
-     * MODIFICA SALA
-     */
-
+    /* MODIFICA SALA */
     @Transactional
     public CinemaRoom updateRoom(
             Long roomId,
@@ -80,10 +74,7 @@ public class CinemaRoomService {
         return cinemaRoomRepository.save(room);
     }
 
-    /*
-     * VALIDAZIONE
-     */
-
+    /* VALIDAZIONE */
     private void validateRoom(
             String name,
             String address,

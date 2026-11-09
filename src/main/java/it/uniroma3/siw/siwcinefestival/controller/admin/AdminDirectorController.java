@@ -35,8 +35,7 @@ public class AdminDirectorController {
         }
 
         /* ELENCO REGISTI */
-
-        @GetMapping({ "", "/new" })
+        @GetMapping({ "", "/new" })  //contiene sia la rotta /admin/directors che /admin/directors/new
         public String listDirectors(Model model) {
 
                 model.addAttribute(
@@ -49,7 +48,6 @@ public class AdminDirectorController {
         }
 
         /* CREAZIONE REGISTA */
-
         @PostMapping("/new")
         public String createDirector(
 
@@ -90,7 +88,6 @@ public class AdminDirectorController {
         }
 
         /* FORM MODIFICA REGISTA */
-
         @GetMapping("/{id}/edit")
         public String editDirectorForm(
 
@@ -103,7 +100,7 @@ public class AdminDirectorController {
                 DirectorForm form = new DirectorForm();
 
                 form.setName(director.getName());
-                form.setSurname(director.getSurname());
+                form.setSurname(director.getSurname());  //qui sto creando un dto con i dati già presenti nel database
 
                 model.addAttribute(
                                 "directorForm",
@@ -115,7 +112,6 @@ public class AdminDirectorController {
         }
 
         /* MODIFICA REGISTA */
-
         @PostMapping("/{id}/edit")
         public String updateDirector(
 
@@ -160,7 +156,6 @@ public class AdminDirectorController {
         }
 
         /* METODI PRIVATI */
-
         private Director requireDirector(Long id) {
 
                 return directorService.findById(id)

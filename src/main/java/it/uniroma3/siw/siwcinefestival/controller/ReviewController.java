@@ -47,7 +47,6 @@ public class ReviewController {
         /* ELENCO RECENSIONI
          * URL:
          * GET /films/{filmId}/reviews
-         *
          * Accessibile anche ai visitatori.
          */
         @GetMapping
@@ -104,7 +103,6 @@ public class ReviewController {
                 /*
                  * Serve un utente autenticato.
                  */
-
                 if (principal == null) {
                         return "redirect:/login";
                 }
@@ -116,7 +114,6 @@ public class ReviewController {
                  * questo film, lo mandiamo
                  * al form di modifica.
                  */
-
                 Review existingReview = reviewService
                                 .findByFilmIdAndUsername(
                                                 filmId,
@@ -244,7 +241,6 @@ public class ReviewController {
                  * Recuperiamo la recensione
                  * controllando anche l'autore.
                  */
-
                 Review review = requireOwnedReview(
                                 reviewId,
                                 filmId,
@@ -360,9 +356,6 @@ public class ReviewController {
         /* ELIMINAZIONE RECENSIONE
          * URL:
          * POST /films/{filmId}/reviews/{reviewId}/delete
-         *
-         * Non utilizziamo GET
-         * per eliminare dati.
          */
         @PostMapping("/{reviewId}/delete")
         public String deleteReview(

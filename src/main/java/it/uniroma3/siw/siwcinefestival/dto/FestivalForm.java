@@ -16,7 +16,7 @@ public class FestivalForm {
     private String name;
 
     @NotNull(message = "L'anno è obbligatorio.")
-    @Min(value = 1895, message = "L'anno non è valido.")
+    @Min(value = 1800, message = "L'anno non è valido.")
     private Integer year;
 
     @NotBlank(message = "La città è obbligatoria.")

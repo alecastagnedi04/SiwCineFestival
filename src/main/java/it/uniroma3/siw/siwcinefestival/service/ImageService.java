@@ -40,17 +40,11 @@ public class ImageService {
 
         private static final Logger logger = LoggerFactory.getLogger(ImageService.class);
 
-        /*
-         * Dimensione massima: 3 MB.
-         */
-
+        /* Dimensione massima: 3 MB */
         private static final long MAX_SIZE = 3L * 1024 * 1024;
 
-        /*
-         * Cartella in cui salviamo le immagini.
-         */
-
-        private static final Path UPLOAD_DIRECTORY = Path.of("uploads", "images")
+        /* Cartella in cui salviamo le immagini */
+        private static final Path UPLOAD_DIRECTORY = Path.of("uploads", "images")  //rappresenta il percorso relativo alla cartella "uploads/images" 
                         .toAbsolutePath()
                         .normalize();
 
@@ -69,11 +63,10 @@ public class ImageService {
         }
 
         /* UPLOAD LOCANDINA FILM*/
-
         @Transactional
         public void uploadFilmImage(
                         Long filmId,
-                        MultipartFile file) {
+                        MultipartFile file) { //è un'interfaccia di spring che rappresenta un file caricato in una richiesta HTTP multipart
 
                 Film film = filmRepository
                                 .findById(filmId)
@@ -94,7 +87,6 @@ public class ImageService {
         }
 
         /* UPLOAD FOTO ATTORE*/
-
         @Transactional
         public void uploadActorImage(
                         Long actorId,
@@ -118,7 +110,6 @@ public class ImageService {
         }
 
         /* UPLOAD COPERTINA FESTIVAL*/
-
         @Transactional
         public void uploadFestivalImage(
                         Long festivalId,
@@ -142,7 +133,6 @@ public class ImageService {
         }
 
         /*SALVATAGGIO DEL FILE */
-
         private String saveImage(MultipartFile file) {
 
                 if (file == null || file.isEmpty()) {
@@ -159,15 +149,11 @@ public class ImageService {
 
                 try {
 
-                        byte[] bytes = file.getBytes();
+                        byte[] bytes = file.getBytes(); //recupero il contenuto del file come array di byte, mi serve per controllarne il formato
 
                         String extension;
 
-                        /*
-                         * Controlliamo il formato
-                         * attraverso la firma del file.
-                         */
-
+                        /* Controlliamo il formato */
                         if (isJpeg(bytes)) {
 
                                 extension = "jpg";
@@ -186,8 +172,7 @@ public class ImageService {
                          * Controlliamo che il contenuto
                          * sia effettivamente un'immagine.
                          */
-
-                        BufferedImage image = ImageIO.read(
+                        BufferedImage image = ImageIO.read(  //classe java che rappresenta un'immagine in memoria, ImageIO.read() legge l'immagine dai byte e la converte in un oggetto BufferedImage
                                         new ByteArrayInputStream(bytes));
 
                         if (image == null) {
@@ -196,10 +181,7 @@ public class ImageService {
                                                 "Il file selezionato non è un'immagine valida.");
                         }
 
-                        /*
-                         * Limitiamo anche la risoluzione.
-                         */
-
+                        /*Limitiamo anche la risoluzione */
                         if (image.getWidth() > 5000
                                         || image.getHeight() > 5000) {
 
@@ -207,24 +189,15 @@ public class ImageService {
                                                 "L'immagine ha dimensioni troppo grandi.");
                         }
 
-                        /*
-                         * Creiamo la cartella se necessario.
-                         */
-
+                        /* Creiamo la cartella se necessario */
                         Files.createDirectories(
                                         UPLOAD_DIRECTORY);
 
-                        /*
-                         * Generiamo un nome unico.
-                         */
-
+                        /* Generiamo un nome unico */
                         String fileName = UUID.randomUUID() + "." + extension;
                         Path destination = UPLOAD_DIRECTORY.resolve(fileName);
 
-                        /*
-                         * Salviamo il file.
-                         */
-
+                        /* Salviamo il file nel filesystem */
                         Files.write(
                                         destination,
                                         bytes,
@@ -243,13 +216,10 @@ public class ImageService {
         /*GESTIONE FILE IN CASO DI ROLLBACK
          * Il filesystem non partecipa alle
          * transazioni del database.
-         *
          * Per questo registriamo una pulizia:
-         *
          * - commit: eliminiamo la vecchia immagine
          * - rollback: eliminiamo la nuova immagine
          */
-
         private void registerFileCleanup(
                         String newFileName,
                         String oldFileName) {
@@ -262,7 +232,7 @@ public class ImageService {
                                                         public void afterCompletion(
                                                                         int status) {
 
-                                                                if (status == STATUS_COMMITTED) {
+                                                                if (status == STATUS_COMMITTED) {  //transazione completata con successo, elimino la vecchia immagine se esiste e se è diversa dalla nuova
 
                                                                         if (oldFileName != null
                                                                                         && !oldFileName.equals(
@@ -275,7 +245,7 @@ public class ImageService {
                                                                 } else {
 
                                                                         deleteImageQuietly(
-                                                                                        newFileName);
+                                                                                        newFileName);  //elimino la nuova immagine se la transazione è fallita
                                                                 }
                                                         }
                                                 });
@@ -285,7 +255,6 @@ public class ImageService {
          * Elimina un file senza interrompere
          * l'operazione già completata.
          */
-
         private void deleteImageQuietly(
                         String fileName) {
 
@@ -301,11 +270,11 @@ public class ImageService {
                                         fileName,
                                         ex);
                 }
+                //utilizzo try-catch perchè l'eliminazione potrebbe fallire. invece di interrompere l'operazione, logghiamo l'errore e proseguiamo
         }
 
         /* VERIFICA JPEG*/
-
-        private boolean isJpeg(byte[] bytes) {
+        private boolean isJpeg(byte[] bytes) {  //controllo i byte caratteristici del formato jpeg
 
                 return bytes.length >= 3
 
@@ -315,7 +284,6 @@ public class ImageService {
         }
 
         /* VERIFICA PNG*/
-
         private boolean isPng(byte[] bytes) {
 
                 byte[] signature = {
@@ -344,7 +312,6 @@ public class ImageService {
         }
 
         /* RECUPERO PERCORSO*/
-
         public Path getImagePath(String fileName) {
 
                 /*

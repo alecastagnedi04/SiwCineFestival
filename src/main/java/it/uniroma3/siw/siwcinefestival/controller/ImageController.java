@@ -44,12 +44,11 @@ public class ImageController {
         /*UPLOAD IMMAGINI
          * Soltanto ADMIN.
          */
-
         @PostMapping("/admin/media/{type}/{id}")
         @PreAuthorize("hasRole('ADMIN')")
         public String uploadImage(
 
-                        @PathVariable String type,
+                        @PathVariable String type,  //indica a quale entità appartiene l'immagine: film, actor o festival
                         @PathVariable Long id,
                         @RequestParam("image") MultipartFile image,
                         RedirectAttributes redirectAttributes) {
@@ -58,7 +57,6 @@ public class ImageController {
                  * Determiniamo la pagina
                  * a cui tornare.
                  */
-
                 String redirectUrl = switch (type) {
 
                         case "film" ->
@@ -120,7 +118,6 @@ public class ImageController {
         }
 
         /* VISUALIZZAZIONE PUBBLICA */
-
         @GetMapping("/media/{fileName:.+}")
         public ResponseEntity<Resource> getImage(
 

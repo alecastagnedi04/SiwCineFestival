@@ -40,7 +40,6 @@ public class FestivalService {
         }
 
         /* LETTURA*/
-
         @Transactional(readOnly = true)
         public List<Festival> findAll() {
 
@@ -57,11 +56,10 @@ public class FestivalService {
         @Transactional(readOnly = true)
         public Optional<Festival> findByIdWithFilms(Long id) {
 
-                return festivalRepository.findByIdWithFilms(id);
+                return festivalRepository.findByIdWithFilms(id);  //recupera un festival con i film associati (entitygraph)
         }
 
         /* CREAZIONE FESTIVAL */
-
         @Transactional
         public Festival createFestival(
                         String name,
@@ -88,7 +86,6 @@ public class FestivalService {
         }
 
         /*MODIFICA FESTIVAL*/
-
         @Transactional
         public Festival updateFestival(
                         Long festivalId,
@@ -108,7 +105,7 @@ public class FestivalService {
                                 name, year, city, startDate, endDate);
 
                 /*
-                 * Prima di modificare le date controlliamo
+                 * Prima di modificare le date controllo
                  * che le proiezioni esistenti rimangano valide.
                  */
 
@@ -142,7 +139,6 @@ public class FestivalService {
         }
 
         /*ASSOCIA FILM A FESTIVAL */
-
         @Transactional
         public void addFilmToFestival(
                         Long festivalId,
@@ -167,7 +163,7 @@ public class FestivalService {
 
                 /*
                  * Aggiorniamo entrambi i lati
-                 * della relazione ManyToMany.
+                 * della relazione ManyToMany (festival -> film e film -> festival).
                  */
 
                 festival.addFilm(film);
@@ -176,7 +172,6 @@ public class FestivalService {
         }
 
         /* RIMUOVI FILM DA FESTIVAL*/
-
         @Transactional
         public void removeFilmFromFestival(
                         Long festivalId,
@@ -214,7 +209,6 @@ public class FestivalService {
         }
 
         /* VALIDAZIONE */
-
         private void validateFestival(
                         String name,
                         Integer year,
@@ -228,7 +222,7 @@ public class FestivalService {
                                         "Il nome del festival è obbligatorio.");
                 }
 
-                if (year == null || year < 1895) {
+                if (year == null || year < 1800) {
 
                         throw new IllegalArgumentException(
                                         "L'anno del festival non è valido.");
@@ -256,63 +250,40 @@ public class FestivalService {
 
         /*PAGINAZIONE FESTIVAL — HOMEPAGE
          * Mostriamo 3 festival per pagina.
-         *
-         * Il metodo è utilizzato soltanto
-         * nella homepage.
-         *
-         * La pagina /festivals continuerà
-         * a recuperare tutti i festival.
-         */
-
+        */
         @Transactional(readOnly = true)
         public Page<Festival> findHomePage(
-                        String query,
-                        int requestedPage) {
+                        String query,  //testo cercato dall'utente
+                        int requestedPage) { //numero della pagina richiesta 
 
-                /*
-                 * Numero di festival per pagina.
-                 */
-
+                /* Numero di festival per pagina */
                 final int PAGE_SIZE = 3;
 
-                /*
-                 * Il numero di pagina non può
-                 * essere negativo.
-                 */
-
+                /* Il numero di pagina non può essere negativo */
                 int pageNumber = Math.max(0, requestedPage);
 
-                /*
-                 * Normalizziamo il testo cercato.
-                 */
-
+                /* Normalizziamo il testo cercato */
                 String search = query == null
                                 ? ""
-                                : query.trim().toLowerCase(Locale.ROOT);
+                                : query.trim().toLowerCase(Locale.ROOT);  //conversione in minuscolo per rendere il comportamento più prevedibile.
 
-                /*
-                 * Ordinamento:
+                /* Ordinamento:
                  * prima i festival più recenti.
-                 *
                  * L'ID garantisce un ordinamento
                  * stabile quando le date coincidono.
                  */
 
                 Sort sort = Sort.by(
                                 Sort.Order.desc("startDate"),
-                                Sort.Order.desc("id"));
+                                Sort.Order.desc("id"));  //se due festival hanno la stessa data di inizio, vengono ordinati per ID decrescente.
 
-                /*
-                 * Creiamo Pageable.
-                 */
-
+                /* Creiamo Pageable */
                 Pageable pageable = PageRequest.of(
                                 pageNumber,
                                 PAGE_SIZE,
                                 sort);
 
-                /*
-                 * Se l'utente cerca un anno,
+                /* Se l'utente cerca un anno,
                  * ad esempio 2026,
                  * lo riconosciamo.
                  *
@@ -322,14 +293,11 @@ public class FestivalService {
 
                 Integer year = -1;
 
-                if (search.matches("\\d{4}")) {
-                        year = Integer.parseInt(search);
+                if (search.matches("\\d{4}")) {  //4 perché l'anno è composto da 4 cifre.
+                        year = Integer.parseInt(search);  //conversione della stringa in intero
                 }
 
-                /*
-                 * Interroghiamo il Repository.
-                 */
-
+                /* Interroghiamo il Repository */
                 Page<Festival> result;
 
                 if (search.isBlank()) {
@@ -345,8 +313,7 @@ public class FestivalService {
                                         pageable);
                 }
 
-                /*
-                 * Se viene richiesta una pagina
+                /* Se viene richiesta una pagina
                  * oltre l'ultima disponibile,
                  * ritorniamo all'ultima pagina.
                  */
@@ -375,6 +342,6 @@ public class FestivalService {
                         }
                 }
 
-                return result;
+                return result; //restituisce la pagina di festival da mostrare all'utente. HomeController chiama questo metodo per ottenere i festival da mostrare nella homepage.
         }
 }

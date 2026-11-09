@@ -45,17 +45,11 @@ public class ScreeningService {
         }
 
         /* LETTURA*/
-
         @Transactional(readOnly = true)
         public Optional<Screening> findById(Long id) {
 
                 return screeningRepository.findById(id)
                                 .map(screening -> {
-
-                                        /*
-                                         * Inizializziamo le associazioni
-                                         * necessarie al form di modifica.
-                                         */
 
                                         screening.getFestival().getName();
                                         screening.getFilm().getTitle();
@@ -65,13 +59,8 @@ public class ScreeningService {
                                 });
         }
 
-        /*
-         * Programma delle proiezioni di un festival.
-         *
-         * Il Repository carica Film e Sala
-         * tramite EntityGraph.
-         */
-
+        /* Programma delle proiezioni di un festival.
+         * Il Repository carica Film e Sala */
         @Transactional(readOnly = true)
         public List<Screening> findProgramByFestivalId(
                         Long festivalId) {
@@ -84,57 +73,35 @@ public class ScreeningService {
         /*PROGRAMMA FESTIVAL PER API REST
          * Recuperiamo le proiezioni del festival
          * e le convertiamo in ScreeningResponse.
-         *
-         * La conversione avviene all'interno
-         * della transazione.
-         *
-         * In questo modo le associazioni JPA
-         * necessarie sono ancora accessibili.
          */
-
         @Transactional(readOnly = true)
         public List<ScreeningResponse> findProgramForApi(
                         Long festivalId) {
 
-                /*
-                 * Controlliamo che il festival esista.
-                 */
-
+                /* Controlliamo che il festival esista */
                 if (!festivalRepository.existsById(festivalId)) {
 
                         throw new NoSuchElementException(
                                         "Festival non trovato.");
                 }
 
-                /*
-                 * Recuperiamo le proiezioni.
-                 *
+                /* Recuperiamo le proiezioni.
                  * Il Repository utilizza EntityGraph
                  * per richiedere Film e CinemaRoom.
                  */
-
                 List<Screening> screenings = screeningRepository
                                 .findByFestivalIdOrderByDateAscTimeAsc(
                                                 festivalId);
 
-                /*
-                 * Convertiamo le entità in DTO.
-                 *
-                 * Non restituiamo direttamente
-                 * gli oggetti JPA al frontend.
-                 */
-
-                return screenings.stream()
+                /*Convertiamo le entità in DTO */
+                return screenings.stream()  //uno stream permette di elaborare una sequenza di elementi.
 
                                 .map(ScreeningResponse::fromEntity)
 
                                 .toList();
         }
 
-        /*
-         * Proiezioni di uno specifico film.
-         */
-
+        /* Proiezioni di uno specifico film */
         @Transactional(readOnly = true)
         public List<Screening> findByFilmId(Long filmId) {
 
@@ -144,12 +111,9 @@ public class ScreeningService {
         }
 
         /* CREAZIONE PROIEZIONE
-         * Crea una proiezione e, se necessario,
-         * associa automaticamente il film al festival.
-         *
+         * Crea una proiezione e, se necessario, associa automaticamente il film al festival.
          * Tutto avviene nella stessa transazione.
          */
-
         @Transactional
         public Screening createScreening(
                         Long festivalId,
@@ -160,7 +124,6 @@ public class ScreeningService {
                         ScreeningStatus status) {
 
                 /* 1. VALIDAZIONE CAMPI OBBLIGATORI*/
-
                 validateRequiredFields(
                                 festivalId,
                                 filmId,
@@ -169,7 +132,6 @@ public class ScreeningService {
                                 time);
 
                 /* 2. RECUPERIAMO FESTIVAL E FILM*/
-
                 Festival festival = requireFestival(festivalId);
 
                 Film film = requireFilm(filmId);
@@ -179,29 +141,23 @@ public class ScreeningService {
                  * per gestire correttamente
                  * eventuali operazioni concorrenti.
                  */
-
                 CinemaRoom room = lockRoom(roomId);
 
                 /* 4. STATO DELLA PROIEZIONE */
-
                 ScreeningStatus finalStatus = status != null
                                 ? status
-                                : ScreeningStatus.SCHEDULED;
+                                : ScreeningStatus.SCHEDULED; //se lo stato è specificato uso quello, altrimenti è scheduled.
 
                 /*5. CONTROLLO DATA DEL FESTIVAL
-                 * La data deve essere compresa
-                 * tra l'inizio e la fine del festival.
+                 * La data deve essere compresa tra l'inizio e la fine del festival.
                  */
-
                 validateDateInFestival(
                                 date,
                                 festival);
 
                 /*6. CONTROLLO DISPONIBILITÀ DELLA SALA
-                 * Le proiezioni annullate
-                 * non occupano la sala.
+                 * Le proiezioni annullate non occupano la sala.
                  */
-
                 if (finalStatus != ScreeningStatus.CANCELLED) {
 
                         validateRoomAvailability(
@@ -218,13 +174,11 @@ public class ScreeningService {
                  *
                  * Se partecipa già, non succede nulla.
                  */
-
                 ensureFilmInFestival(
                                 festival,
                                 film);
 
                 /*8. CREAZIONE DELLA PROIEZIONE*/
-
                 Screening screening = new Screening();
 
                 screening.setFestival(festival);
@@ -234,23 +188,15 @@ public class ScreeningService {
                 screening.setTime(time);
                 screening.setStatus(finalStatus);
 
-                /*9. SALVATAGGIO
-                 * Anche il salvataggio dell'associazione
-                 * Film-Festival appartiene a questa
-                 * transazione.
-                 */
-
+                /*9. SALVATAGGIO */
                 return screeningRepository.save(screening);
         }
 
         /*MODIFICA PROIEZIONE
          * Modifica una proiezione esistente.
-         *
          * Se il film selezionato non appartiene
-         * ancora al festival, lo associa
-         * automaticamente.
+         * ancora al festival, lo associa automaticamente.
          */
-
         @Transactional
         public Screening updateScreening(
                         Long screeningId,
@@ -262,7 +208,6 @@ public class ScreeningService {
                         ScreeningStatus status) {
 
                 /* 1. VALIDAZIONE */
-
                 validateRequiredFields(
                                 festivalId,
                                 filmId,
@@ -271,14 +216,12 @@ public class ScreeningService {
                                 time);
 
                 /*2. RECUPERIAMO LA PROIEZIONE*/
-
                 Screening screening = screeningRepository
                                 .findById(screeningId)
                                 .orElseThrow(() -> new NoSuchElementException(
                                                 "Proiezione non trovata."));
 
                 /* 3. BLOCCO DELLE SALE*/
-
                 Long oldRoomId = screening.getRoom().getId();
 
                 lockRoomsInOrder(
@@ -286,7 +229,6 @@ public class ScreeningService {
                                 roomId);
 
                 /* 4. RECUPERIAMO LE ENTITÀ*/
-
                 Festival festival = requireFestival(festivalId);
 
                 Film film = requireFilm(filmId);
@@ -297,19 +239,16 @@ public class ScreeningService {
                                                 "Sala non trovata."));
 
                 /* 5. STATO DELLA PROIEZIONE*/
-
                 ScreeningStatus finalStatus = status != null
                                 ? status
                                 : ScreeningStatus.SCHEDULED;
 
                 /* 6. CONTROLLO DATA */
-
                 validateDateInFestival(
                                 date,
                                 festival);
 
                 /* 7. CONTROLLO DISPONIBILITÀ */
-
                 if (finalStatus != ScreeningStatus.CANCELLED) {
 
                         validateRoomAvailability(
@@ -321,13 +260,11 @@ public class ScreeningService {
                 }
 
                 /*8. ASSOCIAZIONE AUTOMATICA*/
-
                 ensureFilmInFestival(
                                 festival,
                                 film);
 
                 /* 9. AGGIORNAMENTO PROIEZIONE*/
-
                 screening.setFestival(festival);
                 screening.setFilm(film);
                 screening.setRoom(room);
@@ -336,12 +273,10 @@ public class ScreeningService {
                 screening.setStatus(finalStatus);
 
                 /* 10. SALVATAGGIO*/
-
                 return screeningRepository.save(screening);
         }
 
         /* ELIMINAZIONE PROIEZIONE*/
-
         @Transactional
         public void deleteScreening(Long screeningId) {
 
@@ -350,19 +285,16 @@ public class ScreeningService {
                                 .orElseThrow(() -> new NoSuchElementException(
                                                 "Proiezione non trovata."));
 
-                /*
-                 * Acquisiamo il lock sulla sala
+                /* Acquisiamo il lock sulla sala
                  * per coordinare l'eliminazione
                  * con le operazioni di programmazione.
                  */
-
                 lockRoom(screening.getRoom().getId());
 
                 screeningRepository.delete(screening);
         }
 
         /*RECUPERO ENTITÀ */
-
         private Festival requireFestival(Long festivalId) {
 
                 return festivalRepository
@@ -380,7 +312,6 @@ public class ScreeningService {
         }
 
         /* LOCK SALA*/
-
         private CinemaRoom lockRoom(Long roomId) {
 
                 return cinemaRoomRepository
@@ -409,33 +340,22 @@ public class ScreeningService {
          *
          * 1. Controlliamo se il film appartiene al festival.
          *
-         * 2. Se appartiene già al festival,
-         * non dobbiamo fare nulla.
+         * 2. Se appartiene già al festival, non dobbiamo fare nulla.
          *
-         * 3. Se non appartiene ancora al festival,
-         * creiamo automaticamente l'associazione.
-         *
-         * L'operazione viene eseguita all'interno
-         * della transazione della proiezione.
+         * 3. Se non appartiene ancora al festival, creiamo automaticamente l'associazione.
          */
-
         private void ensureFilmInFestival(
                         Festival festival,
                         Film film) {
 
-                /*
-                 * Recuperiamo gli ID.
-                 */
-
+                /* Recuperiamo gli ID */
                 Long festivalId = festival.getId();
 
                 Long filmId = film.getId();
 
-                /*
-                 * Controlliamo se l'associazione
+                /* Controlliamo se l'associazione
                  * esiste già nel database.
                  */
-
                 boolean alreadyAssociated = festivalRepository.isFilmInFestival(
                                 festivalId,
                                 filmId);
@@ -444,7 +364,6 @@ public class ScreeningService {
                  * Se il film partecipa già al festival,
                  * non creiamo un'associazione duplicata.
                  */
-
                 if (alreadyAssociated) {
                         return;
                 }
@@ -468,12 +387,10 @@ public class ScreeningService {
                  * La nuova relazione sarà registrata
                  * nella tabella festival_films.
                  */
-
                 festivalRepository.save(festival);
         }
 
         /*CONTROLLA DATA */
-
         private void validateDateInFestival(
                         LocalDate date,
                         Festival festival) {
@@ -488,17 +405,10 @@ public class ScreeningService {
         }
 
         /*CONTROLLO SOVRAPPOSIZIONI
-         * Due intervalli si sovrappongono quando:
-         *
-         * startA < endB
-         * AND
-         * startB < endA
-         *
          * Usiamo LocalDateTime anche per
          * gestire le proiezioni che
          * terminano dopo mezzanotte.
          */
-
         private void validateRoomAvailability(
                         Long roomId,
                         Long excludedScreeningId,
@@ -518,11 +428,7 @@ public class ScreeningService {
 
                 for (Screening existing : existingScreenings) {
 
-                        /*
-                         * Durante la modifica ignoriamo
-                         * la proiezione stessa.
-                         */
-
+                        /* Durante la modifica ignoriamo la proiezione stessa */
                         if (excludedScreeningId != null
                                         && excludedScreeningId.equals(
                                                         existing.getId())) {
@@ -551,7 +457,6 @@ public class ScreeningService {
         }
 
         /*VALIDAZIONE CAMPI OBBLIGATORI*/
-
         private void validateRequiredFields(
                         Long festivalId,
                         Long filmId,

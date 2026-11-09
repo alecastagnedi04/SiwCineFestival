@@ -14,7 +14,7 @@ import it.uniroma3.siw.siwcinefestival.model.Festival;
 import it.uniroma3.siw.siwcinefestival.service.FestivalService;
 
 @Controller
-public class HomeController {
+public class HomeController {  //gestisce la home page e la ricerca dei festival
 
         private final FestivalService festivalService;
 
@@ -24,40 +24,24 @@ public class HomeController {
                 this.festivalService = festivalService;
         }
 
-        /* HOMEPAGE CON PAGINAZIONE
-         * GET /
-         *
-         * GET /?festivalPage=0
-         *
-         * GET /?festivalPage=1
-         *
-         * GET /?q=Venezia
-         *
-         * La paginazione riguarda soltanto
-         * l'anteprima dei festival nella Home.
-         */
-
+        /* HOMEPAGE CON PAGINAZIONE */
         @GetMapping("/")
         public String home(
 
-                        @RequestParam(name = "festivalPage", defaultValue = "0") int festivalPage,
-                        @RequestParam(name = "q", defaultValue = "") String q,
+                        @RequestParam(name = "festivalPage", defaultValue = "0") int festivalPage,  //per sapere quale pagina di festival mostrare nella home page
+                        @RequestParam(name = "q", defaultValue = "") String q, //per recuperare il testo cercato dall'utente nella barra di ricerca
                         Model model) {
 
                 /*
                  * Recuperiamo la pagina richiesta.
                  */
-
                 Page<Festival> result = festivalService.findHomePage(
                                 q,
                                 festivalPage);
 
                 /*
-                 * I festival da mostrare.
-                 *
-                 * Al massimo 3.
+                 * I festival da mostrare. Al massimo 3.
                  */
-
                 model.addAttribute(
                                 "festivals",
                                 result.getContent());
@@ -65,16 +49,13 @@ public class HomeController {
                 /*
                  * Informazioni sulla paginazione.
                  */
-
                 model.addAttribute(
                                 "festivalPage",
                                 result);
                                 
-
                 /*
                  * Testo della ricerca.
                  */
-
                 model.addAttribute(
                                 "q",
                                 q.trim());

@@ -20,14 +20,13 @@ public class UserService {
 
     public UserService(
             UserRepository userRepository,
-            PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder) { //Password Encoder viene usata per trasformare la password in hash prima di salvarla nel database
 
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
     /*ELENCO UTENTI */
-
     @Transactional(readOnly = true)
     public List<User> findAll() {
 
@@ -35,12 +34,11 @@ public class UserService {
     }
 
     /* RICERCA UTENTE*/
-
     @Transactional(readOnly = true)
     public Optional<User> findByUsername(String username) {
 
         if (username == null || username.isBlank()) {
-            return Optional.empty();
+            return Optional.empty(); //non ho un utente da cercare, quindi ritorno un optional vuoto
         }
 
         return userRepository.findByUsername(
@@ -48,7 +46,6 @@ public class UserService {
     }
 
     /* REGISTRAZIONE UTENTE*/
-
     @Transactional
     public User register(
             String username,
@@ -62,7 +59,6 @@ public class UserService {
         String normalizedEmail = email.trim().toLowerCase(Locale.ROOT);
 
         // Controlliamo se lo username esiste già
-
         if (userRepository.existsByUsernameIgnoreCase(
                 normalizedUsername)) {
 
@@ -71,7 +67,6 @@ public class UserService {
         }
 
         // Controlliamo se l'email esiste già
-
         if (userRepository.existsByEmailIgnoreCase(
                 normalizedEmail)) {
 
@@ -80,28 +75,23 @@ public class UserService {
         }
 
         // Creiamo il nuovo utente
-
         User user = new User();
 
         user.setUsername(normalizedUsername);
         user.setEmail(normalizedEmail);
 
         // Password cifrata con BCrypt
-
         user.setPassword(
                 passwordEncoder.encode(password));
 
         // Ogni nuovo utente è USER
-
         user.setRole(Role.USER);
 
         // Salviamo nel database
-
         return userRepository.save(user);
     }
 
     /* VALIDAZIONE REGISTRAZIONE */
-
     private void validateRegistration(
             String username,
             String email,

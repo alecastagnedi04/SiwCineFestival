@@ -65,18 +65,14 @@ public class FilmController {
         public String showFilm(
 
                         @PathVariable("id") Long id,
-
                         @RequestParam(name = "reviewPage", defaultValue = "0") int reviewPage,
-
                         Model model,
-
-                        Principal principal) {
+                        Principal principal) {  //principal rappresenta l'utente autenticato, se presente. 
 
                 /*
                  * Recuperiamo il film
                  * con regista e cast.
                  */
-
                 Film film = filmService
                                 .findByIdWithDirectorAndCast(id)
                                 .orElseThrow(() -> new ResponseStatusException(
@@ -86,7 +82,6 @@ public class FilmController {
                 /*
                  * Informazioni principali.
                  */
-
                 model.addAttribute(
                                 "film",
                                 film);
@@ -94,7 +89,6 @@ public class FilmController {
                 /*
                  * Cast del film.
                  */
-
                 model.addAttribute(
                                 "castings",
                                 film.getCastings());
@@ -102,7 +96,6 @@ public class FilmController {
                 /*
                  * Regista.
                  */
-
                 model.addAttribute(
                                 "director",
                                 film.getDirector());
@@ -110,7 +103,6 @@ public class FilmController {
                 /*
                  * Festival ai quali partecipa.
                  */
-
                 model.addAttribute(
                                 "festivals",
                                 film.getFestivals());
@@ -118,7 +110,6 @@ public class FilmController {
                 /*
                  * Proiezioni del film.
                  */
-
                 model.addAttribute(
                                 "screenings",
                                 screeningService.findByFilmId(id));
@@ -127,7 +118,6 @@ public class FilmController {
                  * Recuperiamo soltanto
                  * 3 recensioni per pagina.
                  */
-
                 Page<Review> result = reviewService.findPageByFilmId(
                                 id,
                                 reviewPage);
@@ -136,7 +126,6 @@ public class FilmController {
                  * Elenco delle recensioni
                  * presenti nella pagina corrente.
                  */
-
                 model.addAttribute(
                                 "reviews",
                                 result.getContent());
@@ -144,7 +133,6 @@ public class FilmController {
                 /*
                  * Informazioni sulla paginazione.
                  */
-
                 model.addAttribute(
                                 "reviewPage",
                                 result);
@@ -152,7 +140,6 @@ public class FilmController {
                 /*
                  * Recensione dell'utente autenticato.
                  */
-
                 if (principal != null) {
 
                         model.addAttribute(

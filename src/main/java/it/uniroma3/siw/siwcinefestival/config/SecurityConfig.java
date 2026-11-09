@@ -21,10 +21,8 @@ public class SecurityConfig {
 
     /* PASSWORD ENCODER
      * Le password non vengono salvate in chiaro nel database.
-     *
      * Uso BCrypt per calcolare un hash sicuro della password.
      */
-
     @Bean
     public PasswordEncoder passwordEncoder() {
 

@@ -30,7 +30,7 @@ import it.uniroma3.siw.siwcinefestival.service.FilmService;
 @Controller
 @RequestMapping("/admin/festivals")
 @PreAuthorize("hasRole('ADMIN')")
-public class AdminFestivalController {
+public class AdminFestivalController {   //gestisce i festival e le associazioni con i film
 
         private final FestivalService festivalService;
         private final FilmService filmService;
@@ -46,7 +46,6 @@ public class AdminFestivalController {
         /* ELENCO FESTIVAL
          * GET /admin/festivals
          */
-
         @GetMapping
         public String listFestivals(Model model) {
 
@@ -60,7 +59,6 @@ public class AdminFestivalController {
         /* FORM CREAZIONE
          * GET /admin/festivals/new
          */
-
         @GetMapping("/new")
         public String newFestivalForm(Model model) {
 
@@ -76,7 +74,6 @@ public class AdminFestivalController {
         /* CREAZIONE FESTIVAL
          * POST /admin/festivals/new
          */
-
         @PostMapping("/new")
         public String createFestival(
 
@@ -126,7 +123,6 @@ public class AdminFestivalController {
         /* FORM MODIFICA
          * GET /admin/festivals/{id}/edit
          */
-
         @GetMapping("/{id}/edit")
         public String editFestivalForm(
 
@@ -157,7 +153,6 @@ public class AdminFestivalController {
         /* SALVATAGGIO MODIFICA
          * POST /admin/festivals/{id}/edit
          */
-
         @PostMapping("/{id}/edit")
         public String updateFestival(
 
@@ -211,7 +206,6 @@ public class AdminFestivalController {
         /* AGGIUNGI FILM AL FESTIVAL
          * POST /admin/festivals/{id}/films/add
          */
-
         @PostMapping("/{id}/films/add")
         public String addFilmToFestival(
 
@@ -246,7 +240,6 @@ public class AdminFestivalController {
         /* RIMUOVI FILM DAL FESTIVAL
          * POST /admin/festivals/{id}/films/{filmId}/remove
          */
-
         @PostMapping("/{id}/films/{filmId}/remove")
         public String removeFilmFromFestival(
 
@@ -279,7 +272,6 @@ public class AdminFestivalController {
         }
 
         /* METODI PRIVATI */
-
         private Festival requireFestival(Long id) {
 
                 return festivalService.findByIdWithFilms(id)

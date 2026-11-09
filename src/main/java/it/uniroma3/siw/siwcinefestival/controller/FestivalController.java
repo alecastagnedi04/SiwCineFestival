@@ -34,15 +34,13 @@ public class FestivalController {
         /*ELENCO FESTIVAL
          * URL:
          * GET /festivals
-         *
-         * Pagina pubblica.
          */
         @GetMapping
         public String listFestivals(Model model) {
 
                 model.addAttribute(
                                 "festivals",
-                                festivalService.findAll());
+                                festivalService.findAll());  //il controller chiama il service per recuperare tutti i festival tramite il repository.
 
                 return "festivals/list";
         }
@@ -50,9 +48,6 @@ public class FestivalController {
         /*DETTAGLIO FESTIVAL
          * URL:
          * GET /festivals/{id}
-         *
-         * Esempio:
-         * GET /festivals/1
          */
         @GetMapping("/{id}")
         public String showFestival(

@@ -32,7 +32,7 @@ import it.uniroma3.siw.siwcinefestival.service.FilmService;
 @Controller
 @RequestMapping("/admin/films")
 @PreAuthorize("hasRole('ADMIN')")
-public class AdminFilmController {
+public class AdminFilmController {  //gestione dei film e del cast associato a ciascun film
 
         private final FilmService filmService;
         private final DirectorService directorService;
@@ -54,7 +54,6 @@ public class AdminFilmController {
         /* ELENCO FILM
          * GET /admin/films
          */
-
         @GetMapping
         public String listFilms(Model model) {
 
@@ -67,11 +66,9 @@ public class AdminFilmController {
 
         /* FORM NUOVO FILM
          * Permette di scegliere tra:
-         *
          * - Regista esistente
          * - Nuovo regista
          */
-
         @GetMapping("/new")
         public String newFilmForm(Model model) {
 

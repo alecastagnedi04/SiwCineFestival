@@ -20,7 +20,7 @@ import it.uniroma3.siw.siwcinefestival.dto.RegistrationForm;
 import it.uniroma3.siw.siwcinefestival.service.UserService;
 
 @Controller
-public class AuthController {
+public class AuthController { //gestisce le pagine di login e registrazione
 
     private final UserService userService;
 
@@ -32,17 +32,12 @@ public class AuthController {
      * URL:
      * GET /login
      *
-     * Il controllo della password
-     * sarà effettuato da Spring Security.
+     * Controllo della password effettuato da Spring Security.
      */
     @GetMapping("/login")
     public String login(Principal principal) {
 
-        /*
-         * Un utente già autenticato
-         * viene rimandato alla homepage.
-         */
-
+        /* Un utente già autenticato viene rimandato alla homepage */
         if (principal != null) {
             return "redirect:/";
         }
@@ -78,17 +73,13 @@ public class AuthController {
     /* REGISTRAZIONE UTENTE
      * URL:
      * POST /register
-     *
-     * Riceve:
-     * username
-     * email
-     * password
+     * Riceve: username, email, password
      */
     @PostMapping("/register")
     public String register(
 
             @Valid @ModelAttribute("registrationForm") RegistrationForm form,
-            BindingResult bindingResult,
+            BindingResult bindingResult,  
             Principal principal,
             RedirectAttributes redirectAttributes) {
 
@@ -97,7 +88,6 @@ public class AuthController {
          * già autenticato di registrarsi
          * nuovamente tramite questo form.
          */
-
         if (principal != null) {
             return "redirect:/";
         }
@@ -105,16 +95,8 @@ public class AuthController {
         /*
          * Controlliamo gli errori rilevati
          * dalle annotazioni del DTO.
-         *
-         * Esempi:
-         *
-         * @NotBlank
-         * 
-         * @Email
-         * 
-         * @Size
+         * Esempi: @NotBlank, @Email, @Size
          */
-
         if (bindingResult.hasErrors()) {
             return "register";
         }
@@ -124,11 +106,7 @@ public class AuthController {
             /*
              * La logica di registrazione
              * si trova in UserService.
-             *
-             * Qui NON cifriamo la password
-             * e NON accediamo al Repository.
              */
-
             userService.register(
                     form.getUsername(),
                     form.getEmail(),
@@ -176,5 +154,4 @@ public class AuthController {
             return "register";
         }
     }
-
 }

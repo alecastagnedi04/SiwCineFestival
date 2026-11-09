@@ -35,7 +35,6 @@ public class AdminActorController {
         }
 
         /* ELENCO E FORM NUOVO ATTORE */
-
         @GetMapping({ "", "/new" })
         public String listActors(Model model) {
 
@@ -49,7 +48,6 @@ public class AdminActorController {
         }
 
         /* CREAZIONE ATTORE */
-
         @PostMapping("/new")
         public String createActor(
 
@@ -92,7 +90,6 @@ public class AdminActorController {
         }
 
         /* FORM MODIFICA ATTORE */
-
         @GetMapping("/{id}/edit")
         public String editActorForm(
 
@@ -117,7 +114,6 @@ public class AdminActorController {
         }
 
         /* MODIFICA ATTORE */
-
         @PostMapping("/{id}/edit")
         public String updateActor(
 

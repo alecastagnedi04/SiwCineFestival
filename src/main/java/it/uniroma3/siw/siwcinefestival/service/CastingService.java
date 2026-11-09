@@ -31,10 +31,7 @@ public class CastingService {
                 this.actorRepository = actorRepository;
         }
 
-        /*
-         * CAST DI UN FILM
-         */
-
+        /* CAST DI UN FILM */
         @Transactional(readOnly = true)
         public List<Casting> findCastByFilmId(Long filmId) {
 
@@ -42,10 +39,7 @@ public class CastingService {
                                 .findByFilmIdOrderByIdAsc(filmId);
         }
 
-        /*
-         * FILMOGRAFIA DI UN ATTORE
-         */
-
+        /* FILMOGRAFIA DI UN ATTORE */
         @Transactional(readOnly = true)
         public List<Casting> findFilmographyByActorId(
                         Long actorId) {
@@ -54,10 +48,7 @@ public class CastingService {
                                 .findByActorIdOrderByIdAsc(actorId);
         }
 
-        /*
-         * AGGIUNTA ATTORE AL CAST
-         */
-
+        /* AGGIUNTA ATTORE AL CAST */
         @Transactional
         public Casting addActorToFilm(
                         Long filmId,
@@ -92,10 +83,7 @@ public class CastingService {
                 return castingRepository.save(casting);
         }
 
-        /*
-         * MODIFICA CASTING
-         */
-
+        /* MODIFICA CASTING */
         @Transactional
         public Casting updateCasting(
                         Long castingId,
@@ -116,14 +104,13 @@ public class CastingService {
 
                 Long filmId = casting.getFilm().getId();
 
-                /*
-                 * Se cambiamo attore, controlliamo
+                /* Se cambiamo attore, controlliamo
                  * che quello nuovo non sia già
                  * presente nel cast dello stesso film.
                  */
 
-                if (!casting.getActor().getId().equals(actorId)
-                                && castingRepository.existsByFilmIdAndActorId(
+                if (!casting.getActor().getId().equals(actorId)  //controllo che l'attore selezionato sia diverso da quello associato
+                                && castingRepository.existsByFilmIdAndActorId(  //controllo che l'attore selezionato non sia già presente nel cast dello stesso film
                                                 filmId, actorId)) {
 
                         throw new IllegalStateException(
@@ -136,10 +123,7 @@ public class CastingService {
                 return castingRepository.save(casting);
         }
 
-        /*
-         * ELIMINAZIONE DAL CAST
-         */
-
+        /* ELIMINAZIONE DAL CAST */
         @Transactional
         public void removeActorFromFilm(
                         Long castingId,
@@ -159,10 +143,7 @@ public class CastingService {
                 castingRepository.delete(casting);
         }
 
-        /*
-         * VALIDAZIONE PERSONAGGIO
-         */
-
+        /* VALIDAZIONE PERSONAGGIO */
         private void validateCharacterName(
                         String characterName) {
 

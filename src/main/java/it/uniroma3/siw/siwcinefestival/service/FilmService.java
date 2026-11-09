@@ -28,9 +28,6 @@ public class FilmService {
         private final DirectorRepository directorRepository;
         private final ScreeningRepository screeningRepository;
         private final CinemaRoomRepository cinemaRoomRepository;
-        /*
-         * Utilizziamo anche il Service dei registi.
-         */
         private final DirectorService directorService;
 
         public FilmService(
@@ -44,11 +41,10 @@ public class FilmService {
                 this.directorRepository = directorRepository;
                 this.screeningRepository = screeningRepository;
                 this.cinemaRoomRepository = cinemaRoomRepository;
-                this.directorService = directorService;
+                this.directorService = directorService;  //per creare un nuovo regista quando si crea un film con regista nuovo.
         }
 
         /* LETTURA */
-
         @Transactional(readOnly = true)
         public List<Film> findAll() {
 
@@ -67,12 +63,10 @@ public class FilmService {
 
                 Optional<Film> result = filmRepository.findByIdWithDirectorAndCast(id);
 
-                /*
-                 * Director e Casting vengono caricati
-                 * tramite EntityGraph nel Repository.
+                /* Director e Casting vengono caricati tramite EntityGraph nel Repository.
                  *
-                 * Inizializziamo separatamente i festival
-                 * mentre la transazione è ancora aperta.
+                 * La collezione dei festival potrebbe non essere ancora stata caricata, 
+                 * quindi inizializziamo separatamente i festival mentre la transazione è ancora aperta.
                  */
 
                 result.ifPresent(film -> {
@@ -90,7 +84,6 @@ public class FilmService {
         }
 
         /*CREAZIONE FILM */
-
         @Transactional
         public Film createFilm(
                         String title,
@@ -125,13 +118,8 @@ public class FilmService {
         /* CREAZIONE FILM CON REGISTA ESISTENTE O NUOVO
          * Permette di:
          * Selezionare un regista esistente.
-         * Creare un nuovo regista e associarlo
-         * immediatamente al nuovo film.
-         *
-         * Le operazioni vengono effettuate
-         * nella stessa transazione.
+         * Creare un nuovo regista e associarlo immediatamente al nuovo film.
          */
-
         @Transactional
         public Film createFilmWithDirectorOption(
 
@@ -140,13 +128,12 @@ public class FilmService {
                         Integer duration,
                         String genre,
                         String productionCountry,
-                        String directorMode,
+                        String directorMode,  //utilizza un regista esistente o crea un nuovo regista
                         Long directorId,
                         String newDirectorName,
                         String newDirectorSurname) {
 
                 /* VALIDAZIONE DATI FILM */
-
                 validateFilm(
                                 title,
                                 year,
@@ -155,12 +142,9 @@ public class FilmService {
                                 productionCountry);
 
                 /* REGISTA NUOVO */
-
                 if ("new".equals(directorMode)) {
 
-                        /*
-                         * DirectorService valida nome e cognome.
-                         *
+                        /* DirectorService valida nome e cognome.
                          * Se i dati non sono validi,
                          * viene generata un'eccezione.
                          */
@@ -169,14 +153,10 @@ public class FilmService {
                                         newDirectorName,
                                         newDirectorSurname);
 
-                        /*
-                         * Il regista appena creato
-                         * possiede ora un ID.
-                         *
+                        /* Il regista appena creato possiede ora un ID.
                          * Possiamo riutilizzare il metodo
                          * createFilm() già esistente.
                          */
-
                         return createFilm(
 
                                         title,
@@ -189,12 +169,9 @@ public class FilmService {
                 }
 
                 /* REGISTA ESISTENTE */
-
                 if ("existing".equals(directorMode)) {
 
-                        /*
-                         * Se è stato selezionato
-                         * un regista esistente,
+                        /* Se è stato selezionato un regista esistente,
                          * l'ID è obbligatorio.
                          */
 
@@ -204,12 +181,9 @@ public class FilmService {
                                                 "Seleziona un regista dal catalogo.");
                         }
 
-                        /*
-                         * Il metodo createFilm() recupera
-                         * il regista dal Repository
+                        /* Il metodo createFilm() recupera il regista dal Repository
                          * e lo associa al film.
                          */
-
                         return createFilm(
 
                                         title,
@@ -221,13 +195,11 @@ public class FilmService {
                 }
 
                 /* MODALITÀ NON VALIDA*/
-
                 throw new IllegalArgumentException(
                                 "Seleziona una modalità valida per il regista.");
         }
 
         /* MODIFICA FILM*/
-
         @Transactional
         public Film updateFilm(
                         Long filmId,
@@ -277,15 +249,10 @@ public class FilmService {
         }
 
         /* VERIFICA MODIFICA DURATA
-         * Controlliamo che la nuova durata
-         * non produca sovrapposizioni
+         * Controlliamo che la nuova durata non produca sovrapposizioni
          * nelle sale interessate.
-         *
-         * Per coerenza con ScreeningService,
-         * acquisiamo i lock delle sale
-         * in ordine crescente.
+         * Acquisiamo i lock delle sale in ordine crescente.
          */
-
         private void validateDurationChange(
                         Long filmId,
                         Integer newDuration) {
@@ -294,7 +261,7 @@ public class FilmService {
                                 .findByFilmIdOrderByDateAscTimeAsc(
                                                 filmId);
 
-                TreeSet<Long> roomIds = new TreeSet<>();
+                TreeSet<Long> roomIds = new TreeSet<>();  //un treeSet mantiene gli ID delle sale in ordine crescente e senza duplicati.
 
                 for (Screening screening : affectedScreenings) {
 
@@ -302,13 +269,10 @@ public class FilmService {
 
                                 roomIds.add(
                                                 screening.getRoom().getId());
-                        }
+                        } //se la proiezione non è cancellata, aggiungiamo una sola volta l'ID della sala. 
                 }
 
-                /*
-                 * Blocchiamo le sale interessate.
-                 */
-
+                /* Blocchiamo le sale interessate per coordinare le modifiche */
                 for (Long roomId : roomIds) {
 
                         cinemaRoomRepository
@@ -317,11 +281,7 @@ public class FilmService {
                                                         "Sala non trovata."));
                 }
 
-                /*
-                 * Per ogni sala controlliamo
-                 * l'intero programma.
-                 */
-
+                /* Per ogni sala controlliamo l'intero programma */
                 for (Long roomId : roomIds) {
 
                         List<Screening> screenings = screeningRepository
@@ -329,12 +289,8 @@ public class FilmService {
                                                         roomId,
                                                         ScreeningStatus.CANCELLED);
 
-                        /*
-                         * Confrontiamo ogni proiezione
-                         * con quelle successive.
-                         */
-
-                        for (int i = 0; i < screenings.size(); i++) {
+                        /* Confrontiamo ogni proiezione con quelle successive */
+                        for (int i = 0; i < screenings.size(); i++) {  //due cicli perchè dobbiamo confrontare le proiezioni a coppie
 
                                 Screening first = screenings.get(i);
 
@@ -365,7 +321,7 @@ public class FilmService {
 
                                         boolean overlap = firstStart.isBefore(secondEnd)
                                                         &&
-                                                        secondStart.isBefore(firstEnd);
+                                                        secondStart.isBefore(firstEnd);  //formula di sovrapposizione di intervalli temporali
 
                                         if (overlap) {
 
@@ -380,7 +336,6 @@ public class FilmService {
         }
 
         /* VALIDAZIONE FILM */
-
         private void validateFilm(
                         String title,
                         Integer year,
@@ -394,7 +349,7 @@ public class FilmService {
                                         "Il titolo del film è obbligatorio.");
                 }
 
-                if (year == null || year < 1888) {
+                if (year == null || year < 1800) {
 
                         throw new IllegalArgumentException(
                                         "L'anno del film non è valido.");

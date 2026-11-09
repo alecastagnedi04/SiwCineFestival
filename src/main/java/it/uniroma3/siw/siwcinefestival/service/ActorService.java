@@ -34,10 +34,7 @@ public class ActorService {
                 return actorRepository.findById(id);
         }
 
-        /*
-         * CREAZIONE ATTORE
-         */
-
+        /* CREAZIONE ATTORE*/
         @Transactional
         public Actor createActor(
                         String name,
@@ -58,10 +55,7 @@ public class ActorService {
                 return actorRepository.save(actor);
         }
 
-        /*
-         * MODIFICA ATTORE
-         */
-
+        /* MODIFICA ATTORE */
         @Transactional
         public Actor updateActor(
                         Long actorId,
@@ -86,10 +80,7 @@ public class ActorService {
                 return actorRepository.save(actor);
         }
 
-        /*
-         * VALIDAZIONE
-         */
-
+        /* VALIDAZIONE */
         private void validateActor(
                         String name,
                         String surname,

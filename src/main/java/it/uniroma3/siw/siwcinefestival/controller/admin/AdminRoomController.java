@@ -35,7 +35,6 @@ public class AdminRoomController {
         }
 
         /*ELENCO SALE*/
-
         @GetMapping
         public String listRooms(Model model) {
 
@@ -47,7 +46,6 @@ public class AdminRoomController {
         }
 
         /* FORM NUOVA SALA */
-
         @GetMapping("/new")
         public String newRoomForm(Model model) {
 
@@ -61,7 +59,6 @@ public class AdminRoomController {
         }
 
         /*CREAZIONE SALA */
-
         @PostMapping("/new")
         public String createRoom(
 
@@ -103,7 +100,6 @@ public class AdminRoomController {
         }
 
         /*FORM MODIFICA SALA*/
-
         @GetMapping("/{id}/edit")
         public String editRoomForm(
 
@@ -128,7 +124,6 @@ public class AdminRoomController {
         }
 
         /*MODIFICA SALA*/
-
         @PostMapping("/{id}/edit")
         public String updateRoom(
 
@@ -174,7 +169,6 @@ public class AdminRoomController {
         }
 
         /* METODI PRIVATI */
-
         private CinemaRoom requireRoom(Long id) {
 
                 return roomService.findById(id)

@@ -38,7 +38,6 @@ public class ReviewService {
         }
 
         /*RECENSIONI DI UN FILM*/
-
         @Transactional(readOnly = true)
         public List<Review> findByFilmId(Long filmId) {
 
@@ -46,10 +45,7 @@ public class ReviewService {
                                 .findByFilmIdOrderByDateDescIdDesc(filmId);
         }
 
-        /*
-         * RECENSIONE DI UN UTENTE SU UN FILM
-         */
-
+        /* RECENSIONE DI UN UTENTE SU UN FILM */
         @Transactional(readOnly = true)
         public Optional<Review> findByFilmIdAndUsername(
                         Long filmId,
@@ -61,10 +57,7 @@ public class ReviewService {
                                                 username);
         }
 
-        /*
-         * RECENSIONE APPARTENENTE ALL'UTENTE
-         */
-
+        /* RECENSIONE APPARTENENTE ALL'UTENTE */
         @Transactional(readOnly = true)
         public Optional<Review> findOwnedReview(
                         Long reviewId,
@@ -77,7 +70,6 @@ public class ReviewService {
         }
 
         /* CREAZIONE RECENSIONE*/
-
         @Transactional
         public Review createReview(
                         Long filmId,
@@ -126,7 +118,6 @@ public class ReviewService {
         }
 
         /* MODIFICA RECENSIONE*/
-
         @Transactional
         public Review updateReview(
                         Long reviewId,
@@ -140,7 +131,6 @@ public class ReviewService {
                  * Il Repository recupera la recensione
                  * soltanto se appartiene all'utente.
                  */
-
                 Review review = reviewRepository
                                 .findByIdAndAuthorUsername(
                                                 reviewId,
@@ -156,7 +146,6 @@ public class ReviewService {
         }
 
         /*ELIMINAZIONE RECENSIONE */
-
         @Transactional
         public void deleteReview(
                         Long reviewId,
@@ -174,7 +163,6 @@ public class ReviewService {
         }
 
         /* VALIDAZIONE RECENSIONE */
-
         private void validateReview(
                         String text,
                         Integer rating) {
@@ -195,11 +183,8 @@ public class ReviewService {
         }
 
         /*RECENSIONI SCRITTE DA UN UTENTE
-         * Utilizzato nella pagina profilo.
-         *
-         * Operazione di sola lettura.
-         */
-
+         * Utilizzato nella pagina profilo 
+        */
         @Transactional(readOnly = true)
         public List<Review> findByAuthorUsername(
                         String username) {
@@ -211,64 +196,42 @@ public class ReviewService {
 
         /* PAGINAZIONE RECENSIONI
          * Mostriamo 3 recensioni per pagina.
-         *
          * Utilizzato nel dettaglio del film.
-         *
-         * La pagina con tutte le recensioni
-         * continuerà a usare findByFilmId().
          */
-
         @Transactional(readOnly = true)
         public Page<Review> findPageByFilmId(
                         Long filmId,
                         int requestedPage) {
 
-                /*
-                 * Tre recensioni per pagina.
-                 */
-
+                /* Tre recensioni per pagina */
                 final int PAGE_SIZE = 3;
 
-                /*
-                 * Numero della pagina richiesta.
-                 */
+                /* Numero della pagina richiesta */
 
                 int pageNumber = Math.max(
                                 0,
                                 requestedPage);
 
-                /*
-                 * Ordiniamo dalla recensione
-                 * più recente alla più vecchia.
-                 */
-
+                /* Ordiniamo dalla recensione più recente alla più vecchia */
                 Sort sort = Sort.by(
                                 Sort.Order.desc("date"),
                                 Sort.Order.desc("id"));
 
-                /*
-                 * Creiamo Pageable.
-                 */
-
+                /* Creiamo Pageable */
                 PageRequest pageable = PageRequest.of(
                                 pageNumber,
                                 PAGE_SIZE,
                                 sort);
 
-                /*
-                 * Recuperiamo le recensioni.
-                 */
-
+                /* Recuperiamo le recensioni */
                 Page<Review> result = reviewRepository.findByFilmId(
                                 filmId,
                                 pageable);
 
                 /*
-                 * Se la pagina richiesta
-                 * non esiste più,
+                 * Se la pagina richiesta non esiste più,
                  * ritorniamo all'ultima disponibile.
                  */
-
                 if (result.getTotalPages() > 0
                                 && pageNumber >= result.getTotalPages()) {
 

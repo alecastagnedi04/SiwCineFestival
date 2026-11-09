@@ -40,7 +40,6 @@ public class AdminController {
         /* DASHBOARD ADMIN
          * GET /admin
          */
-
         @GetMapping
         public String dashboard(Model model) {
 

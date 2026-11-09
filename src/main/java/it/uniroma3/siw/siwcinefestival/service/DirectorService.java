@@ -13,7 +13,7 @@ import it.uniroma3.siw.siwcinefestival.repository.DirectorRepository;
 @Service
 public class DirectorService {
 
-    private final DirectorRepository directorRepository;
+    private final DirectorRepository directorRepository;  //directorService ha bisogno di un DirectorRepository per accedere ai dati dei registi
 
     public DirectorService(
             DirectorRepository directorRepository) {
@@ -21,7 +21,7 @@ public class DirectorService {
         this.directorRepository = directorRepository;
     }
 
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true) //readonly=true perchè il metodo deve soltanto leggere i dati
     public List<Director> findAll() {
 
         return directorRepository
@@ -34,29 +34,23 @@ public class DirectorService {
         return directorRepository.findById(id);
     }
 
-    /*
-     * CREAZIONE REGISTA
-     */
-
+    /* CREAZIONE REGISTA */
     @Transactional
     public Director createDirector(
             String name,
             String surname) {
 
-        validateDirector(name, surname);
+        validateDirector(name, surname); //per verificare che il nome e cognome del regista siano validi.
 
         Director director = new Director();
 
-        director.setName(name.trim());
+        director.setName(name.trim());  //trim per rimuovere eventuali spazi vuori all'inizio o alla fine.
         director.setSurname(surname.trim());
 
-        return directorRepository.save(director);
+        return directorRepository.save(director);  //il service chiede al repository di salvare l'oggetto
     }
 
-    /*
-     * MODIFICA REGISTA
-     */
-
+    /* MODIFICA REGISTA */
     @Transactional
     public Director updateDirector(
             Long directorId,
@@ -76,10 +70,7 @@ public class DirectorService {
         return directorRepository.save(director);
     }
 
-    /*
-     * VALIDAZIONE
-     */
-
+    /* VALIDAZIONE */
     private void validateDirector(
             String name,
             String surname) {
